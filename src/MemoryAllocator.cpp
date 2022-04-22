@@ -19,3 +19,7 @@ MemoryAllocator* MemoryAllocator::getAllocator() {
 void *MemoryAllocator::mem_alloc(size_t size) {
     return list.find_best(size);
 }
+
+int MemoryAllocator::mem_free(void *) {
+    return 0;
+}

@@ -1,5 +1,6 @@
 #include "../lib/console.h"
 #include "../lib/hw.h"
+#include "../lib/mem.h"
 
 uint64 pc;
 
@@ -12,11 +13,6 @@ void b(){
 
 
 void main(){
-    a();
-    __putc('D');
-    __putc('\n');
-    b();
-
 
 
 }

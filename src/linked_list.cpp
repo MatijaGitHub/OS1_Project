@@ -2,8 +2,12 @@
 
 
 linked_list::linked_list() {
-    head = nullptr;
-    tail = nullptr;
+    node beg;
+    beg.next = nullptr;
+    beg.mem_free_block =(void*)HEAP_START_ADDR;
+    beg.size = (size_t)HEAP_END_ADDR-(size_t)HEAP_START_ADDR;
+    *head = beg;
+    *tail = beg;
 }
 
 void *linked_list::find_best(size_t size) {
@@ -29,7 +33,7 @@ void *linked_list::find_best(size_t size) {
         this->allocate_mem(prevReplace,toReplace,size);
         return start_adr;
     }
-    else return nullptr;
+    return nullptr;
 }
 
 
@@ -51,3 +55,5 @@ void linked_list::allocate_mem(struct node* prev,struct node *here, size_t size)
         here->mem_free_block = (void*)((size_t)here->mem_free_block + size);
     }
 }
+
+
