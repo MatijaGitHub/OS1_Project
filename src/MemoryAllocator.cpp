@@ -12,5 +12,10 @@ MemoryAllocator* MemoryAllocator::getAllocator() {
     if(singleton == nullptr){
         *singleton = MemoryAllocator();
     }
+
     return singleton;
+}
+
+void *MemoryAllocator::mem_alloc(size_t size) {
+    return list.find_best(size);
 }

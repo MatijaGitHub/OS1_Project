@@ -15,7 +15,8 @@ class linked_list
         {
         private:
                 node *head,*tail;
-
+protected:
+            void allocate_mem(struct node* prev,struct node* here,size_t size);
         public:
         linked_list();
         void* find_best(size_t size);
