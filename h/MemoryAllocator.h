@@ -4,13 +4,13 @@
 
 #ifndef PROJECT_BASE_V1_0_MEMORYALLOCATOR_H
 #define PROJECT_BASE_V1_0_MEMORYALLOCATOR_H
-#include "linked_list.h"
+#include "FreeShardList.hpp"
 #ifdef __cplusplus
 extern "C" {
 #endif
 class MemoryAllocator{
         private:
-        linked_list list;
+        FreeShardList list;
         static MemoryAllocator* singleton;
         protected:
         MemoryAllocator();

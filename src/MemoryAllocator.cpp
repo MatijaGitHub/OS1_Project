@@ -5,7 +5,7 @@
 
 
 MemoryAllocator::MemoryAllocator() {
-    list = linked_list();
+    list = FreeShardList();
 }
 
 MemoryAllocator* MemoryAllocator::getAllocator() {
