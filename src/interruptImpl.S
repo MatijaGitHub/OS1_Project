@@ -1,7 +1,7 @@
-.extern _ZN9interrupt11doSomethingEv
+.extern _ZN9Interrupt11doSomethingEv
 .align 4
-.global _ZN59interrupt11callRoutineEv
-.type _ZN9interrupt11callRoutineEv @function
-_ZN9interrupt11callRoutineEv:
-    call _ZN9interrupt11doSomethingEv
+.global _ZN9Interrupt11callRoutineEv
+.type _ZN9Interrupt11callRoutineEv @function
+_ZN9Interrupt11callRoutineEv:
+    call _ZN9Interrupt11doSomethingEv
     sret
