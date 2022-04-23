@@ -20,6 +20,6 @@ void *MemoryAllocator::mem_alloc(size_t size) {
     return list.find_best(size);
 }
 
-int MemoryAllocator::mem_free(void *) {
+int MemoryAllocator::mem_free(void * mem) {
     return 0;
 }

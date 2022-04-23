@@ -16,7 +16,7 @@ class MemoryAllocator{
         MemoryAllocator();
         public:
         void* mem_alloc(size_t size);
-        int mem_free(void*);
+        int mem_free(void* mem);
         static inline MemoryAllocator* getAllocator();
 
 };
