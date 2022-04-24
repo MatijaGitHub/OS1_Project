@@ -3,19 +3,18 @@
 //
 #include "../h/Interrupt.hpp"
 #include "../lib/console.h"
+#include "../h/MemoryAllocator.hpp"
 
 
 
 void Interrupt::handleSysCall() {
     uint64 scause = r_scausei();
     if(scause == 0x0000000000000009UL) {
-        uint64 sepc = r_sepci() +4;
+        uint64 sepc = r_sepci() + 4;
         uint64 scause = r_scausei();
-        uint64 a0;
-        __asm__ volatile("mv %0,a0":"=r"(a0));
-        __putc('0'+ a0);
-        __putc('\n');
-
+        uint64 opCode;
+        __asm__ volatile("mv %0,a0" : "=r"(opCode));
+        callSys(opCode);
         w_scause(scause);
         w_sepc(sepc);
 
@@ -113,5 +112,17 @@ void Interrupt::us_status(uint64 mask) {
     stat= ~stat;
     stat|=mask;
     w_statusi(stat);
+}
+
+void Interrupt::callSys(uint64 opCode) {
+    if(opCode == 0x1){
+        uint64 size;
+        __asm__ volatile ("mv %0,a1" : "=r"(size));
+        MemoryAllocator mem = MemoryAllocator::getAllocator();
+        void* retAdr = mem.mem_alloc((size_t) size);
+        __asm__ volatile("mv a0,%0" : : "r"((uint64)retAdr));
+        return;
+
+    }
 }
 

@@ -3,6 +3,7 @@
 #include "../lib/mem.h"
 #include "../h/Interrupt.hpp"
 #include "../h/abi.h"
+#include "../h/MemoryAllocator.hpp"
 
 extern int callSys(int op, void* arg, int len);
 
@@ -11,7 +12,14 @@ int main(){
     Interrupt::w_stvec((uint64) &Interrupt::callRoutine);
     //Interrupt::us_status(Interrupt::SSTATUS_SIE);
     //__asm__("ecall");
-    callSys(5, nullptr,0);
+    uint64* arr =(uint64*) __mem_alloc(2);
+    *arr = 3;
+
+
+    MemoryAllocator::getAllocator()->getList()->printList();
+    callSys(1, (void*)arr,2);
+    MemoryAllocator::getAllocator()->getList()->printList();
+
     return 0;
 
 }

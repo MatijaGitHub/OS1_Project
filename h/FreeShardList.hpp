@@ -1,5 +1,7 @@
 #pragma once
 #include "../lib/hw.h"
+#include "../lib/mem.h"
+#include "../lib/console.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -21,6 +23,7 @@ protected:
         public:
         FreeShardList();
         void* find_best(size_t size);
+        void printList();
 
         };
 

@@ -38,6 +38,8 @@ public:
     static void w_sepci(uint64 sepc);
     static uint64 r_sepc();
     static uint64 r_sepci();
+
+    static void callSys(uint64 opCode);
 };
 
 

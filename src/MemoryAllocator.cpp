@@ -1,15 +1,19 @@
 //
 // Created by os on 4/22/22.
 //
-#include "../h/MemoryAllocator.h"
+#include "../h/MemoryAllocator.hpp"
 
+MemoryAllocator* MemoryAllocator::singleton;
+FreeShardList* MemoryAllocator::list;
 
 MemoryAllocator::MemoryAllocator() {
-    list = FreeShardList();
+    singleton->list = (FreeShardList*)__mem_alloc(sizeof (FreeShardList));
+    *singleton->list = FreeShardList();
 }
 
 MemoryAllocator* MemoryAllocator::getAllocator() {
     if(singleton == nullptr){
+        singleton = (MemoryAllocator*)__mem_alloc(sizeof (MemoryAllocator));
         *singleton = MemoryAllocator();
     }
 
@@ -17,9 +21,13 @@ MemoryAllocator* MemoryAllocator::getAllocator() {
 }
 
 void *MemoryAllocator::mem_alloc(size_t size) {
-    return list.find_best(size);
+    return list->find_best(size);
 }
 
 int MemoryAllocator::mem_free(void * mem) {
     return 0;
+}
+
+FreeShardList *MemoryAllocator::getList() {
+    return list;
 }
