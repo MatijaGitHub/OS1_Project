@@ -5,6 +5,9 @@
     extern "C" {
 #endif
 
+
+static const size_t ALLOCATED_HEADER_SIZE = 8;
+
 struct args
 {
     uint64 arg1;

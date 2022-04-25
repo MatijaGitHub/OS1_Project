@@ -3,9 +3,8 @@
 #include "../lib/hw.h"
 
 
-
 void* mem_alloc(size_t size){
-    uint64 sizeB = (uint64)(size/MEM_BLOCK_SIZE);
+    size_t sizeB = ((size + ALLOCATED_HEADER_SIZE)/MEM_BLOCK_SIZE);
     if(size%MEM_BLOCK_SIZE > 0){
         sizeB++;
     }
@@ -17,5 +16,9 @@ void* mem_alloc(size_t size){
 }
 
 int mem_free(void* adr){
-    return 0;
+    struct args arguments;
+    arguments.arg1 = (uint64) adr;
+    struct args* argsP = &arguments;
+    int res = (int) callSys(2,(void*)argsP,1);
+    return res;
 }

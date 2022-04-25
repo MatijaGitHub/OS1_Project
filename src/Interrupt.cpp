@@ -121,8 +121,22 @@ void Interrupt::callSys(uint64 opCode) {
         size*=MEM_BLOCK_SIZE;
         MemoryAllocator* mem = MemoryAllocator::getAllocator();
         void* retAdr = mem->mem_alloc((size_t) size);
-        __asm__ volatile("mv a0,%0" : : "r"((uint64)retAdr));
+        long* header = (long*) retAdr;
+        size/=MEM_BLOCK_SIZE;
+        *header = size;
+        header++;
+        __asm__ volatile("mv a0,%0" : : "r"((uint64)header));
         return;
+
+    }
+    else if(opCode == 0x2){
+        uint64 adr;
+        __asm__ volatile ("mv %0,a1" : "=r"(adr));
+        MemoryAllocator* mem = MemoryAllocator::getAllocator();
+        int res = mem->mem_free((void*) adr);
+        __asm__ volatile("mv a0,%0" : : "r"((uint64)res));
+        return;
+
 
     }
 }

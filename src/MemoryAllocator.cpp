@@ -28,7 +28,7 @@ void *MemoryAllocator::mem_alloc(size_t size) {
 }
 
 int MemoryAllocator::mem_free(void * mem) {
-    return 0;
+    return listFree->free_memory(mem);
 }
 
 FreeShardList *MemoryAllocator::getList() {
