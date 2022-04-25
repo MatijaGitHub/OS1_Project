@@ -10,7 +10,7 @@ extern "C" {
 
 class MemoryAllocator{
         private:
-        static FreeShardList* list;
+        static FreeShardList* listFree;
         static MemoryAllocator* singleton;
         protected:
         MemoryAllocator();

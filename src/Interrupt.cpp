@@ -9,14 +9,14 @@
 
 void Interrupt::handleSysCall() {
     uint64 scause = r_scausei();
-    if(scause == 0x0000000000000009UL) {
+    if(scause == 0x0000000000000009UL || scause == 0x0000000000000008UL) {
         uint64 sepc = r_sepci() + 4;
         uint64 scause = r_scausei();
         uint64 opCode;
         __asm__ volatile("mv %0,a0" : "=r"(opCode));
         callSys(opCode);
-        w_scause(scause);
-        w_sepc(sepc);
+        w_scausei(scause);
+        w_sepci(sepc);
 
     }
     else if(scause == 0x8000000000000001UL){
@@ -118,8 +118,9 @@ void Interrupt::callSys(uint64 opCode) {
     if(opCode == 0x1){
         uint64 size;
         __asm__ volatile ("mv %0,a1" : "=r"(size));
-        MemoryAllocator mem = MemoryAllocator::getAllocator();
-        void* retAdr = mem.mem_alloc((size_t) size);
+        size*=MEM_BLOCK_SIZE;
+        MemoryAllocator* mem = MemoryAllocator::getAllocator();
+        void* retAdr = mem->mem_alloc((size_t) size);
         __asm__ volatile("mv a0,%0" : : "r"((uint64)retAdr));
         return;
 

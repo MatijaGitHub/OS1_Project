@@ -4,11 +4,14 @@
 #include "../h/MemoryAllocator.hpp"
 
 MemoryAllocator* MemoryAllocator::singleton;
-FreeShardList* MemoryAllocator::list;
+FreeShardList* MemoryAllocator::listFree;
+
 
 MemoryAllocator::MemoryAllocator() {
-    singleton->list = (FreeShardList*)__mem_alloc(sizeof (FreeShardList));
-    *singleton->list = FreeShardList();
+    singleton->listFree = (FreeShardList*)__mem_alloc(sizeof (FreeShardList));
+    *singleton->listFree = FreeShardList();
+
+
 }
 
 MemoryAllocator* MemoryAllocator::getAllocator() {
@@ -21,7 +24,7 @@ MemoryAllocator* MemoryAllocator::getAllocator() {
 }
 
 void *MemoryAllocator::mem_alloc(size_t size) {
-    return list->find_best(size);
+    return listFree->find_best(size);
 }
 
 int MemoryAllocator::mem_free(void * mem) {
@@ -29,5 +32,5 @@ int MemoryAllocator::mem_free(void * mem) {
 }
 
 FreeShardList *MemoryAllocator::getList() {
-    return list;
+    return listFree;
 }

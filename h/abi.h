@@ -6,7 +6,7 @@
 extern "C" {
 #endif
 
-int callSys(int op, void *args, int argLen);
+uint64 callSys(int op, void *args, int argLen);
 
 
 #ifdef __cplusplus

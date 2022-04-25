@@ -4,21 +4,31 @@
 #include "../h/Interrupt.hpp"
 #include "../h/abi.h"
 #include "../h/MemoryAllocator.hpp"
+#include "../h/syscall_c.h"
 
-extern int callSys(int op, void* arg, int len);
+struct primer{
+    int a1;
+    long a2;
+    char a3;
+};
 
 int main(){
-    //Interrupt::callRoutine();
+
     Interrupt::w_stvec((uint64) &Interrupt::callRoutine);
-    //Interrupt::us_status(Interrupt::SSTATUS_SIE);
-    //__asm__("ecall");
-    uint64* arr =(uint64*) __mem_alloc(2);
-    *arr = 3;
 
 
-    MemoryAllocator::getAllocator()->getList()->printList();
-    callSys(1, (void*)arr,2);
-    MemoryAllocator::getAllocator()->getList()->printList();
+    struct primer* adr =(struct primer*) mem_alloc(sizeof(struct primer));
+    struct primer* adr2 = (struct primer*) mem_alloc(sizeof (struct primer));
+
+    adr->a1 = 3;
+    adr->a2 = 4;
+    adr->a3 = 'a';
+    adr2->a3 = 'A';
+
+    __putc(adr->a3);
+    __putc(adr2->a3);
+    __putc('\n');
+
 
     return 0;
 

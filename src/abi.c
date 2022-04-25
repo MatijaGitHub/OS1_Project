@@ -2,12 +2,13 @@
 #include "../lib/console.h"
 
 
-int callSys(int op, void* args, int argLen){
+uint64 callSys(int op, void* args, int argLen){
     uint64 opReg = (uint64) op;
     uint64* argsReg = (uint64*)args;
     __asm__ volatile("mv a0,%0": :"r"(opReg));
     if(argLen == 1){
-        __asm__ volatile("mv a1,%0": :"r"(argsReg[0]));
+        uint64 arg1 = argsReg[0];
+        __asm__ volatile("mv a1,%0": :"r"(arg1));
     }
     else if(argLen == 2){
         uint64 arg1 = argsReg[0];
