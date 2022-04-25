@@ -71,7 +71,7 @@ void FreeShardList::allocate_mem(struct node* prev, struct node *here, size_t si
         here->mem_free_block = (void*)((size_t)prevMemBlock+size);
         here->next = prevNext;
         if(prev == nullptr) head = here;
-        else if(here->next == nullptr) tail = here;
+        if(here->next == nullptr) tail = here;
     }
 }
 
