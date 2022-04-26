@@ -141,3 +141,8 @@ void Interrupt::callSys(uint64 opCode) {
     }
 }
 
+void Interrupt::popSppSpie() {
+    __asm__ volatile("csrw sepc,ra");
+    __asm__ volatile("sret");
+}
+

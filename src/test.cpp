@@ -6,44 +6,37 @@
 #include "../h/MemoryAllocator.hpp"
 #include "../h/syscall_c.h"
 #include "../h/FreeShardList.hpp"
+#include "../h/PCB.hpp"
+#include "../h/Scheduler.hpp"
 
-struct primer{
-    int a1;
-    char a3;
-    long a2;
+void f1(){
+    __putc('A');
+    PCB::dispatch();
+}
 
-};
+void f2(){
+    __putc('C');
+    PCB::dispatch();
+}
+
+
 
 int main(){
 
     Interrupt::w_stvec((uint64) &Interrupt::callRoutine);
 
-    FreeShardList* list = MemoryAllocator::getAllocator()->getList();
-
-    struct primer* adr =(struct primer*) mem_alloc(sizeof(struct primer));
-    struct primer* adr2 = (struct primer*) mem_alloc(sizeof (struct primer));
-    struct primer* adr3 = (struct primer*) mem_alloc(sizeof (struct primer));
-
-
-    adr->a1 = 3;
-    adr->a2 = 4;
-    adr->a3 = 'a';
-    adr2->a3 = 'A';
+    PCB* func = (PCB*) mem_alloc(sizeof (PCB));
+    *func = PCB(&f1,3);
+    PCB* func2 =(PCB*) mem_alloc(sizeof (PCB));
+    *func2 = PCB(&f2,4);
+    Scheduler::put(func);
+    Scheduler::put(func2);
+    PCB::running = func;
+    func2->dispatch();
 
 
-
-
-    int res = mem_free(adr2);
-    int res2 = mem_free((void*)((uint64)adr2 + 10));
-    __putc(res+'0');
-    __putc(res2+'0');
-    __putc('\n');
-    adr->a3 = 'a';
-    __putc((uint64)list);
-    __putc(adr->a3);
-    __putc(adr2->a3);
-    __putc(adr3->a3);
-    __putc('\n');
     return 0;
+
+
 
 }
