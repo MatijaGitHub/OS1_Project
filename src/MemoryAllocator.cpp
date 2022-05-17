@@ -1,7 +1,7 @@
 //
 // Created by os on 4/22/22.
 //
-#include "../h/MemoryAllocator.hpp"
+#include "../h/MemoryAllocator.h"
 
 MemoryAllocator* MemoryAllocator::singleton;
 FreeShardList* MemoryAllocator::listFree;

@@ -1,42 +1,49 @@
 #include "../lib/console.h"
 #include "../lib/hw.h"
 #include "../lib/mem.h"
-#include "../h/Interrupt.hpp"
+#include "../h/Interrupt.h"
 #include "../h/abi.h"
-#include "../h/MemoryAllocator.hpp"
+#include "../h/MemoryAllocator.h"
 #include "../h/syscall_c.h"
-#include "../h/FreeShardList.hpp"
-#include "../h/PCB.hpp"
-#include "../h/Scheduler.hpp"
+#include "../h/FreeShardList.h"
+#include "../h/PCB.h"
+#include "../h/Scheduler.h"
+#include "../h/syscall_cpp.h"
 
-void f1(){
-    __putc('A');
+
+typedef struct {
+    char c;
+}Arguments;
+
+
+void f1(void* args){
+    __putc(((Arguments*)args)->c);
     PCB::dispatch();
+    __putc('D');
 }
 
-void f2(){
-    __putc('C');
+void f2(void* args){
+    __putc(((Arguments*)args)->c);
     PCB::dispatch();
 }
-
-
+void medium(void* args){
+    while (true){}
+}
+void init(){
+    Interrupt::w_stvec((uint64) &Interrupt::callRoutine);
+    Thread startThread = Thread(&medium, nullptr);
+    startThread.start();
+}
 
 int main(){
+    init();
 
-    Interrupt::w_stvec((uint64) &Interrupt::callRoutine);
-
-    PCB* func = (PCB*) mem_alloc(sizeof (PCB));
-    *func = PCB(&f1,3);
-    PCB* func2 =(PCB*) mem_alloc(sizeof (PCB));
-    *func2 = PCB(&f2,4);
-    Scheduler::put(func);
-    Scheduler::put(func2);
-    PCB::running = func;
-    func2->dispatch();
-
-
+    //Arguments args;
+    //args.c = 'a';
+    //Thread t = Thread(&f1,(void *)&args);
+    //t.start();
+    //PCB::dispatch();
     return 0;
-
 
 
 }

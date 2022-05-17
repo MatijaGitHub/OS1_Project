@@ -24,6 +24,16 @@ uint64 callSys(int op, void* args, int argLen){
         __asm__ volatile("mv a2,%0": :"r"(arg2));
         __asm__ volatile("mv a3,%0": :"r"(arg3));
     }
+    else if(argLen == 4){
+        uint64 arg1 = argsReg[0];
+        uint64 arg2 = argsReg[1];
+        uint64 arg3 = argsReg[2];
+        uint64 arg4 = argsReg[3];
+        __asm__ volatile("mv a1,%0": :"r"(arg1));
+        __asm__ volatile("mv a2,%0": :"r"(arg2));
+        __asm__ volatile("mv a3,%0": :"r"(arg3));
+        __asm__ volatile("mv a4,%0": :"r"(arg4));
+    }
 
     __asm__ volatile("ecall");
     uint64 res;

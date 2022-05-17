@@ -1,4 +1,4 @@
-#include "../h/Scheduler.hpp"
+#include "../h/Scheduler.h"
 
 PCB* Scheduler::head;
 PCB* Scheduler::tail;
@@ -23,4 +23,8 @@ PCB *Scheduler::get() {
 
 Scheduler::Scheduler() {
 
+}
+
+bool Scheduler::moreProcs() {
+    return head != nullptr;
 }

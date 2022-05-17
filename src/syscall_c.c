@@ -3,6 +3,8 @@
 #include "../lib/hw.h"
 
 
+
+
 void* mem_alloc(size_t size){
     size_t sizeB = ((size + ALLOCATED_HEADER_SIZE)/MEM_BLOCK_SIZE);
     if(size%MEM_BLOCK_SIZE > 0){
@@ -20,5 +22,17 @@ int mem_free(void* adr){
     arguments.arg1 = (uint64) adr;
     struct args* argsP = &arguments;
     int res = (int) callSys(2,(void*)argsP,1);
+    return res;
+}
+
+int thread_create (thread_t* handle, void(*start_routine)(void*), void* arg){
+    struct args arguments;
+    arguments.arg1 = (uint64) handle;
+    arguments.arg2 = (uint64) start_routine;
+    arguments.arg3 = (uint64) arg;
+    arguments.arg4 = (uint64)mem_alloc(DEFAULT_STACK_SIZE);
+    if(arguments.arg4 == 0) return -2;
+    struct args* argsP = &arguments;
+    int res = (int) callSys(0x11,(void *)argsP,4);
     return res;
 }
