@@ -16,7 +16,7 @@ PCB::PCB(Body body,void* args,uint64 * stac,uint64 timeSlice) {
     next_scheduler = nullptr;
     stack = stac;
     context.ra = (uint64) &threadWrapper;
-    context.sp = (uint64) &stack[DEFAULT_STACK_SIZE];
+    context.sp = (uint64) &stack[DEFAULT_STACK_SIZE-1];
     this->body = body;
     this->timeSlice = timeSlice;
     this->args = args;
@@ -30,6 +30,8 @@ void PCB::threadWrapper() {
     void * args = running->getArgs();
     running->body(args);
     running->setFinished(true);
+    PCB::dispatch();
+
 
 }
 
@@ -63,7 +65,7 @@ void PCB::start() {
 }
 
 void *PCB::allocatePCB() {
-    uint64 size = sizeof (PCB);
+    uint64 size = sizeof (PCB) + ALLOCATED_HEADER_SIZE;
     uint64 inBlocks = size/MEM_BLOCK_SIZE;
     if(size%MEM_BLOCK_SIZE!=0){
         inBlocks++;
@@ -75,7 +77,13 @@ void *PCB::allocatePCB() {
     inBlocks/=MEM_BLOCK_SIZE;
     *header = inBlocks;
     header++;
-    return header;
+    void* ret = (void*)header;
+    return ret;
+}
+
+void PCB::setContext(uint64 ra, uint64 sp) {
+    this->context.ra = ra;
+    this->context.sp = sp;
 }
 
 

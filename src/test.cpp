@@ -17,22 +17,34 @@ typedef struct {
 
 
 void f1(void* args){
-    __putc(((Arguments*)args)->c);
-    PCB::dispatch();
-    __putc('D');
+//    for(int i = 0; i < 10;i++) {
+//        __putc('a');
+//        if(i == 4){
+//            PCB::dispatch();
+//        }
+//    }
 }
 
 void f2(void* args){
-    __putc(((Arguments*)args)->c);
-    PCB::dispatch();
+//    for(int i = 0; i < 10;i++) {
+//        __putc('b');
+//        if(i == 4){
+//            PCB::dispatch();
+//        }
+//    }
 }
 void medium(void* args){
     while (true){}
 }
 void init(){
     Interrupt::w_stvec((uint64) &Interrupt::callRoutine);
-    Thread startThread = Thread(&medium, nullptr);
+    Thread startThread(&f2, nullptr);
+    Thread secondThread(&f1, nullptr);
     startThread.start();
+    secondThread.start();
+    PCB::dispatch();
+
+
 }
 
 int main(){

@@ -93,6 +93,7 @@ inline void Interrupt::w_scausei(uint64 scause) {
 void Interrupt::w_sepc(uint64 sepc) {
     w_sepci(sepc);
 }
+
 inline void Interrupt::w_sepci(uint64 sepc) {
     __asm__ volatile ("csrw sepc,%[sepc]": : [sepc]"r"(sepc));
 
@@ -147,13 +148,13 @@ void Interrupt::callSys(uint64 opCode) {
         __asm__ volatile ("mv %0,a4" : "=r"(stac));
 
 
-        ((thread_t)handle)->PCB = PCB::allocatePCB();
-        if(((thread_t)handle)->PCB == 0){
+        (*(thread_t*)handle)->PCB = PCB::allocatePCB();
+        if((*(thread_t*)handle)->PCB == 0){
             res = -1;
             __asm__ volatile("mv a0,%0" : : "r"(res));
             return;
         }
-        *(PCB*)((thread_t)handle)->PCB  = PCB((PCB::Body)body,(void*)args,(uint64*)stac,DEFAULT_TIME_SLICE);
+        *(PCB*)(*(thread_t*)handle)->PCB = PCB((PCB::Body)body,(void*)args,(uint64*)stac,DEFAULT_TIME_SLICE);
         res = 0;
         __asm__ volatile("mv a0,%0" : : "r"(res));
         return;
@@ -164,4 +165,11 @@ void Interrupt::popSppSpie() {
     __asm__ volatile("csrw sepc,ra");
     __asm__ volatile("sret");
 }
+
+
+
+
+
+
+
 

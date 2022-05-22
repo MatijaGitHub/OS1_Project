@@ -7,7 +7,7 @@
 
 void* mem_alloc(size_t size){
     size_t sizeB = ((size + ALLOCATED_HEADER_SIZE)/MEM_BLOCK_SIZE);
-    if(size%MEM_BLOCK_SIZE > 0){
+    if((size + ALLOCATED_HEADER_SIZE)%MEM_BLOCK_SIZE > 0){
         sizeB++;
     }
     struct args arguments;

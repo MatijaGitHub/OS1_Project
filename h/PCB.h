@@ -24,6 +24,7 @@ public:
     void* getArgs();
     void start();
     static void* allocatePCB();
+    void setContext(uint64 ra, uint64 sp);
 
 
 private:
