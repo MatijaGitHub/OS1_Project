@@ -43,7 +43,6 @@ void f2(void* args){
         }
     }
     __putc('s');
-    return;
 }
 void medium(void* args){
     while (true){}
@@ -59,7 +58,9 @@ void init(){
     PCB::dispatch();
     PCB::dispatch();
     PCB::dispatch();
-    PCB::dispatch();
+
+
+
 
 }
 
