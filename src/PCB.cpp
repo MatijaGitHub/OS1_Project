@@ -16,7 +16,7 @@ PCB::PCB(Body body,void* args,uint64 * stac,uint64 timeSlice) {
     next_scheduler = nullptr;
     stack = stac;
     context.ra = (uint64) &threadWrapper;
-    context.sp = (uint64) &stack[DEFAULT_STACK_SIZE-1];
+    context.sp = (uint64) &stack[DEFAULT_STACK_SIZE];
     this->body = body;
     this->timeSlice = timeSlice;
     this->args = args;

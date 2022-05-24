@@ -145,7 +145,7 @@ void Interrupt::callSys(uint64 opCode) {
         __asm__ volatile ("mv %0,a1" : "=r"(handle));
         __asm__ volatile ("mv %0,a2" : "=r"(body));
         __asm__ volatile ("mv %0,a3" : "=r"(args));
-        __asm__ volatile ("mv %0,a4" : "=r"(stac));
+        __asm__ volatile ("mv %0,a6" : "=r"(stac));
 
 
         (*(thread_t*)handle)->PCB = PCB::allocatePCB();

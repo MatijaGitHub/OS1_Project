@@ -17,33 +17,49 @@ typedef struct {
 
 
 void f1(void* args){
-//    for(int i = 0; i < 10;i++) {
-//        __putc('a');
-//        if(i == 4){
-//            PCB::dispatch();
-//        }
-//    }
+    for(int i = 0; i < 10;i++) {
+        __putc('f');
+        __putc('1');
+        __putc(':');
+        __putc(i+'0');
+        __putc(' ');
+        if(i == 4){
+            PCB::dispatch();
+        }
+    }
+    __putc('s');
 }
 
 void f2(void* args){
-//    for(int i = 0; i < 10;i++) {
-//        __putc('b');
-//        if(i == 4){
-//            PCB::dispatch();
-//        }
-//    }
+    for(int i = 0; i < 10;i++) {
+        __putc('f');
+        __putc('2');
+        __putc(':');
+        __putc(i+'0');
+
+        __putc(' ');
+        if(i == 4){
+            PCB::dispatch();
+        }
+    }
+    __putc('s');
+    return;
 }
 void medium(void* args){
     while (true){}
 }
 void init(){
     Interrupt::w_stvec((uint64) &Interrupt::callRoutine);
-    Thread startThread(&f2, nullptr);
-    Thread secondThread(&f1, nullptr);
+    Thread startThread(&medium, nullptr);
+    Thread secondThread(&f2, nullptr);
+    Thread thirdThread(&f1, nullptr);
     startThread.start();
     secondThread.start();
+    thirdThread.start();
     PCB::dispatch();
-
+    PCB::dispatch();
+    PCB::dispatch();
+    PCB::dispatch();
 
 }
 
@@ -55,6 +71,8 @@ int main(){
     //Thread t = Thread(&f1,(void *)&args);
     //t.start();
     //PCB::dispatch();
+    __putc('E');
+    __putc('\n');
     return 0;
 
 

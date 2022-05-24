@@ -32,7 +32,7 @@ uint64 callSys(int op, void* args, int argLen){
         __asm__ volatile("mv a1,%0": :"r"(arg1));
         __asm__ volatile("mv a2,%0": :"r"(arg2));
         __asm__ volatile("mv a3,%0": :"r"(arg3));
-        __asm__ volatile("mv a4,%0": :"r"(arg4));
+        __asm__ volatile("mv a6,%0": :"r"(arg4));
     }
 
     __asm__ volatile("ecall");

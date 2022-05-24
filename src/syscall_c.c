@@ -30,7 +30,8 @@ int thread_create (thread_t* handle, void(*start_routine)(void*), void* arg){
     arguments.arg1 = (uint64) handle;
     arguments.arg2 = (uint64) start_routine;
     arguments.arg3 = (uint64) arg;
-    arguments.arg4 = (uint64)mem_alloc(DEFAULT_STACK_SIZE);
+    void* adr = mem_alloc(DEFAULT_STACK_SIZE);
+    arguments.arg4 = (uint64)adr;
     if(arguments.arg4 == 0) return -2;
     struct args* argsP = &arguments;
     int res = (int) callSys(0x11,(void *)argsP,4);

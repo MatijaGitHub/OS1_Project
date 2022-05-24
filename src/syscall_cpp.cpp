@@ -6,7 +6,7 @@
 
 Thread::Thread(void (*body)(void *), void *arg) {
     this->myHandle =(thread_t) mem_alloc(sizeof (thread_t));
-    int res = thread_create(&this->myHandle,body,arg);
+    int res = thread_create(&myHandle,body,arg);
     if(res < 0){
         __putc('!');
         __putc('\n');
