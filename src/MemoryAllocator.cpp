@@ -1,7 +1,7 @@
 //
 // Created by os on 4/22/22.
 //
-#include "../h/MemoryAllocator.hpp"
+#include "../h/MemoryAllocator.h"
 
 MemoryAllocator* MemoryAllocator::singleton;
 FreeShardList* MemoryAllocator::listFree;
@@ -28,7 +28,7 @@ void *MemoryAllocator::mem_alloc(size_t size) {
 }
 
 int MemoryAllocator::mem_free(void * mem) {
-    return 0;
+    return listFree->free_memory(mem);
 }
 
 FreeShardList *MemoryAllocator::getList() {
