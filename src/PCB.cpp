@@ -3,6 +3,7 @@
 
 PCB* PCB::running = nullptr;
 uint64 PCB::timeLeft = 0;
+int PCB::id_cnt = 0;
 
 PCB *PCB::getNext() {
     return this->next_scheduler;
@@ -16,11 +17,13 @@ PCB::PCB(Body body,void* args,uint64 * stac,uint64 timeSlice) {
     next_scheduler = nullptr;
     stack = stac;
     context.ra = (uint64) &threadWrapper;
-    context.sp = (uint64) &stack[DEFAULT_STACK_SIZE];
+    context.sp = (uint64) &stack[DEFAULT_STACK_SIZE-1];
     this->body = body;
     this->timeSlice = timeSlice;
     this->args = args;
     finished = false;
+    isBlocked = false;
+    my_id = 'e';
 
 
 }
@@ -45,7 +48,7 @@ bool PCB::checkFinished() {
 
 void PCB::dispatch() {
     PCB* old = running;
-    if(!old->checkFinished())Scheduler::put(old);
+    if(!old->checkFinished()&&!old->checkBlocked())Scheduler::put(old);
     running = Scheduler::get();
     contextSwitch(&old->context,&running->context);
 
@@ -60,8 +63,14 @@ void *PCB::getArgs() {
 }
 
 void PCB::start() {
-    if(running == nullptr) running = this;
-    else Scheduler::put(this);
+    if(running == nullptr) {
+        running = this;
+        running->setId('m');
+    }
+    else {
+        Scheduler::put(this);
+        this->setId('0' + PCB::id_cnt++);
+    }
 }
 
 void *PCB::allocatePCB() {
@@ -84,6 +93,18 @@ void *PCB::allocatePCB() {
 void PCB::setContext(uint64 ra, uint64 sp) {
     this->context.ra = ra;
     this->context.sp = sp;
+}
+
+bool PCB::checkBlocked() {
+    return isBlocked;
+}
+
+void PCB::setBlocked(bool f) {
+    isBlocked = f;
+}
+
+void PCB::setId(char id) {
+    this->my_id = id;
 }
 
 

@@ -1,17 +1,20 @@
 #include "../h/Scheduler.h"
 
 
-PCB* Scheduler::head;
-PCB* Scheduler::tail;
+PCB* Scheduler::head = nullptr;
+PCB* Scheduler::tail = nullptr;
 
 void Scheduler::put(PCB *pcb) {
     if(head == nullptr){
         head = pcb;
+        head->setNext(nullptr);
         tail = pcb;
+        tail->setNext(nullptr);
     }
     else{
         tail->setNext(pcb);
         tail = tail->getNext();
+        tail->setNext(nullptr);
     }
 }
 
@@ -24,6 +27,7 @@ PCB *Scheduler::get() {
     } else {
         head = head->getNext();
     }
+    pom->setNext(nullptr);
     return pom;
 }
 

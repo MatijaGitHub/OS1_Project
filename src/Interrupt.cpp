@@ -8,6 +8,7 @@
 #include "../h/syscall_c.h"
 
 uint64 sepc;
+int Interrupt::lock_var = 0;
 
 void Interrupt::handleSysCall() {
     uint64 scause = r_scausei();
@@ -159,11 +160,44 @@ void Interrupt::callSys(uint64 opCode) {
         __asm__ volatile("mv a0,%0" : : "r"(res));
         return;
     }
+    else if(opCode == 0x12){
+        PCB::running->setFinished(true);
+        uint64 res = 0;
+        __asm__ volatile("mv a0,%0" : : "r"(res));
+        return;
+    }
+    else if(opCode == 0x13){
+        PCB::dispatch();
+        return;
+    }
 }
 
 void Interrupt::popSppSpie() {
     __asm__ volatile("csrw sepc,ra");
     __asm__ volatile("sret");
+}
+
+void Interrupt::lock() {
+    if(lock_var++ == 0) disable_sintr();
+}
+
+void Interrupt::unlock() {
+    if(--lock_var == 0) enable_sintr();
+}
+
+void Interrupt::disable_sintr() {
+    uint64 sie;
+    __asm__ volatile ("csrr %[sie],sie":  [sie]"=r"(sie));
+    uint64 nsie = (~Interrupt::SSTATUS_SIE)&sie;
+    __asm__ volatile ("csrw sie,%[nsie]": : [nsie]"r"(nsie));
+
+}
+
+void Interrupt::enable_sintr() {
+    uint64 sie;
+    __asm__ volatile ("csrr %[sie],sie":  [sie]"=r"(sie));
+    uint64 nsie = Interrupt::SSTATUS_SIE|sie;
+    __asm__ volatile ("csrw sie,%[nsie]": : [nsie]"r"(nsie));
 }
 
 

@@ -8,16 +8,15 @@ FreeShardList* MemoryAllocator::listFree;
 
 
 MemoryAllocator::MemoryAllocator() {
-    singleton->listFree = (FreeShardList*)__mem_alloc(sizeof (FreeShardList));
-    *singleton->listFree = FreeShardList();
-
-
+    FreeShardList list = FreeShardList();
+    singleton->listFree = &list;
+    //*singleton->listFree = FreeShardList();
 }
 
 MemoryAllocator* MemoryAllocator::getAllocator() {
     if(singleton == nullptr){
-        singleton = (MemoryAllocator*)__mem_alloc(sizeof (MemoryAllocator));
-        *singleton = MemoryAllocator();
+        MemoryAllocator mem = MemoryAllocator();
+        singleton = &mem;
     }
 
     return singleton;
