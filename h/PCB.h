@@ -25,6 +25,10 @@ public:
     void start();
     static void* allocatePCB();
     void setContext(uint64 ra, uint64 sp);
+    bool checkBlocked();
+    void setBlocked(bool f);
+    void setId(char id);
+    static int id_cnt;
 
 
 private:
@@ -35,7 +39,8 @@ private:
     uint64 timeSlice;
     static uint64 timeLeft;
     bool finished;
-
+    bool isBlocked;
+    char my_id;
     Body body;
     static void threadWrapper();
     static void contextSwitch(Context* old,Context* new_t);

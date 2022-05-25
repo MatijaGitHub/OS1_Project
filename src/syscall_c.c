@@ -37,3 +37,13 @@ int thread_create (thread_t* handle, void(*start_routine)(void*), void* arg){
     int res = (int) callSys(0x11,(void *)argsP,4);
     return res;
 }
+
+int thread_exit(){
+    int res = (int) callSys(0x12,0,0);
+    if(res == 0) thread_dispatch();
+    return res;
+}
+
+void thread_dispatch(){
+    callSys(0x13,0,0);
+}

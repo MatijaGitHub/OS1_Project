@@ -18,6 +18,11 @@ public:
         SSTATUS_SPIE = (1 << 5),
         SSTATUS_SPP = (1 << 8),
     };
+    static void disable_sintr();
+    static void enable_sintr();
+    static int lock_var;
+    static void lock();
+    static void unlock();
     static void callRoutine();
     static void handleSysCall();
     static void w_stvec(uint64 stvec);

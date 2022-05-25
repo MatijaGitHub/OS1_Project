@@ -30,6 +30,20 @@ int thread_create (
         void(*start_routine)(void*),
         void* arg
 );
+int thread_exit();
+
+void thread_dispatch();
+
+typedef struct {
+    void* Sem;
+}_sem;
+
+typedef _sem* sem_t;
+
+int sem_open (
+        sem_t* handle,
+        unsigned init
+);
 #ifdef __cplusplus
 }
 #endif
