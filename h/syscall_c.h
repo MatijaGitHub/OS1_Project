@@ -1,5 +1,6 @@
 #pragma once
 #include "../lib/hw.h"
+#include "../h/abi.h"
 
 
 #ifdef __cplusplus
@@ -44,6 +45,8 @@ int sem_open (
         sem_t* handle,
         unsigned init
 );
+int sem_wait (sem_t id);
+int sem_signal (sem_t id);
 #ifdef __cplusplus
 }
 #endif

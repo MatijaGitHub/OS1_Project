@@ -2,10 +2,7 @@
 // Created by os on 4/23/22.
 //
 #include "../h/Interrupt.h"
-#include "../lib/console.h"
-#include "../h/MemoryAllocator.h"
-#include "../h/PCB.h"
-#include "../h/syscall_c.h"
+
 
 uint64 sepc;
 int Interrupt::lock_var = 0;
@@ -23,7 +20,17 @@ void Interrupt::handleSysCall() {
 
     }
     else if(scause == 0x8000000000000001UL){
-        return;
+        //__putc('0' + PCB::timeLeft);
+        PCB::timeLeft++;
+        if(PCB::timeLeft >= PCB::running->getTimeSlice()){
+            sepc = r_sepci();
+            uint64 scause = r_scausei();
+            PCB::timeLeft = 0;
+            thread_dispatch();
+            w_scausei(scause);
+            w_sepci(sepc);
+        }
+        mc_sip(SIP_SSIP);
     }
 }
 
@@ -161,14 +168,63 @@ void Interrupt::callSys(uint64 opCode) {
         return;
     }
     else if(opCode == 0x12){
-        PCB::running->setFinished(true);
-        uint64 res = 0;
+        if(PCB::running!= nullptr) {
+            PCB::running->setFinished(true);
+            uint64 res = 0;
+            __asm__ volatile("mv a0,%0" : : "r"(res));
+            return;
+        }
+        uint64 res = -1;
         __asm__ volatile("mv a0,%0" : : "r"(res));
         return;
+
     }
     else if(opCode == 0x13){
         PCB::dispatch();
         return;
+    }
+    else if(opCode == 0x21){
+        uint64 handle,init,res;
+        __asm__ volatile ("mv %0,a1" : "=r"(handle));
+        __asm__ volatile ("mv %0,a2" : "=r"(init));
+        (*(sem_t *)handle)->Sem = Sem::allocateSem();
+        if((*(sem_t *)handle)->Sem == 0){
+            res = -1;
+            __asm__ volatile("mv a0,%0" : : "r"(res));
+            return;
+        }
+        *(Sem*)(*(sem_t *)handle)->Sem = Sem((int)init);
+        res = 0;
+        __asm__ volatile("mv a0,%0" : : "r"(res));
+        return;
+
+    }
+    else if(opCode == 0x23){
+        uint64 handle,res;
+        __asm__ volatile ("mv %0,a1" : "=r"(handle));
+        if((Sem*)(*(sem_t*)handle)->Sem!= nullptr) {
+            (*(Sem *) (*(sem_t *) handle)->Sem).wait();
+            res = 0;
+            __asm__ volatile("mv a0,%0" : : "r"(res));
+            return;
+        }
+        res = -1;
+        __asm__ volatile("mv a0,%0" : : "r"(res));
+        return;
+    }
+    else if(opCode == 0x24){
+        uint64 handle,res;
+        __asm__ volatile ("mv %0,a1" : "=r"(handle));
+        if((Sem*)(*(sem_t*)handle)->Sem!= nullptr) {
+            (*(Sem *) (*(sem_t *) handle)->Sem).signal();
+            res = 0;
+            __asm__ volatile("mv a0,%0" : : "r"(res));
+            return;
+        }
+        res = -1;
+        __asm__ volatile("mv a0,%0" : : "r"(res));
+        return;
+
     }
 }
 
@@ -199,6 +255,20 @@ void Interrupt::enable_sintr() {
     uint64 nsie = Interrupt::SSTATUS_SIE|sie;
     __asm__ volatile ("csrw sie,%[nsie]": : [nsie]"r"(nsie));
 }
+
+inline void Interrupt::mc_sip(uint64 mask) {
+    __asm__ volatile("csrc sip, %[mask]" : : [mask]"r"(mask));
+}
+
+void Interrupt::mc_status(uint64 mask) {
+    __asm__ volatile("csrc sstatus, %[mask]" : : [mask]"r"(mask));
+
+}
+
+//void Interrupt::ms_sstatus(uint64 mask) {
+//    __asm__ volatile("csrc sip, %[mask]" : : [mask]"r"(mask));
+//
+//}
 
 
 

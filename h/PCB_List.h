@@ -1,10 +1,11 @@
 #pragma once
-#include "./PCB.h"
+
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
+class PCB;
 struct pcbnode
 {
     PCB* PCB;

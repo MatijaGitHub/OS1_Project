@@ -3,6 +3,8 @@
 #include "../h/syscall_c.h"
 #include "../h/Interrupt.h"
 #include "../h/Scheduler.h"
+#include "../h/MemoryAllocator.h"
+
 
 
 
@@ -29,6 +31,9 @@ public:
     void setBlocked(bool f);
     void setId(char id);
     static int id_cnt;
+    static uint64 timeLeft;
+    uint64 getTimeSlice() const;
+    void setTimeSlice(uint64 timeSlice);
 
 
 private:
@@ -37,7 +42,6 @@ private:
     void* args;
     Context context;
     uint64 timeSlice;
-    static uint64 timeLeft;
     bool finished;
     bool isBlocked;
     char my_id;

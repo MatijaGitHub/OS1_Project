@@ -1,5 +1,4 @@
 #include "../h/PCB.h"
-#include "../h/MemoryAllocator.h"
 
 PCB* PCB::running = nullptr;
 uint64 PCB::timeLeft = 0;
@@ -17,7 +16,7 @@ PCB::PCB(Body body,void* args,uint64 * stac,uint64 timeSlice) {
     next_scheduler = nullptr;
     stack = stac;
     context.ra = (uint64) &threadWrapper;
-    context.sp = (uint64) &stack[DEFAULT_STACK_SIZE-1];
+    context.sp = (uint64) &stack[DEFAULT_STACK_SIZE];
     this->body = body;
     this->timeSlice = timeSlice;
     this->args = args;
@@ -29,13 +28,10 @@ PCB::PCB(Body body,void* args,uint64 * stac,uint64 timeSlice) {
 }
 
 void PCB::threadWrapper() {
-    //Interrupt::popSppSpie();
+    Interrupt::popSppSpie();
     void * args = running->getArgs();
     running->body(args);
-    running->setFinished(true);
-    PCB::dispatch();
-
-
+    thread_exit();
 }
 
 void PCB::setFinished(bool f) {
@@ -105,6 +101,16 @@ void PCB::setBlocked(bool f) {
 
 void PCB::setId(char id) {
     this->my_id = id;
+}
+
+
+
+uint64 PCB::getTimeSlice() const {
+    return timeSlice;
+}
+
+void PCB::setTimeSlice(uint64 timeSlice) {
+    PCB::timeSlice = timeSlice;
 }
 
 

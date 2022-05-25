@@ -1,6 +1,5 @@
 #include "../h/syscall_c.h"
-#include "../h/abi.h"
-#include "../lib/hw.h"
+
 
 
 
@@ -38,6 +37,7 @@ int thread_create (thread_t* handle, void(*start_routine)(void*), void* arg){
     return res;
 }
 
+
 int thread_exit(){
     int res = (int) callSys(0x12,0,0);
     if(res == 0) thread_dispatch();
@@ -46,4 +46,26 @@ int thread_exit(){
 
 void thread_dispatch(){
     callSys(0x13,0,0);
+}
+int sem_open (sem_t* handle,unsigned init){
+    struct args arguments;
+    arguments.arg1 = (uint64)handle;
+    arguments.arg2 = (uint64)init;
+    struct args* argsP = &arguments;
+    int res = (int) callSys(0x21,(void *)argsP,2);
+    return res;
+}
+int sem_wait (sem_t id){
+    struct args arguments;
+    arguments.arg1 = (uint64)id;
+    struct args* argsP = &arguments;
+    int res = (int) callSys(0x23,(void *)argsP,1);
+    return res;
+}
+int sem_signal (sem_t id){
+    struct args arguments;
+    arguments.arg1 = (uint64)id;
+    struct args* argsP = &arguments;
+    int res = (int) callSys(0x24,(void *)argsP,1);
+    return res;
 }
