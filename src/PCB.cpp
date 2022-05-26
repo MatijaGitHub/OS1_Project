@@ -22,16 +22,17 @@ PCB::PCB(Body body,void* args,uint64 * stac,uint64 timeSlice) {
     this->args = args;
     finished = false;
     isBlocked = false;
-    my_id = 'e';
 
 
 }
 
 void PCB::threadWrapper() {
+    //Interrupt::mc_sip(Interrupt::SIP_SSIP);
     Interrupt::popSppSpie();
     void * args = running->getArgs();
     running->body(args);
     thread_exit();
+
 }
 
 void PCB::setFinished(bool f) {

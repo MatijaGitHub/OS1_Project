@@ -1,4 +1,5 @@
 #include "../h/PCB_List.h"
+#include "../h/MemoryAllocator.h"
 
 PCB_List::PCB_List() {
     head = nullptr;
@@ -6,7 +7,8 @@ PCB_List::PCB_List() {
 }
 
 void PCB_List::put(PCB* pcb) {
-    pcbnode* tmp = (pcbnode*)mem_alloc(sizeof (pcbnode));
+    pcbnode* tmp = (pcbnode*)MemoryAllocator::getAllocator()->mem_alloc(sizeof (pcbnode));
+    //pcbnode* tmp = (pcbnode*)mem_alloc(sizeof (pcbnode));
     tmp->PCB = pcb;
     tmp->next = nullptr;
     if(tail == nullptr){
@@ -27,6 +29,7 @@ PCB *PCB_List::get() {
         head = nullptr;
         tail = nullptr;
     }
-    mem_free((void *)tmp);
+    //mem_free((void *)tmp);
+    MemoryAllocator::getAllocator()->mem_free((void *)tmp);
     return get;
 }

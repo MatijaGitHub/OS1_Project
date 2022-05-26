@@ -1,6 +1,5 @@
 #include "../h/Sem.h"
-
-
+#include "../h/PCB.h"
 
 Sem::Sem(int init) {
     count = init;
@@ -25,7 +24,8 @@ int Sem::value() {
 void Sem::block() {
     waiting_PCB.put(PCB::running);
     PCB::running->setBlocked(true);
-    thread_dispatch();
+    //thread_dispatch();
+    PCB::dispatch();
 }
 
 void Sem::unblock() {
