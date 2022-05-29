@@ -83,19 +83,15 @@ void operator delete[] (void * p) noexcept{
 
 
 int Semaphore::wait() {
-    //Interrupt::mc_status(Interrupt::SSTATUS_SIE);
-    Interrupt::lock();
+    //Interrupt::lock();
     int res = sem_wait(this->myHandle);
     //Interrupt::ms_status(Interrupt::SSTATUS_SIE);
-    Interrupt::unlock();
     return res;
 }
 
 int Semaphore::signal() {
     //Interrupt::mc_status(Interrupt::SSTATUS_SIE);
-    Interrupt::lock();
     int res = sem_signal(this->myHandle);
     //Interrupt::ms_status(Interrupt::SSTATUS_SIE);
-    Interrupt::unlock();
     return res;
 }

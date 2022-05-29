@@ -11,69 +11,68 @@ typedef struct {
 
 Semaphore mutex;
 void f1(void* args){
-    //mutex.wait();
-    for(int i = 0; i < 10;i++) {
-        __putc('f');
-        __putc('1');
-        __putc(':');
-        __putc(i+'0');
-        __putc(' ');
+    for(int i = 0; i < 99;i++){
+        __putc('a');
+        __putc('\n');
+        for(int j = 0; j < 110000000;j++){}
+
     }
-    __putc('s');
 }
-
 void f2(void* args){
-    //mutex.wait();
-    for(int i = 0; i < 10;i++) {
-        __putc('f');
-        __putc('2');
-        __putc(':');
-        __putc(i+'0');
+    for(int i = 0; i < 99;i++){
+        __putc('b');
+        __putc('\n');
+        for(int j = 0; j < 90000000;j++){}
 
-        __putc(' ');
+
+
+    }
+}
+void f3(void* args){
+    for(int i = 0; i < 99;i++){
+        __putc('c');
+        __putc('\n');
+        for(int j = 0; j < 100000000;j++){}
+
+
 
     }
     //mutex.signal();
-    __putc('s');
 }
+
 void medium(void* args){
     while (true){
-        __putc('h');
-        thread_dispatch();
+        //__putc('a');
+        //thread_dispatch();
     }
 }
 void init(){
     Interrupt::w_stvec((uint64) &Interrupt::callRoutine);
-    Thread startThread(&f1, nullptr);
+    Thread startThread(&medium, nullptr);
     startThread.start();
     Thread waitingThread(&medium, nullptr);
     waitingThread.start();
-   // thread_dispatch();
-    Thread secondThread(&f1, nullptr);
-    Thread thirdThread(&f2, nullptr);
-    secondThread.start();
-    thirdThread.start();
+    //Interrupt::unlock();
+    Thread t1(&f1, nullptr);
+    t1.start();
+    Thread t2(&f2, nullptr);
+    t2.start();
+    Thread t3(&f3, nullptr);
+    t3.start();
     mutex = Semaphore(0);
     Interrupt::unlock();
-    thread_dispatch();
-
-
-
-    //Interrupt::unlock();
-    __putc('d');
-
 }
 
 int main(){
     init();
-    __putc('b');
+    //__putc('b');
     //mutex.wait();
-    int i = 0;
-    __putc('0' + i);
-    __putc('E');
-    __putc('\n');
+    //int i = 0;
+    //__putc('0' + i);
+    //__putc('E');
+    //__putc('\n');
 
-
+    mutex.wait();
     return 0;
 
 

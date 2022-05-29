@@ -3,36 +3,41 @@
 //
 #include "../h/Interrupt.h"
 
-
-uint64 sepc;
+uint64 Interrupt::prevSstatus = 2;
 int Interrupt::lock_var = 1;
-
 void Interrupt::handleSysCall() {
 
     uint64 scause = r_scausei();
     if(scause == 0x0000000000000009UL || scause == 0x0000000000000008UL) {
-        sepc = r_sepci() + 4;
-        uint64 scause = r_scausei();
+        uint64 sepc = r_sepci() + 4;
+        uint64 sscause = r_scausei();
         uint64 opCode;
         __asm__ volatile("mv %0,a0" : "=r"(opCode));
         callSys(opCode);
-        w_scausei(scause);
+        w_scausei(sscause);
         w_sepci(sepc);
+        return;
 
     }
     else if(scause == 0x8000000000000001UL){
         //__putc('0' + PCB::timeLeft);
         PCB::timeLeft++;
         if(PCB::timeLeft >= PCB::running->getTimeSlice()){
-            sepc = r_sepci();
-            uint64 scause = r_scausei();
-            PCB::timeLeft = 0;
-            PCB::dispatch();
-            w_scausei(scause);
-            w_sepci(sepc);
+          uint64 sepc = r_sepc();
+          uint64 sscause = r_scausei();
+          PCB::timeLeft = 0;
+          //__putc('b');
+          PCB::dispatch();
+          //__putc('h');
+          w_scausei(sscause);
+         w_sepc(sepc);
         }
         mc_sip(SIP_SSIP);
     }
+    else if(scause == 0x8000000000000009UL){
+        console_handler();
+    }
+
 }
 
 void Interrupt::callSys(uint64 opCode) {
@@ -62,8 +67,8 @@ void Interrupt::callSys(uint64 opCode) {
         uint64 handle,body,args,stac,res;
         __asm__ volatile ("mv %0,a1" : "=r"(handle));
         __asm__ volatile ("mv %0,a2" : "=r"(body));
-        __asm__ volatile ("mv %0,a3" : "=r"(args));
-        __asm__ volatile ("mv %0,a6" : "=r"(stac));
+        __asm__ volatile ("mv %0,a6" : "=r"(args));
+        __asm__ volatile ("mv %0,a7" : "=r"(stac));
 
 
         (*(thread_t*)handle)->PCB = PCB::allocatePCB();
@@ -139,7 +144,7 @@ void Interrupt::callSys(uint64 opCode) {
     }
 }
 
-void Interrupt::ms_status(uint64 mask) {
+inline void Interrupt::ms_status(uint64 mask) {
     __asm__ volatile("csrs sstatus, %[mask]" : : [mask]"r"(mask));
 }
 
@@ -236,11 +241,16 @@ void Interrupt::popSppSpie() {
 }
 
 void Interrupt::lock() {
-    if(lock_var++ == 0) disable_sintr();
+    if(lock_var++ == 0){
+        prevSstatus = r_statusi();
+        mc_status(SSTATUS_SIE);
+    } //disable_sintr();
 }
 
 void Interrupt::unlock() {
-    if(--lock_var == 0) enable_sintr();
+    if(--lock_var == 0){
+        ms_status(prevSstatus & SSTATUS_SIE ? SSTATUS_SIE:0);
+    } //enable_sintr();
 }
 
 void Interrupt::disable_sintr() {
@@ -255,7 +265,7 @@ inline void Interrupt::mc_sip(uint64 mask) {
     __asm__ volatile("csrc sip, %[mask]" : : [mask]"r"(mask));
 }
 
-void Interrupt::mc_status(uint64 mask) {
+inline void Interrupt::mc_status(uint64 mask) {
     __asm__ volatile("csrc sstatus, %[mask]" : : [mask]"r"(mask));
 
 }
