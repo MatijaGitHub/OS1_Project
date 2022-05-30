@@ -42,7 +42,7 @@ void f3(void* args){
 
 void medium(void* args){
     while (true){
-        //__putc('a');
+        __putc('a');
         //thread_dispatch();
     }
 }
@@ -52,27 +52,23 @@ void init(){
     startThread.start();
     Thread waitingThread(&medium, nullptr);
     waitingThread.start();
+    PCB::sleeping_list = new PCB_List;
+
     //Interrupt::unlock();
-    Thread t1(&f1, nullptr);
-    t1.start();
-    Thread t2(&f2, nullptr);
-    t2.start();
-    Thread t3(&f3, nullptr);
-    t3.start();
-    mutex = Semaphore(0);
+//    Thread t1(&f1, nullptr);
+//    t1.start();
+//    Thread t2(&f2, nullptr);
+//    t2.start();
+//    Thread t3(&f3, nullptr);
+//    t3.start();
+//    mutex = Semaphore(0);
     Interrupt::unlock();
 }
 
 int main(){
     init();
-    //__putc('b');
-    //mutex.wait();
-    //int i = 0;
-    //__putc('0' + i);
-    //__putc('E');
-    //__putc('\n');
-
-    mutex.wait();
+    int res = Thread::sleep(50);
+    __putc('0' + res);
     return 0;
 
 

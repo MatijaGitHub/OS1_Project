@@ -20,15 +20,19 @@ void Interrupt::handleSysCall() {
 
     }
     else if(scause == 0x8000000000000001UL){
-        //__putc('0' + PCB::timeLeft);
+        PCB::sleeping_list->decTime();
+        while (PCB::sleeping_list->getTimeLeft() == 0){
+            __putc('d');
+            PCB* pcb = PCB::sleeping_list->get();
+            pcb->setSleeping(false);
+            Scheduler::put(pcb);
+        }
         PCB::timeLeft++;
         if(PCB::timeLeft >= PCB::running->getTimeSlice()){
           uint64 sepc = r_sepc();
           uint64 sscause = r_scausei();
           PCB::timeLeft = 0;
-          //__putc('b');
           PCB::dispatch();
-          //__putc('h');
           w_scausei(sscause);
          w_sepc(sepc);
         }
@@ -141,6 +145,18 @@ void Interrupt::callSys(uint64 opCode) {
         __asm__ volatile("mv a0,%0" : : "r"(res));
         return;
 
+    } else if(opCode == 0x31){
+        uint64 time,res;
+        __asm__ volatile ("mv %0,a1" : "=r"(time));
+        PCB::sleep((time_t) time);
+        if(PCB::running->checkSleeping() == false){
+            res = -1;
+        }
+        else{
+            res = 0;
+        }
+        __asm__ volatile("mv a0,%0" : : "r"(res));
+        return;
     }
 }
 

@@ -2,6 +2,7 @@
 
 PCB* PCB::running = nullptr;
 uint64 PCB::timeLeft = 0;
+PCB_List* PCB::sleeping_list = nullptr;
 int PCB::id_cnt = 0;
 
 PCB *PCB::getNext() {
@@ -22,6 +23,7 @@ PCB::PCB(Body body,void* args,uint64 * stac,uint64 timeSlice) {
     this->args = args;
     finished = false;
     isBlocked = false;
+    isSleeping = false;
 
 
 }
@@ -44,7 +46,7 @@ bool PCB::checkFinished() {
 
 void PCB::dispatch() {
     PCB* old = running;
-    if(!old->checkFinished()&&!old->checkBlocked())Scheduler::put(old);
+    if(!old->checkFinished()&&!old->checkBlocked()&&!old->checkSleeping())Scheduler::put(old);
     running = Scheduler::get();
     contextSwitch(&old->context,&running->context);
 
@@ -111,6 +113,20 @@ uint64 PCB::getTimeSlice() const {
 
 void PCB::setTimeSlice(uint64 timeSlice) {
     PCB::timeSlice = timeSlice;
+}
+
+void PCB::sleep(time_t time) {
+    PCB::sleeping_list->putTime(running,time);
+    running->setSleeping(true);
+    PCB::dispatch();
+}
+
+void PCB::setSleeping(bool f) {
+    isSleeping = f;
+}
+
+bool PCB::checkSleeping() {
+    return isSleeping;
 }
 
 

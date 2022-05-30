@@ -14,6 +14,7 @@ public:
         uint64 ra;
         uint64 sp;
     };
+    static PCB_List* sleeping_list;
     using Body = void(*)(void *);
     PCB* getNext();
     void setNext(PCB* next);
@@ -21,6 +22,8 @@ public:
     static PCB* running;
     void setFinished(bool f);
     bool checkFinished();
+    void setSleeping(bool f);
+    bool checkSleeping();
     static void dispatch();
     void setArgs(void * arg);
     void* getArgs();
@@ -34,6 +37,7 @@ public:
     static uint64 timeLeft;
     uint64 getTimeSlice() const;
     void setTimeSlice(uint64 timeSlice);
+    static void sleep(time_t time);
 
 
 private:
@@ -44,6 +48,7 @@ private:
     uint64 timeSlice;
     bool finished;
     bool isBlocked;
+    bool isSleeping;
     char my_id;
     Body body;
     static void threadWrapper();

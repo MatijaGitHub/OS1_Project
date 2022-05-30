@@ -45,6 +45,13 @@ void Thread::dispatch() {
     Interrupt::unlock();
 }
 
+int Thread::sleep(time_t time) {
+    Interrupt::lock();
+    int res = time_sleep(time);
+    Interrupt::unlock();
+    return res;
+}
+
 void* operator new(size_t n){
     //Interrupt::mc_status(Interrupt::SSTATUS_SIE);
     Interrupt::lock();

@@ -1,4 +1,5 @@
 #pragma once
+#include "../lib/hw.h"
 
 
 
@@ -9,7 +10,9 @@ class PCB;
 struct pcbnode
 {
     PCB* PCB;
+    time_t timeLeft;
     struct pcbnode*next;
+
 };
 class PCB_List
 {
@@ -19,6 +22,10 @@ public:
     PCB_List();
     void put(PCB* pcb);
     PCB* get();
+    void putTime(PCB* pcb,time_t timeLeft);
+    time_t getTimeLeft();
+    void decTime();
+
 
 
 
