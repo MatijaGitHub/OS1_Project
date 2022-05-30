@@ -69,3 +69,11 @@ int sem_signal (sem_t id){
     int res = (int) callSys(0x24,(void *)argsP,1);
     return res;
 }
+
+int time_sleep (time_t time){
+    struct args arguments;
+    arguments.arg1 = (uint64)time;
+    struct args* argsP = &arguments;
+    int res = (int) callSys(0x31,(void *)argsP,1);
+    return res;
+}

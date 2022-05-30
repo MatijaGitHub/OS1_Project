@@ -47,6 +47,7 @@ int sem_open (
 );
 int sem_wait (sem_t id);
 int sem_signal (sem_t id);
+int time_sleep (time_t);
 #ifdef __cplusplus
 }
 #endif
