@@ -118,7 +118,7 @@ void PCB::setTimeSlice(uint64 timeSlice) {
 void PCB::sleep(time_t time) {
     PCB::sleeping_list->putTime(running,time);
     running->setSleeping(true);
-    PCB::dispatch();
+    //PCB::dispatch();
 }
 
 void PCB::setSleeping(bool f) {

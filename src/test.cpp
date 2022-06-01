@@ -41,10 +41,7 @@ void f3(void* args){
 }
 
 void medium(void* args){
-    while (true){
-        __putc('a');
-        //thread_dispatch();
-    }
+    while (true){}
 }
 void init(){
     Interrupt::w_stvec((uint64) &Interrupt::callRoutine);
@@ -67,8 +64,9 @@ void init(){
 
 int main(){
     init();
-    int res = Thread::sleep(50);
+    int res = Thread::sleep(10);
     __putc('0' + res);
+    Thread::dispatch();
     return 0;
 
 

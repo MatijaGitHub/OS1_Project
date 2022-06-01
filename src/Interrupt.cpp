@@ -22,7 +22,6 @@ void Interrupt::handleSysCall() {
     else if(scause == 0x8000000000000001UL){
         PCB::sleeping_list->decTime();
         while (PCB::sleeping_list->getTimeLeft() == 0){
-            __putc('d');
             PCB* pcb = PCB::sleeping_list->get();
             pcb->setSleeping(false);
             Scheduler::put(pcb);
@@ -149,14 +148,11 @@ void Interrupt::callSys(uint64 opCode) {
         uint64 time,res;
         __asm__ volatile ("mv %0,a1" : "=r"(time));
         PCB::sleep((time_t) time);
-        if(PCB::running->checkSleeping() == false){
-            res = -1;
-        }
-        else{
-            res = 0;
-        }
+        PCB::timeLeft = 0;
+        PCB::dispatch();
+        res = 0;
         __asm__ volatile("mv a0,%0" : : "r"(res));
-        return;
+
     }
 }
 
@@ -260,13 +256,13 @@ void Interrupt::lock() {
     if(lock_var++ == 0){
         prevSstatus = r_statusi();
         mc_status(SSTATUS_SIE);
-    } //disable_sintr();
+    }
 }
 
 void Interrupt::unlock() {
     if(--lock_var == 0){
-        ms_status(prevSstatus & SSTATUS_SIE ? SSTATUS_SIE:0);
-    } //enable_sintr();
+        ms_status(prevSstatus&SSTATUS_SIE?SSTATUS_SIE:0);
+    }
 }
 
 void Interrupt::disable_sintr() {

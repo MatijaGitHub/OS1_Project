@@ -35,7 +35,7 @@ PCB *PCB_List::get() {
 }
 
 void PCB_List::putTime(PCB *pcb, time_t timeLeft) {
-    pcbnode* tmp = (pcbnode*)mem_alloc(sizeof (pcbnode));
+    pcbnode* tmp = (pcbnode*)MemoryAllocator::getAllocator()->mem_alloc(sizeof (pcbnode));
     tmp->next = nullptr;
     tmp->PCB = pcb;
     tmp->timeLeft =timeLeft;

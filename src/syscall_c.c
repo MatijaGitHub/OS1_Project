@@ -12,7 +12,7 @@ void* mem_alloc(size_t size){
     struct args arguments;
     arguments.arg1 =(uint64) sizeB;
     struct args* argsP = &arguments;
-    void* res = (void*)callSys(1,(void*) argsP,1);
+    void* res = (void*)callSys(0x1,(void*) argsP,1);
     return res;
 }
 
@@ -20,7 +20,7 @@ int mem_free(void* adr){
     struct args arguments;
     arguments.arg1 = (uint64) adr;
     struct args* argsP = &arguments;
-    int res = (int) callSys(2,(void*)argsP,1);
+    int res = (int) callSys(0x2,(void*)argsP,1);
     return res;
 }
 
@@ -36,6 +36,7 @@ int thread_create (thread_t* handle, void(*start_routine)(void*), void* arg){
     int res = (int) callSys(0x11,(void *)argsP,4);
     return res;
 }
+
 
 
 int thread_exit(){

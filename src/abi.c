@@ -36,6 +36,7 @@ uint64 callSys(int op, void* args, int argLen){
     }
 
     __asm__ volatile("ecall");
+
     uint64 res;
     __asm__ volatile("mv %0,a0":"=r"(res));
 

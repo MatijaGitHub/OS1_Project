@@ -39,18 +39,29 @@ int Thread::start() {
 
 void Thread::dispatch() {
     //Interrupt::mc_status(Interrupt::SSTATUS_SIE);
-    Interrupt::lock();
+    //Interrupt::lock();
     thread_dispatch();
     //Interrupt::ms_status(Interrupt::SSTATUS_SIE);
-    Interrupt::unlock();
+    //Interrupt::unlock();
 }
 
 int Thread::sleep(time_t time) {
-    Interrupt::lock();
+    //Interrupt::lock();
     int res = time_sleep(time);
-    Interrupt::unlock();
+    //Interrupt::unlock();
     return res;
 }
+
+//Thread::Thread() {
+//    Interrupt::lock();
+//    this->myHandle =(thread_t) new thread_t;
+//    int res = thread_create(&myHandle, &Thread::run, nullptr);
+//    if(res < 0){
+//        __putc('!');
+//        __putc('\n');
+//    }
+//    Interrupt::unlock();
+//}
 
 void* operator new(size_t n){
     //Interrupt::mc_status(Interrupt::SSTATUS_SIE);
@@ -102,3 +113,5 @@ int Semaphore::signal() {
     //Interrupt::ms_status(Interrupt::SSTATUS_SIE);
     return res;
 }
+
+

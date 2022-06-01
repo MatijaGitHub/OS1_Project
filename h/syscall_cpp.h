@@ -14,8 +14,8 @@ public:
     static void dispatch();
     static int sleep (time_t);
 protected:
-    //Thread ();
-    //virtual void run () {}
+//    Thread ();
+//    virtual void run () {}
 private:
     thread_t myHandle;
 };
@@ -29,16 +29,16 @@ public:
 private:
     sem_t myHandle;
 };
-/*
+
 class PeriodicThread : public Thread {
 protected:
     PeriodicThread (time_t period);
     virtual void periodicActivation () {}
 };
-class Console {
+/*class Console {
 public:
     static char getc ();
     static void putc (char);
-};
- */
+};*/
+
 #endif
