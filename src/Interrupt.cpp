@@ -66,6 +66,25 @@ void Interrupt::callSys(uint64 opCode) {
         __asm__ volatile("mv a0,%0" : : "r"((uint64)res));
         return;
     }
+    else if(opCode == 0x10){
+        uint64 handle,body,args,stac,res;
+        __asm__ volatile ("mv %0,a1" : "=r"(handle));
+        __asm__ volatile ("mv %0,a2" : "=r"(body));
+        __asm__ volatile ("mv %0,a6" : "=r"(args));
+        __asm__ volatile ("mv %0,a7" : "=r"(stac));
+
+
+        (*(thread_t*)handle)->PCB = PCB::allocatePCB();
+        if((*(thread_t*)handle)->PCB == 0){
+            res = -1;
+            __asm__ volatile("mv a0,%0" : : "r"(res));
+            return;
+        }
+        *(PCB*)(*(thread_t*)handle)->PCB = PCB((PCB::Body)body,(void*)args,(uint64*)stac,DEFAULT_TIME_SLICE);
+        res = 0;
+        __asm__ volatile("mv a0,%0" : : "r"(res));
+        return;
+    }
     else if(opCode == 0x11){
         uint64 handle,body,args,stac,res;
         __asm__ volatile ("mv %0,a1" : "=r"(handle));
@@ -81,6 +100,7 @@ void Interrupt::callSys(uint64 opCode) {
             return;
         }
         *(PCB*)(*(thread_t*)handle)->PCB = PCB((PCB::Body)body,(void*)args,(uint64*)stac,DEFAULT_TIME_SLICE);
+        Scheduler::put((PCB*)(*(thread_t*)handle)->PCB);
         res = 0;
         __asm__ volatile("mv a0,%0" : : "r"(res));
         return;

@@ -23,14 +23,14 @@ void PCB_List::put(PCB* pcb) {
 PCB *PCB_List::get() {
     if(head == nullptr) return nullptr;
     PCB* get = head->PCB;
-    pcbnode* tmp = head;
+    //pcbnode* tmp = head;
     if(head->next!= nullptr)head = head->next;
     else{
         head = nullptr;
         tail = nullptr;
     }
     //mem_free((void *)tmp);
-    MemoryAllocator::getAllocator()->mem_free((void *)tmp);
+    //MemoryAllocator::getAllocator()->mem_free((void *)tmp);
     return get;
 }
 

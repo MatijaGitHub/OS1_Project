@@ -6,16 +6,25 @@
 
 //void* ::operator new (size_t n);
 //void ::operator delete (void* p);
+void wrapper(void *t);
+void periodicWrapper(void *t);
 class Thread {
 public:
+
+    friend void wrapper(void * t);
     Thread (void (*body)(void*), void* arg);
-    //virtual ~Thread ();
-    int start ();
+    virtual ~Thread ();
+
     static void dispatch();
     static int sleep (time_t);
+
+    int start ();
+
 protected:
-//    Thread ();
-//    virtual void run () {}
+    virtual void run () {}
+
+    Thread ();
+
 private:
     thread_t myHandle;
 };
@@ -30,7 +39,10 @@ private:
     sem_t myHandle;
 };
 
+
 class PeriodicThread : public Thread {
+public:
+    friend void periodicWrapper(void * t);
 protected:
     PeriodicThread (time_t period);
     virtual void periodicActivation () {}

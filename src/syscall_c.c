@@ -26,6 +26,7 @@ int mem_free(void* adr){
 
 int thread_create (thread_t* handle, void(*start_routine)(void*), void* arg){
     struct args arguments;
+    *handle = (_thread*)mem_alloc(sizeof (_thread));
     arguments.arg1 = (uint64) handle;
     arguments.arg2 = (uint64) start_routine;
     arguments.arg3 = (uint64) arg;
@@ -34,6 +35,20 @@ int thread_create (thread_t* handle, void(*start_routine)(void*), void* arg){
     if(arguments.arg4 == 0) return -2;
     struct args* argsP = &arguments;
     int res = (int) callSys(0x11,(void *)argsP,4);
+    return res;
+}
+
+int thread_init (thread_t* handle, void(*start_routine)(void*), void* arg){
+    struct args arguments;
+    *handle = (_thread*)mem_alloc(sizeof (_thread));
+    arguments.arg1 = (uint64) handle;
+    arguments.arg2 = (uint64) start_routine;
+    arguments.arg3 = (uint64) arg;
+    void* adr = mem_alloc(DEFAULT_STACK_SIZE);
+    arguments.arg4 = (uint64)adr;
+    if(arguments.arg4 == 0) return -2;
+    struct args* argsP = &arguments;
+    int res = (int) callSys(0x10,(void *)argsP,4);
     return res;
 }
 
@@ -55,6 +70,9 @@ int sem_open (sem_t* handle,unsigned init){
     struct args* argsP = &arguments;
     int res = (int) callSys(0x21,(void *)argsP,2);
     return res;
+}
+int sem_close (sem_t handle){
+    return 0;
 }
 int sem_wait (sem_t id){
     struct args arguments;

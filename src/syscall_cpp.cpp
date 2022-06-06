@@ -1,12 +1,12 @@
-#include "../h/syscall_cpp.h"
+#include "../h/syscall_cpp.hpp"
 
 
 
 Thread::Thread(void (*body)(void *), void *arg) {
     //Interrupt::mc_status(Interrupt::SSTATUS_SIE);
     Interrupt::lock();
-    this->myHandle =(thread_t) new thread_t;
-    int res = thread_create(&myHandle,body,arg);
+    //this->myHandle =(thread_t) new thread_t;
+    int res = thread_init(&myHandle,body,arg);
     if(res < 0){
         __putc('!');
         __putc('\n');
@@ -52,16 +52,46 @@ int Thread::sleep(time_t time) {
     return res;
 }
 
-//Thread::Thread() {
-//    Interrupt::lock();
-//    this->myHandle =(thread_t) new thread_t;
-//    int res = thread_create(&myHandle, &Thread::run, nullptr);
-//    if(res < 0){
-//        __putc('!');
-//        __putc('\n');
-//    }
-//    Interrupt::unlock();
-//}
+
+void wrapper(void *t) {
+    if (t) {
+        ((Thread *) t)->run();
+    }
+}
+typedef struct {
+    PeriodicThread* t;
+    time_t time;
+} periodicArgs;
+void periodicWrapper(void *args){
+    time_t times = ((periodicArgs*)args)->time;
+    PeriodicThread* threads = (PeriodicThread *) ((periodicArgs*)args)->t;
+    if(((periodicArgs*)args)->t){
+        while (true){
+            threads->periodicActivation();
+            Thread::sleep(times);
+        }
+    }
+}
+
+PeriodicThread::PeriodicThread(time_t period) : Thread(&periodicWrapper,new periodicArgs{this,period})  {
+
+}
+
+Thread::Thread() {
+    Interrupt::lock();
+    //this->myHandle =(thread_t) new thread_t;
+    int res = thread_create(&myHandle,&wrapper, this);
+    if(res < 0){
+        __putc('!');
+        __putc('\n');
+    }
+    Interrupt::unlock();
+}
+
+
+Thread::~Thread() {
+    delete this->myHandle;
+}
 
 void* operator new(size_t n){
     //Interrupt::mc_status(Interrupt::SSTATUS_SIE);
@@ -113,5 +143,8 @@ int Semaphore::signal() {
     //Interrupt::ms_status(Interrupt::SSTATUS_SIE);
     return res;
 }
+
+
+
 
 
