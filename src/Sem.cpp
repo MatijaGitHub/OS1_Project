@@ -31,6 +31,7 @@ void Sem::block() {
 void Sem::unblock() {
     PCB* pcb = waiting_PCB.get();
     pcb->setBlocked(false);
+    pcb->unblockError = false;
     Scheduler::put(pcb);
 }
 
@@ -49,4 +50,13 @@ void *Sem::allocateSem() {
     header++;
     void* ret = (void*)header;
     return ret;
+}
+
+void Sem::deblockAll() {
+    PCB* pcb;
+    while((pcb = waiting_PCB.get())!= nullptr){
+        pcb->setBlocked(false);
+        pcb->unblockError = true;
+        Scheduler::put(pcb);
+    }
 }

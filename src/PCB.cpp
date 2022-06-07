@@ -24,6 +24,7 @@ PCB::PCB(Body body,void* args,uint64 * stac,uint64 timeSlice) {
     finished = false;
     isBlocked = false;
     isSleeping = false;
+    unblockError = false;
 
 
 }

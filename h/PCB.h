@@ -38,6 +38,7 @@ public:
     uint64 getTimeSlice() const;
     void setTimeSlice(uint64 timeSlice);
     static void sleep(time_t time);
+    bool unblockError;
 
 
 private:

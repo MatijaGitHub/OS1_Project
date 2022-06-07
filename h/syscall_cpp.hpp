@@ -47,10 +47,10 @@ protected:
     PeriodicThread (time_t period);
     virtual void periodicActivation () {}
 };
-/*class Console {
+class Console {
 public:
     static char getc ();
     static void putc (char);
-};*/
+};
 
 #endif

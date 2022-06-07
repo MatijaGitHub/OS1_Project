@@ -35,7 +35,7 @@ void ProducerKeyboard::producerKeyboard(void *arg) {
 
     int key;
     int i = 0;
-    while ((key = getc()) != 0x1b) {
+    while ((key = __getc()) != 0x1b) {
         data->buffer->put(key);
         i++;
 
@@ -96,21 +96,22 @@ void Consumer::consumer(void *arg) {
         int key = data->buffer->get();
         i++;
 
-        putc(key);
+        __putc(key);
 
         if (i % (5 * data->id) == 0) {
             Thread::dispatch();
         }
 
         if (i % 80 == 0) {
-            putc('\n');
+            __putc('\n');
         }
     }
 
 
     while (td->buffer->getCnt() > 0) {
         int key = td->buffer->get();
-        Console::putc(key);
+        //Console::putc(key);
+        __putc(key);
     }
 
     data->wait->signal();

@@ -2,9 +2,12 @@
 // Created by os on 4/23/22.
 //
 #include "../h/Interrupt.h"
+#include "../h/Cons.hpp"
 
 uint64 Interrupt::prevSstatus = 2;
 int Interrupt::lock_var = 1;
+Sem* PutCharThread::waitForPutSignal;
+Sem* GetCharThread::waitForGetSignal;
 void Interrupt::handleSysCall() {
 
     uint64 scause = r_scausei();
@@ -38,7 +41,13 @@ void Interrupt::handleSysCall() {
         mc_sip(SIP_SSIP);
     }
     else if(scause == 0x8000000000000009UL){
-        console_handler();
+        int irq = plic_claim();
+        if(irq == CONSOLE_IRQ){
+            if(*(char *)CONSOLE_STATUS & CONSOLE_TX_STATUS_BIT)
+                GetCharThread::waitForGetSignal->signal();
+        }
+        plic_complete(irq);
+        //console_handler();
     }
 
 }
@@ -138,14 +147,33 @@ void Interrupt::callSys(uint64 opCode) {
         return;
 
     }
+    else if(opCode == 0x22){
+        uint64 handle,res;
+        __asm__ volatile ("mv %0,a1" : "=r"(handle));
+        if((Sem*)((sem_t)handle)->Sem!= nullptr) {
+            ((Sem *) ((sem_t ) handle)->Sem)->deblockAll();
+            res = 0;
+            __asm__ volatile("mv a0,%0" : : "r"(res));
+            return;
+        }
+        res = -1;
+        __asm__ volatile("mv a0,%0" : : "r"(res));
+        return;
+    }
     else if(opCode == 0x23){
         uint64 handle,res;
         __asm__ volatile ("mv %0,a1" : "=r"(handle));
         if((Sem*)((sem_t)handle)->Sem!= nullptr) {
             ((Sem *) ((sem_t ) handle)->Sem)->wait();
-            res = 0;
-            __asm__ volatile("mv a0,%0" : : "r"(res));
-            return;
+            if(!PCB::running->unblockError) {
+                res = 0;
+                __asm__ volatile("mv a0,%0" : : "r"(res));
+                return;
+            } else{
+                res = -2;
+                __asm__ volatile("mv a0,%0" : : "r"(res));
+                return;
+            }
         }
         res = -1;
         __asm__ volatile("mv a0,%0" : : "r"(res));
@@ -172,6 +200,21 @@ void Interrupt::callSys(uint64 opCode) {
         PCB::dispatch();
         res = 0;
         __asm__ volatile("mv a0,%0" : : "r"(res));
+
+    }
+    else if(opCode == 0x41){
+        uint64 chr;
+        char c = Cons::getConsole()->inputBuffer->get();
+        chr = (uint64)c;
+        __asm__ volatile("mv a0,%0" : : "r"(chr));
+        return;
+    }
+    else if(opCode == 0x42){
+        uint64 chr;
+        __asm__ volatile ("mv %0,a1" : "=r"(chr));
+        Cons::getConsole()->outputBuffer->put((char)chr);
+        PutCharThread::waitForPutSignal->signal();
+        return;
 
     }
 }

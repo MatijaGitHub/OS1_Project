@@ -2,6 +2,7 @@
 #include "../lib/hw.h"
 #include "../h/Interrupt.h"
 #include "../h/syscall_cpp.hpp"
+#include "../h/Cons.hpp"
 #include "../h/Sem.h"
 
 
@@ -16,7 +17,7 @@ void medium(void* args){
 class Test : public Thread{
 protected:
     void run() override{
-        __putc('x');
+        Console::putc('g');
     }
 public:
     Test() : Thread(){
@@ -26,7 +27,7 @@ public:
 class PeriodicTest : public PeriodicThread{
 protected:
     void periodicActivation() override{
-        __putc('q');
+        Console::putc('g');
     }
 public:
     PeriodicTest(time_t t) : PeriodicThread(t){
@@ -40,22 +41,21 @@ void init(){
     startThread.start();
 //    Thread waitingThread(&medium, nullptr);
 //    waitingThread.start();
+    PutCharThread* putCharThread =new PutCharThread();
+    GetCharThread* getCharThread = new GetCharThread();
     PCB::sleeping_list = new PCB_List;
+    Cons::singleton = new Cons();
+    Cons::outputBuffer = new CharBuffer(30);
+    Cons::inputBuffer = new CharBuffer(30);
+    PutCharThread::waitForPutSignal = new Sem(0);
+    GetCharThread::waitForGetSignal = new Sem(0);
+    putCharThread->start();
+    getCharThread->start();
+    Interrupt::unlock();
 
-    //Interrupt::unlock();
-//    Thread t1(&f1, nullptr);
-//    t1.start();
-//    Thread t2(&f2, nullptr);
-//    t2.start();
-//    Thread t3(&f3, nullptr);
-//    t3.start();
-//    mutex = Semaphore(0);
-
-
-    //Interrupt::unlock();
 }
 //#include "../h/Threads_C_API_test.hpp" // zadatak 2, niti C API i sinhrona promena konteksta
-#include "../h/Threads_CPP_API_test.hpp" // zadatak 2., niti CPP API i sinhrona promena konteksta
+//#include "../h/Threads_CPP_API_test.hpp" // zadatak 2., niti CPP API i sinhrona promena konteksta
 
 //#include "../h/ConsumerProducer_C_API_test.h" // zadatak 3., kompletan C API sa semaforima, sinhrona promena konteksta
 //#include "../h/ConsumerProducer_CPP_Sync_API_test.hpp" // zadatak 3., kompletan CPP API sa semaforima, sinhrona promena konteksta
@@ -65,7 +65,7 @@ void init(){
 
 void userMain() {
     //Threads_C_API_test(); // zadatak 2., niti C API i sinhrona promena konteksta
-    Threads_CPP_API_test(); // zadatak 2., niti CPP API i sinhrona promena konteksta
+    //Threads_CPP_API_test(); // zadatak 2., niti CPP API i sinhrona promena konteksta
 
     //producerConsumer_C_API(); // zadatak 3., kompletan C API sa semaforima, sinhrona promena konteksta
     //producerConsumer_CPP_Sync_API(); // zadatak 3., kompletan CPP API sa semaforima, sinhrona promena konteksta
@@ -76,10 +76,15 @@ void userMain() {
 }
 int main(){
     init();
-    userMain();
+    //userMain();
+    Console::putc('a');
+    Console::putc('d');
+    char c = Console::getc();
+    Console::putc(c);
 //    PeriodicTest* pt = new PeriodicTest(14);
 //    pt->start();
-//    while (true){}
+
+    Thread::sleep(20);
 
     return 0;
 

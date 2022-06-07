@@ -72,7 +72,11 @@ int sem_open (sem_t* handle,unsigned init){
     return res;
 }
 int sem_close (sem_t handle){
-    return 0;
+    struct args arguments;
+    arguments.arg1 = (uint64)handle;
+    struct args* argsP = &arguments;
+    int res = (int) callSys(0x22,(void *)argsP,1);
+    return res;
 }
 int sem_wait (sem_t id){
     struct args arguments;
@@ -95,4 +99,17 @@ int time_sleep (time_t time){
     struct args* argsP = &arguments;
     int res = (int) callSys(0x31,(void *)argsP,1);
     return res;
+}
+
+
+void putc (char c){
+    struct args arguments;
+    arguments.arg1 = (uint64)c;
+    struct args* argsP = &arguments;
+    callSys(0x42,(void *)argsP,1);
+
+}
+char getc (){
+    return  (char )callSys(0x41,0,0);
+
 }

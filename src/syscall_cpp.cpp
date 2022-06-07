@@ -80,7 +80,7 @@ PeriodicThread::PeriodicThread(time_t period) : Thread(&periodicWrapper,new peri
 Thread::Thread() {
     Interrupt::lock();
     //this->myHandle =(thread_t) new thread_t;
-    int res = thread_create(&myHandle,&wrapper, this);
+    int res = thread_init(&myHandle,&wrapper, this);
     if(res < 0){
         __putc('!');
         __putc('\n');
@@ -145,6 +145,15 @@ int Semaphore::signal() {
 }
 
 
+char Console::getc() {
+    Interrupt::lock();
+    char c= ::getc();
+    Interrupt::unlock();
+    return c;
+}
 
-
-
+void Console::putc(char c) {
+    Interrupt::lock();
+    ::putc(c);
+    Interrupt::unlock();
+}
