@@ -43,7 +43,7 @@ void Interrupt::handleSysCall() {
     else if(scause == 0x8000000000000009UL){
         int irq = plic_claim();
         if(irq == CONSOLE_IRQ){
-            if(*(char *)CONSOLE_STATUS & CONSOLE_TX_STATUS_BIT)
+            if(*((char *)CONSOLE_STATUS) & CONSOLE_RX_STATUS_BIT)
                 GetCharThread::waitForGetSignal->signal();
         }
         plic_complete(irq);

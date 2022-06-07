@@ -57,7 +57,7 @@ protected:
     void run() override{
         while (true){
             waitForGetSignal->wait();
-            while (Cons::inputBuffer->getSize() > 0) {
+            while (Cons::inputBuffer->getSize() < 5) {
                 while (!(*((char *) CONSOLE_STATUS) & CONSOLE_RX_STATUS_BIT)) {}
                 char c = *((char *) CONSOLE_RX_DATA);
                 Cons::inputBuffer->put(c);

@@ -101,15 +101,13 @@ int time_sleep (time_t time){
     return res;
 }
 
-
+char getc (){
+    return  (char )callSys(0x41,0,0);
+}
 void putc (char c){
     struct args arguments;
     arguments.arg1 = (uint64)c;
     struct args* argsP = &arguments;
     callSys(0x42,(void *)argsP,1);
-
-}
-char getc (){
-    return  (char )callSys(0x41,0,0);
 
 }

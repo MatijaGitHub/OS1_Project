@@ -45,8 +45,8 @@ void init(){
     GetCharThread* getCharThread = new GetCharThread();
     PCB::sleeping_list = new PCB_List;
     Cons::singleton = new Cons();
-    Cons::outputBuffer = new CharBuffer(30);
-    Cons::inputBuffer = new CharBuffer(30);
+    Cons::outputBuffer = new CharBuffer(128);
+    Cons::inputBuffer = new CharBuffer(128);
     PutCharThread::waitForPutSignal = new Sem(0);
     GetCharThread::waitForGetSignal = new Sem(0);
     putCharThread->start();
@@ -84,8 +84,8 @@ int main(){
 //    PeriodicTest* pt = new PeriodicTest(14);
 //    pt->start();
 
-    Thread::sleep(20);
-
+    //Thread::sleep(20);
+    while(true){}
     return 0;
 
 
