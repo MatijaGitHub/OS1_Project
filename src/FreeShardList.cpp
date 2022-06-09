@@ -1,20 +1,16 @@
 #include "../h/FreeShardList.h"
 
-
-
-FreeShardList::FreeShardList() {
-
-    node* beg =(node*) HEAP_START_ADDR;
-    //node* beg = allocate_mem((uint64)sizeof (node));
-    beg->next = nullptr;
-    beg->mem_free_block =(void*)HEAP_START_ADDR;
-    beg->size = (size_t)HEAP_END_ADDR-(size_t)HEAP_START_ADDR;
-    head = beg;
-    tail = beg;
-}
-
+node* FreeShardList::head = nullptr;
+node* FreeShardList::tail = nullptr;
 
 void *FreeShardList::find_best(size_t size) {
+    if(tail == nullptr){
+        head = (node*)HEAP_START_ADDR;
+        head->next = nullptr;
+        head->mem_free_block = head;
+        head->size = (size_t)HEAP_END_ADDR-(size_t)HEAP_START_ADDR;
+        tail= head;
+    }
     if((long)size < 0) return nullptr;
     long min_shard_dif = head->size - size;
     void* start_adr = head->mem_free_block;
@@ -35,7 +31,7 @@ void *FreeShardList::find_best(size_t size) {
     }
     if(min_shard_dif >= 0) {
 
-        this->allocate_mem(prevReplace,toReplace,size);
+        allocate_mem(prevReplace,toReplace,size);
 
         return start_adr;
     }
@@ -67,7 +63,7 @@ void FreeShardList::allocate_mem(struct node* prev, struct node *here, size_t si
         size_t prevSize = here->size;
         void* prevMemBlock = here->mem_free_block;
         struct node* prevNext = here->next;
-        here = (node*)((size_t)here->mem_free_block + size);
+        here = (node*)((size_t )here->mem_free_block + size);
         here->size = prevSize-size;
         here->mem_free_block = (void*)((size_t)prevMemBlock+size);
         here->next = prevNext;
@@ -172,5 +168,7 @@ int FreeShardList::free_memory(void *address) {
     }
     return result;
 }
+
+
 
 

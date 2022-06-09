@@ -23,6 +23,7 @@ void Interrupt::handleSysCall() {
 
     }
     else if(scause == 0x8000000000000001UL){
+        //__putc('a');
         PCB::sleeping_list->decTime();
         while (PCB::sleeping_list->getTimeLeft() == 0){
             PCB* pcb = PCB::sleeping_list->get();
@@ -41,13 +42,20 @@ void Interrupt::handleSysCall() {
         mc_sip(SIP_SSIP);
     }
     else if(scause == 0x8000000000000009UL){
-        int irq = plic_claim();
-        if(irq == CONSOLE_IRQ){
-            if(*((char *)CONSOLE_STATUS) & CONSOLE_RX_STATUS_BIT)
-                GetCharThread::waitForGetSignal->signal();
-        }
-        plic_complete(irq);
-        //console_handler();
+//        int irq = plic_claim();
+//        if(irq == CONSOLE_IRQ){
+//            while (*((char *)CONSOLE_STATUS) & CONSOLE_RX_STATUS_BIT){
+//                char c = (*(char *) CONSOLE_RX_DATA);
+//                Cons::inputBuffer->put(c);
+//                if(Cons::inputBuffer->getSize() == Cons::inputBuffer->getMaxSize()){
+//                    __putc('f');
+//                } else {
+//                    __putc('i');
+//                }
+//            }
+//        }
+//        plic_complete(irq);
+        console_handler();
     }
 
 }
@@ -57,8 +65,7 @@ void Interrupt::callSys(uint64 opCode) {
         uint64 size;
         __asm__ volatile ("mv %0,a1" : "=r"(size));
         size*=MEM_BLOCK_SIZE;
-        MemoryAllocator* mem = MemoryAllocator::getAllocator();
-        void* retAdr = mem->mem_alloc((size_t) size);
+        void* retAdr = MemoryAllocator::mem_alloc((size_t) size);
         long* header = (long*) retAdr;
         size/=MEM_BLOCK_SIZE;
         *header = size;
@@ -70,8 +77,7 @@ void Interrupt::callSys(uint64 opCode) {
     else if(opCode == 0x2){
         uint64 adr;
         __asm__ volatile ("mv %0,a1" : "=r"(adr));
-        MemoryAllocator* mem = MemoryAllocator::getAllocator();
-        int res = mem->mem_free((void*) adr);
+        int res = MemoryAllocator::mem_free((void*) adr);
         __asm__ volatile("mv a0,%0" : : "r"((uint64)res));
         return;
     }
@@ -100,8 +106,6 @@ void Interrupt::callSys(uint64 opCode) {
         __asm__ volatile ("mv %0,a2" : "=r"(body));
         __asm__ volatile ("mv %0,a6" : "=r"(args));
         __asm__ volatile ("mv %0,a7" : "=r"(stac));
-
-
         (*(thread_t*)handle)->PCB = PCB::allocatePCB();
         if((*(thread_t*)handle)->PCB == 0){
             res = -1;
@@ -204,7 +208,8 @@ void Interrupt::callSys(uint64 opCode) {
     }
     else if(opCode == 0x41){
         uint64 chr;
-        char c = Cons::getConsole()->inputBuffer->get();
+        Cons* singleton = Cons::getConsole();
+        char c = singleton->inputBuffer->get();
         chr = (uint64)c;
         __asm__ volatile("mv a0,%0" : : "r"(chr));
         return;

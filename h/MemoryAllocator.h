@@ -10,15 +10,15 @@ extern "C" {
 
 class MemoryAllocator{
         private:
-        static FreeShardList* listFree;
-        static MemoryAllocator* singleton;
+        //static FreeShardList* listFree;
+        //static MemoryAllocator* singleton;
         protected:
-        MemoryAllocator();
+       // MemoryAllocator();
         public:
-        void* mem_alloc(size_t size);
-        int mem_free(void* mem);
-        static MemoryAllocator* getAllocator();
-        static FreeShardList* getList();
+        static void* mem_alloc(size_t size);
+        static int mem_free(void* mem);
+//        static MemoryAllocator* getAllocator();
+//        static FreeShardList* getList();
 
 };
 

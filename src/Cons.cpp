@@ -3,17 +3,18 @@
 
 
 char CharBuffer::get() {
-    getSem->wait();
+   getSem->wait();
     mutex->wait();
     char c = buffer[head];
     head = (head + 1)%size;
     currSize--;
     mutex->signal();
-    putSem->signal();
+   putSem->signal();
     return c;
 }
 
 void CharBuffer::put(char c) {
+    if(this->currSize >= this->size) return;
     putSem->wait();
     mutex->wait();
     buffer[tail] = c;
@@ -45,6 +46,10 @@ CharBuffer::~CharBuffer() {
     delete putSem;
     delete buffer;
     size = head = tail = 0;
+}
+
+int CharBuffer::getMaxSize() {
+    return size;
 }
 
 CharBuffer* Cons::inputBuffer;

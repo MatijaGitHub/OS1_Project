@@ -4,6 +4,7 @@
 
 
 
+
 void* mem_alloc(size_t size){
     size_t sizeB = ((size + ALLOCATED_HEADER_SIZE)/MEM_BLOCK_SIZE);
     if((size + ALLOCATED_HEADER_SIZE)%MEM_BLOCK_SIZE > 0){
@@ -65,6 +66,7 @@ void thread_dispatch(){
 }
 int sem_open (sem_t* handle,unsigned init){
     struct args arguments;
+    *handle = (_sem *)mem_alloc(sizeof (_sem));
     arguments.arg1 = (uint64)handle;
     arguments.arg2 = (uint64)init;
     struct args* argsP = &arguments;

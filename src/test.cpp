@@ -12,7 +12,9 @@ typedef struct {
 
 
 void medium(void* args){
-    while (true){}
+    while (true){
+        thread_dispatch();
+    }
 }
 class Test : public Thread{
 protected:
@@ -39,25 +41,25 @@ void init(){
     Interrupt::w_stvec((uint64) &Interrupt::callRoutine);
     Thread startThread(&medium, nullptr);
     startThread.start();
+    PCB::sleeping_list = new PCB_List;
 //    Thread waitingThread(&medium, nullptr);
 //    waitingThread.start();
-    PutCharThread* putCharThread =new PutCharThread();
-    GetCharThread* getCharThread = new GetCharThread();
-    PCB::sleeping_list = new PCB_List;
-    Cons::singleton = new Cons();
-    Cons::outputBuffer = new CharBuffer(128);
-    Cons::inputBuffer = new CharBuffer(128);
-    PutCharThread::waitForPutSignal = new Sem(0);
-    GetCharThread::waitForGetSignal = new Sem(0);
-    putCharThread->start();
-    getCharThread->start();
-    Interrupt::unlock();
+//    PutCharThread* putCharThread =new PutCharThread();
+//    GetCharThread* getCharThread = new GetCharThread();
+//    Cons::singleton = new Cons();
+//    Cons::outputBuffer = new CharBuffer(128);
+//    Cons::inputBuffer = new CharBuffer(128);
+//    PutCharThread::waitForPutSignal = new Sem(0);
+//    GetCharThread::waitForGetSignal = new Sem(0);
+//    putCharThread->start();
+//    getCharThread->start();
+    //Interrupt::unlock();
 
 }
 //#include "../h/Threads_C_API_test.hpp" // zadatak 2, niti C API i sinhrona promena konteksta
 //#include "../h/Threads_CPP_API_test.hpp" // zadatak 2., niti CPP API i sinhrona promena konteksta
 
-//#include "../h/ConsumerProducer_C_API_test.h" // zadatak 3., kompletan C API sa semaforima, sinhrona promena konteksta
+#include "../h/ConsumerProducer_C_API_test.h" // zadatak 3., kompletan C API sa semaforima, sinhrona promena konteksta
 //#include "../h/ConsumerProducer_CPP_Sync_API_test.hpp" // zadatak 3., kompletan CPP API sa semaforima, sinhrona promena konteksta
 
 //#include "../h/ThreadSleep_C_API_test.hpp" // thread_sleep test C API
@@ -67,7 +69,7 @@ void userMain() {
     //Threads_C_API_test(); // zadatak 2., niti C API i sinhrona promena konteksta
     //Threads_CPP_API_test(); // zadatak 2., niti CPP API i sinhrona promena konteksta
 
-    //producerConsumer_C_API(); // zadatak 3., kompletan C API sa semaforima, sinhrona promena konteksta
+    producerConsumer_C_API(); // zadatak 3., kompletan C API sa semaforima, sinhrona promena konteksta
     //producerConsumer_CPP_Sync_API(); // zadatak 3., kompletan CPP API sa semaforima, sinhrona promena konteksta
 
     //testSleeping(); // thread_sleep test C API
@@ -76,16 +78,18 @@ void userMain() {
 }
 int main(){
     init();
-    //userMain();
-    Console::putc('a');
-    Console::putc('d');
-    char c = Console::getc();
-    Console::putc(c);
-//    PeriodicTest* pt = new PeriodicTest(14);
-//    pt->start();
+    userMain();
 
-    //Thread::sleep(20);
-    while(true){}
+//    while (true){
+////        char c = Console::getc();
+////       Console::putc(c);
+////        __putc('s');
+////     Console::putc('B');
+////        Console::putc('I');
+////        Console::putc('G');
+////
+////      Thread::sleep(10);
+//    }
     return 0;
 
 

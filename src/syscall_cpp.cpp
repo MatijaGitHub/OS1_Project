@@ -17,7 +17,7 @@ Thread::Thread(void (*body)(void *), void *arg) {
 Semaphore::Semaphore(unsigned int init) {
     //Interrupt::mc_status(Interrupt::SSTATUS_SIE);
     Interrupt::lock();
-    this->myHandle =(sem_t) new sem_t;
+//    this->myHandle =(sem_t) new sem_t;
     int res = sem_open(&myHandle,init);
     if(res < 0){
         __putc('!');
@@ -146,9 +146,9 @@ int Semaphore::signal() {
 
 
 char Console::getc() {
-    Interrupt::lock();
+    //Interrupt::lock();
     char c= ::getc();
-    Interrupt::unlock();
+    //Interrupt::unlock();
     return c;
 }
 

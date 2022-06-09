@@ -18,6 +18,7 @@ public:
     char get();
     void put(char c);
     int getSize();
+    int getMaxSize();
 
 };
 class Cons{
@@ -38,11 +39,13 @@ public:
 private:
     void run() override{
         while (true){
+
             waitForPutSignal->wait();
-            while (Cons::outputBuffer->getSize() > 0) {
-                while (!(*((char *) CONSOLE_STATUS) & CONSOLE_TX_STATUS_BIT)) {}
+            while ((*((char *) CONSOLE_STATUS) & CONSOLE_TX_STATUS_BIT)) {
                 *((char *) CONSOLE_TX_DATA) = Cons::outputBuffer->get();
             }
+
+
         }
     }
 };
@@ -56,12 +59,9 @@ public:
 protected:
     void run() override{
         while (true){
-            waitForGetSignal->wait();
-            while (Cons::inputBuffer->getSize() < 5) {
-                while (!(*((char *) CONSOLE_STATUS) & CONSOLE_RX_STATUS_BIT)) {}
-                char c = *((char *) CONSOLE_RX_DATA);
-                Cons::inputBuffer->put(c);
-            }
+
+
+
 
         }
     }

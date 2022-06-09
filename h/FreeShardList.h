@@ -10,26 +10,24 @@ extern "C" {
 
 struct node
 {
-     void* mem_free_block;
-     size_t size;
-     struct node *next;
+    void* mem_free_block;
+    size_t size;
+    struct node *next;
 };
 class FreeShardList
         {
-        private:
-                node *head,*tail;
 protected:
-
-        void allocate_mem(struct node* prev,struct node* here,size_t size);
-        public:
-        FreeShardList();
-
-        void* find_best(size_t size);
-        int free_memory(void* address);
-        void printList();
-        void print(unsigned long n);
+            static void allocate_mem(struct node* prev,struct node* here,size_t size);
+            static node* head;
+            static node* tail;
+public:
+        static void* find_best(size_t size);
+        static int free_memory(void* address);
+        static void printList();
+        static void print(unsigned long n);
 
         };
+
 
 #ifdef __cplusplus
 }

@@ -79,8 +79,7 @@ void *PCB::allocatePCB() {
         inBlocks++;
     }
     inBlocks*=MEM_BLOCK_SIZE;
-    MemoryAllocator* mem = MemoryAllocator::getAllocator();
-    void* retAdr = mem->mem_alloc((size_t) inBlocks);
+    void* retAdr = MemoryAllocator::mem_alloc((size_t) inBlocks);
     long* header = (long*) retAdr;
     inBlocks/=MEM_BLOCK_SIZE;
     *header = inBlocks;

@@ -6,15 +6,15 @@ Sem::Sem(int init) {
     waiting_PCB = PCB_List();
 }
 void Sem::wait() {
-    //Interrupt::lock();
+//    Interrupt::lock();
     if(--count<0)block();
-    //Interrupt::unlock();
+//    Interrupt::unlock();
 }
 
 void Sem::signal() {
-    //Interrupt::lock();
+//    Interrupt::lock();
     if(++count<=0)unblock();
-    //Interrupt::unlock();
+//    Interrupt::unlock();
 }
 
 int Sem::value() {
@@ -24,7 +24,6 @@ int Sem::value() {
 void Sem::block() {
     waiting_PCB.put(PCB::running);
     PCB::running->setBlocked(true);
-    //thread_dispatch();
     PCB::dispatch();
 }
 
@@ -42,8 +41,7 @@ void *Sem::allocateSem() {
         inBlocks++;
     }
     inBlocks*=MEM_BLOCK_SIZE;
-    MemoryAllocator* mem = MemoryAllocator::getAllocator();
-    void* retAdr = mem->mem_alloc((size_t) inBlocks);
+    void* retAdr = MemoryAllocator::mem_alloc((size_t) inBlocks);
     long* header = (long*) retAdr;
     inBlocks/=MEM_BLOCK_SIZE;
     *header = inBlocks;
