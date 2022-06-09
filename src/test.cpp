@@ -41,7 +41,7 @@ void init(){
     Interrupt::w_stvec((uint64) &Interrupt::callRoutine);
     Thread startThread(&medium, nullptr);
     startThread.start();
-    PCB::sleeping_list = new PCB_List;
+    //PCB::sleeping_list = new PCB_List();
 //    Thread waitingThread(&medium, nullptr);
 //    waitingThread.start();
 //    PutCharThread* putCharThread =new PutCharThread();
@@ -54,6 +54,7 @@ void init(){
 //    putCharThread->start();
 //    getCharThread->start();
     //Interrupt::unlock();
+
 
 }
 //#include "../h/Threads_C_API_test.hpp" // zadatak 2, niti C API i sinhrona promena konteksta

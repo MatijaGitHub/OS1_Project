@@ -39,7 +39,7 @@ void Interrupt::handleSysCall() {
           w_scausei(sscause);
          w_sepc(sepc);
         }
-        mc_sip(SIP_SSIP);
+       mc_sip(SIP_SSIP);
     }
     else if(scause == 0x8000000000000009UL){
 //        int irq = plic_claim();
