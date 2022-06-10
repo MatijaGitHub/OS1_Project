@@ -25,6 +25,7 @@ public:
     void putTime(PCB* pcb,time_t timeLeft);
     time_t getTimeLeft();
     void decTime();
+    void setNull();
 
 
 

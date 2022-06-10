@@ -67,8 +67,9 @@ void PCB::start() {
         running->setId('m');
     }
     else {
-        Scheduler::put(this);
         this->setId('0' + PCB::id_cnt++);
+        Scheduler::put(this);
+
     }
 }
 

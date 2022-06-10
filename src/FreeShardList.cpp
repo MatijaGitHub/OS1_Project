@@ -55,7 +55,7 @@ void FreeShardList::allocate_mem(struct node* prev, struct node *here, size_t si
         else{
 
             prev->next = here->next;
-            here->next = nullptr;
+            //here->next = nullptr;
 
         }
     }
@@ -68,6 +68,9 @@ void FreeShardList::allocate_mem(struct node* prev, struct node *here, size_t si
         here->mem_free_block = (void*)((size_t)prevMemBlock+size);
         here->next = prevNext;
         if(prev == nullptr) head = here;
+        else{
+            prev->next = here;
+        }
         if(here->next == nullptr) tail = here;
     }
 }
@@ -112,7 +115,7 @@ int FreeShardList::free_memory(void *address) {
         prev = curr;
         curr = curr->next;
     }
-    if((uint64)address < (uint64)curr->mem_free_block) {
+    if(adrStart < curr->mem_free_block) {
         if (prev == nullptr) {
             if ( (uint64)adrStart + (uint64)size ==  (uint64)curr->mem_free_block) {
                 node *newHead = (node *) adrStart;

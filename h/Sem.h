@@ -8,7 +8,7 @@ extern "C" {
 class Sem{
 private:
     int count;
-    PCB_List waiting_PCB;
+    PCB_List* waiting_PCB;
 public:
     static void* allocateSem();
     Sem(int init);

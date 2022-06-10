@@ -24,22 +24,22 @@ void Interrupt::handleSysCall() {
     }
     else if(scause == 0x8000000000000001UL){
         //__putc('a');
-        PCB::sleeping_list->decTime();
-        while (PCB::sleeping_list->getTimeLeft() == 0){
-            PCB* pcb = PCB::sleeping_list->get();
-            pcb->setSleeping(false);
-            Scheduler::put(pcb);
-        }
-        PCB::timeLeft++;
-        if(PCB::timeLeft >= PCB::running->getTimeSlice()){
-          uint64 sepc = r_sepc();
-          uint64 sscause = r_scausei();
-          PCB::timeLeft = 0;
-          PCB::dispatch();
-          w_scausei(sscause);
-         w_sepc(sepc);
-        }
-       mc_sip(SIP_SSIP);
+//        PCB::sleeping_list->decTime();
+//        while (PCB::sleeping_list->getTimeLeft() == 0){
+//            PCB* pcb = PCB::sleeping_list->get();
+//            pcb->setSleeping(false);
+//            Scheduler::put(pcb);
+//        }
+//        PCB::timeLeft++;
+//        if(PCB::timeLeft >= PCB::running->getTimeSlice()){
+//          uint64 sepc = r_sepc();
+//          uint64 sscause = r_scausei();
+//          PCB::timeLeft = 0;
+//          PCB::dispatch();
+//          w_scausei(sscause);
+//         w_sepc(sepc);
+//        }
+           mc_sip(SIP_SSIP);
     }
     else if(scause == 0x8000000000000009UL){
 //        int irq = plic_claim();
@@ -113,7 +113,13 @@ void Interrupt::callSys(uint64 opCode) {
             return;
         }
         *(PCB*)(*(thread_t*)handle)->PCB = PCB((PCB::Body)body,(void*)args,(uint64*)stac,DEFAULT_TIME_SLICE);
-        Scheduler::put((PCB*)(*(thread_t*)handle)->PCB);
+        //PCB::timeLeft = 0;
+        if(PCB::running == nullptr){
+            PCB::running = (PCB*)(*(thread_t*)handle)->PCB;
+        } else{
+            Scheduler::put((PCB*)(*(thread_t*)handle)->PCB);
+        }
+        //PCB::dispatch();
         res = 0;
         __asm__ volatile("mv a0,%0" : : "r"(res));
         return;
