@@ -23,39 +23,33 @@ void Interrupt::handleSysCall() {
 
     }
     else if(scause == 0x8000000000000001UL){
-        //__putc('a');
-//        PCB::sleeping_list->decTime();
-//        while (PCB::sleeping_list->getTimeLeft() == 0){
-//            PCB* pcb = PCB::sleeping_list->get();
-//            pcb->setSleeping(false);
-//            Scheduler::put(pcb);
-//        }
-//        PCB::timeLeft++;
-//        if(PCB::timeLeft >= PCB::running->getTimeSlice()){
-//          uint64 sepc = r_sepc();
-//          uint64 sscause = r_scausei();
-//          PCB::timeLeft = 0;
-//          PCB::dispatch();
-//          w_scausei(sscause);
-//         w_sepc(sepc);
-//        }
+        PCB::sleeping_list->decTime();
+        while (PCB::sleeping_list->getTimeLeft() == 0){
+            PCB* pcb = PCB::sleeping_list->get();
+            pcb->setSleeping(false);
+            Scheduler::put(pcb);
+        }
+        PCB::timeLeft++;
+        if(PCB::timeLeft >= PCB::running->getTimeSlice()){
+          uint64 sepc = r_sepc();
+          uint64 sscause = r_scausei();
+          PCB::timeLeft = 0;
+          PCB::dispatch();
+          w_scausei(sscause);
+         w_sepc(sepc);
+        }
            mc_sip(SIP_SSIP);
     }
     else if(scause == 0x8000000000000009UL){
-//        int irq = plic_claim();
-//        if(irq == CONSOLE_IRQ){
-//            while (*((char *)CONSOLE_STATUS) & CONSOLE_RX_STATUS_BIT){
-//                char c = (*(char *) CONSOLE_RX_DATA);
-//                Cons::inputBuffer->put(c);
-//                if(Cons::inputBuffer->getSize() == Cons::inputBuffer->getMaxSize()){
-//                    __putc('f');
-//                } else {
-//                    __putc('i');
-//                }
-//            }
-//        }
-//        plic_complete(irq);
-        console_handler();
+        int irq = plic_claim();
+        if(irq == CONSOLE_IRQ){
+            while (*((char *)CONSOLE_STATUS) & CONSOLE_RX_STATUS_BIT){
+                char c = (*(char *) CONSOLE_RX_DATA);
+                Cons::inputBuffer->put(c);
+            }
+        }
+        plic_complete(irq);
+        //console_handler();
     }
 
 }
@@ -214,8 +208,7 @@ void Interrupt::callSys(uint64 opCode) {
     }
     else if(opCode == 0x41){
         uint64 chr;
-        Cons* singleton = Cons::getConsole();
-        char c = singleton->inputBuffer->get();
+        char c = Cons::inputBuffer->get();
         chr = (uint64)c;
         __asm__ volatile("mv a0,%0" : : "r"(chr));
         return;
@@ -223,8 +216,8 @@ void Interrupt::callSys(uint64 opCode) {
     else if(opCode == 0x42){
         uint64 chr;
         __asm__ volatile ("mv %0,a1" : "=r"(chr));
-        Cons::getConsole()->outputBuffer->put((char)chr);
-        PutCharThread::waitForPutSignal->signal();
+        Cons::outputBuffer->put((char)chr);
+        //PutCharThread::waitForPutSignal->signal();
         return;
 
     }

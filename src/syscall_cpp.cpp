@@ -153,7 +153,7 @@ char Console::getc() {
 }
 
 void Console::putc(char c) {
-    Interrupt::lock();
+//    Interrupt::lock();
     ::putc(c);
-    Interrupt::unlock();
+//    Interrupt::unlock();
 }

@@ -13,49 +13,28 @@ typedef struct {
 
 void medium(void* args){
     while (true){
-        __putc('a');
+       // Thread::dispatch();
     }
 }
-class Test : public Thread{
-protected:
-    void run() override{
-        Console::putc('g');
-    }
-public:
-    Test() : Thread(){
 
-    }
-};
-class PeriodicTest : public PeriodicThread{
-protected:
-    void periodicActivation() override{
-        Console::putc('g');
-    }
-public:
-    PeriodicTest(time_t t) : PeriodicThread(t){
-
-    }
-
-};
 void init(){
     Interrupt::w_stvec((uint64) &Interrupt::callRoutine);
     Thread* startThread = new Thread(&medium, nullptr);
     startThread->start();
-//    thread_t  main;
-//    thread_create(&main,medium, nullptr);
-    //PCB::sleeping_list = new PCB_List();
+    PCB::sleeping_list = new PCB_List();
 //    Thread waitingThread(&medium, nullptr);
 //    waitingThread.start();
-//    PutCharThread* putCharThread =new PutCharThread();
-//    GetCharThread* getCharThread = new GetCharThread();
-//    Cons::singleton = new Cons();
-//    Cons::outputBuffer = new CharBuffer(128);
-//    Cons::inputBuffer = new CharBuffer(128);
-//    PutCharThread::waitForPutSignal = new Sem(0);
-//    GetCharThread::waitForGetSignal = new Sem(0);
-//    putCharThread->start();
-//    getCharThread->start();
-    //Interrupt::unlock();
+    PutCharThread* putCharThread =new PutCharThread();
+    GetCharThread* getCharThread = new GetCharThread();
+    Cons::singleton = new Cons();
+    Cons::outputBuffer = new CharBuffer(128);
+    Cons::inputBuffer = new CharBuffer(128);
+    PutCharThread::waitForPutSignal = new Sem(0);
+    GetCharThread::waitForGetSignal = new Sem(0);
+    putCharThread->start();
+   getCharThread->start();
+//    initSems();
+    Interrupt::unlock();
 
 
 }
@@ -81,8 +60,14 @@ void userMain() {
 }
 int main(){
     init();
-    userMain();
-    //while (true){}
+    //userMain();
+    Console::putc('A');
+    Console::putc('D');
+    while (true){
+        char c = Console::getc();
+        if(c == 2) __putc('!');
+        else Console::putc(c);
+    }
     return 0;
 
 

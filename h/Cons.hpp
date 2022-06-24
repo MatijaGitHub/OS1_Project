@@ -39,10 +39,9 @@ public:
 private:
     void run() override{
         while (true){
-
-            waitForPutSignal->wait();
             while ((*((char *) CONSOLE_STATUS) & CONSOLE_TX_STATUS_BIT)) {
-                *((char *) CONSOLE_TX_DATA) = Cons::outputBuffer->get();
+                char c = Cons::outputBuffer->get();
+                *((char *) CONSOLE_TX_DATA) = c;
             }
 
 
@@ -59,7 +58,7 @@ public:
 protected:
     void run() override{
         while (true){
-
+            Thread::dispatch();
 
 
 

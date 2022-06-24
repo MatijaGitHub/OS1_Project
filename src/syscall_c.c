@@ -102,14 +102,28 @@ int time_sleep (time_t time){
     int res = (int) callSys(0x31,(void *)argsP,1);
     return res;
 }
+sem_t getSem,putSem,mutexPut,mutexGet;
+void initSems(){
+    sem_open(&getSem,0);
+    sem_open(&putSem,128);
+    sem_open(&mutexPut,1);
+    sem_open(&mutexGet,1);
 
+}
 char getc (){
-    return  (char )callSys(0x41,0,0);
+
+    char c =  (char )callSys(0x41,0,0);
+
+    return  c;
 }
 void putc (char c){
     struct args arguments;
     arguments.arg1 = (uint64)c;
     struct args* argsP = &arguments;
+
+
+
     callSys(0x42,(void *)argsP,1);
+
 
 }
