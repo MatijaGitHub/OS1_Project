@@ -4,7 +4,8 @@
 
 class CharBuffer{
 private:
-    Sem* mutex;
+    Sem* mutexGet;
+    Sem* mutexPut;
     Sem* getSem;
     Sem* putSem;
     int head;

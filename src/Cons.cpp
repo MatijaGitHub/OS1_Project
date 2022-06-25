@@ -4,11 +4,11 @@
 
 char CharBuffer::get() {
    getSem->wait();
-    mutex->wait();
+    mutexGet->wait();
     char c = buffer[head];
     head = (head + 1)%size;
     currSize--;
-    mutex->signal();
+    mutexGet->signal();
    putSem->signal();
     return c;
 }
@@ -16,11 +16,11 @@ char CharBuffer::get() {
 void CharBuffer::put(char c) {
     if(this->currSize >= this->size) return;
     putSem->wait();
-    mutex->wait();
+    mutexPut->wait();
     buffer[tail] = c;
     tail = (tail + 1)%size;
     currSize++;
-    mutex->signal();
+    mutexPut->signal();
     getSem->signal();
 
 }
@@ -30,7 +30,8 @@ int CharBuffer::getSize() {
 }
 
 CharBuffer::CharBuffer(int size) {
-    mutex = new Sem(1);
+    mutexGet = new Sem(1);
+    mutexPut = new Sem(1);
     getSem = new Sem(0);
     putSem = new Sem(size);
     this->size = size;
@@ -41,7 +42,8 @@ CharBuffer::CharBuffer(int size) {
 }
 
 CharBuffer::~CharBuffer() {
-    delete mutex;
+    delete mutexGet;
+    delete mutexPut;
     delete getSem;
     delete putSem;
     delete buffer;

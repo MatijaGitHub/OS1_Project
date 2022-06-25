@@ -5,7 +5,7 @@
 #include "../h/Cons.hpp"
 
 uint64 Interrupt::prevSstatus = 2;
-int Interrupt::lock_var = 1;
+int Interrupt::lock_var = 0;
 Sem* PutCharThread::waitForPutSignal;
 Sem* GetCharThread::waitForGetSignal;
 void Interrupt::handleSysCall() {
@@ -41,15 +41,15 @@ void Interrupt::handleSysCall() {
            mc_sip(SIP_SSIP);
     }
     else if(scause == 0x8000000000000009UL){
-        int irq = plic_claim();
-        if(irq == CONSOLE_IRQ){
-            while (*((char *)CONSOLE_STATUS) & CONSOLE_RX_STATUS_BIT){
-                char c = (*(char *) CONSOLE_RX_DATA);
-                Cons::inputBuffer->put(c);
-            }
-        }
-        plic_complete(irq);
-        //console_handler();
+//        int irq = plic_claim();
+//        if(irq == CONSOLE_IRQ){
+//            while (*((char *)CONSOLE_STATUS) & CONSOLE_RX_STATUS_BIT){
+//                char c = (*(char *) CONSOLE_RX_DATA);
+//                Cons::inputBuffer->put(c);
+//            }
+//        }
+//        plic_complete(irq);
+        console_handler();
     }
 
 }
@@ -224,7 +224,7 @@ void Interrupt::callSys(uint64 opCode) {
 }
 
 inline void Interrupt::ms_status(uint64 mask) {
-    __asm__ volatile("csrs sstatus, %[mask]" : : [mask]"r"(mask));
+    __asm__ volatile("csrs sie, %[mask]" : : [mask]"r"(mask));
 }
 
 
@@ -345,7 +345,7 @@ inline void Interrupt::mc_sip(uint64 mask) {
 }
 
 inline void Interrupt::mc_status(uint64 mask) {
-    __asm__ volatile("csrc sstatus, %[mask]" : : [mask]"r"(mask));
+    __asm__ volatile("csrc sie, %[mask]" : : [mask]"r"(mask));
 
 }
 
