@@ -12,7 +12,8 @@ void *FreeShardList::find_best(size_t size) {
         tail= head;
     }
     if((long)size < 0) return nullptr;
-    long min_shard_dif = head->size - size;
+
+    long min_shard_dif = head->size  - size;
     void* start_adr = head->mem_free_block;
     node* toReplace = head;
     node* pom = head;
@@ -82,14 +83,14 @@ void FreeShardList::printList() {
 
         pom = pom->next;
     }
-    __putc('\n');
+    putc('\n');
 }
 
 void FreeShardList::print(unsigned long n){
     // If number is smaller than 0, put a - sign
     // and change number to positive
     if (n < 0) {
-        __putc('-');
+        putc('-');
         n = -n;
     }
 
@@ -98,7 +99,7 @@ void FreeShardList::print(unsigned long n){
         print(n/10);
 
     // Print the last digit
-    __putc(n%10 + '0');
+    putc(n%10 + '0');
 }
 
 int FreeShardList::free_memory(void *address) {
@@ -110,7 +111,7 @@ int FreeShardList::free_memory(void *address) {
     node* prev = nullptr;
     node* curr = head;
     if((void*)curr == adrStart) return -3;
-    while(adrStart > curr->mem_free_block && curr->next == nullptr) {
+    while(adrStart > curr->mem_free_block && curr->next != nullptr) {
         if((void*)curr == adrStart) return -3;
         prev = curr;
         curr = curr->next;
@@ -173,5 +174,14 @@ int FreeShardList::free_memory(void *address) {
 }
 
 
+long FreeShardList::toSigned(unsigned long x)
+{
+    if (x <= 2147483647)
+        return static_cast<long>(x);
 
+    if (x >= 2147483648)
+        return static_cast<long>(x - 2147483648) + 2147483648;
+
+    return -1;
+}
 

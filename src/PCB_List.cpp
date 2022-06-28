@@ -47,13 +47,15 @@ PCB *PCB_List::get() {
 }
 
 void PCB_List::putTime(PCB *pcb, time_t timeLeft) {
-    pcbnode* tmp = (pcbnode*)MemoryAllocator::mem_alloc(sizeof (pcbnode));
+    pcbnode* tmp = allocateNode();
     tmp->next = nullptr;
     tmp->PCB = pcb;
     tmp->timeLeft =timeLeft;
     if(head == nullptr){
         head = tmp;
         tail = tmp;
+        head->next = nullptr;
+        tail->next = nullptr;
         return;
     }
     pcbnode* curr = head;
@@ -65,16 +67,18 @@ void PCB_List::putTime(PCB *pcb, time_t timeLeft) {
         time+=curr->timeLeft;
     }
     if(prev == nullptr){
-        if(time < timeLeft){
+        if(time <= timeLeft){
             tmp->next = head->next;
             head->next = tmp;
             tmp->timeLeft = timeLeft - time;
+            if(tmp->next == nullptr) tail =tmp;
             return;
         } else{
             tmp->timeLeft = timeLeft;
             tmp->next = head;
             head->timeLeft -= timeLeft;
             head =tmp;
+            if(head->next->next == nullptr) tail = head->next;
             return;
         }
     }else if(curr->next == nullptr){
@@ -87,14 +91,14 @@ void PCB_List::putTime(PCB *pcb, time_t timeLeft) {
         } else{
             tmp->next = curr;
             prev->next = tmp;
-            tmp->timeLeft = timeLeft - time;
+            tmp->timeLeft = timeLeft - time + curr->timeLeft;
             curr->timeLeft-=tmp->timeLeft;
             return;
         }
     } else{
         tmp->next = curr;
         prev->next = tmp;
-        tmp->timeLeft = timeLeft - time;
+        tmp->timeLeft = timeLeft - time + curr->timeLeft;
         curr->timeLeft-=tmp->timeLeft;
         return;
     }

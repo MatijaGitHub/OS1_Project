@@ -57,6 +57,10 @@ public:
     static void popSppSpie();
     static void mc_sip(uint64 mask);
     static uint64 prevSstatus;
+    static void userMaskSoft();
+    static void userMaskHard();
+    static void userUnmaskSoft();
+    static void userUnmaskHard();
 //    static void ms_sstatus(uint64 mask);
 
     static void callSys(uint64 opCode);

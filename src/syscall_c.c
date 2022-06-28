@@ -120,9 +120,6 @@ void putc (char c){
     struct args arguments;
     arguments.arg1 = (uint64)c;
     struct args* argsP = &arguments;
-
-
-
     callSys(0x42,(void *)argsP,1);
 
 

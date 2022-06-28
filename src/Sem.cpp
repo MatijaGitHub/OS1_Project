@@ -51,6 +51,7 @@ void Sem::unblock() {
     pcb->setBlocked(false);
     pcb->unblockError = false;
     Scheduler::put(pcb);
+    //PCB::dispatch();
 }
 
 void *Sem::allocateSem() {
