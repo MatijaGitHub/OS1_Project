@@ -23,7 +23,7 @@ void *FreeShardList::find_best(size_t size) {
         prev = pom;
         pom = pom->next;
         long shard_diff = pom->size - size;
-        if((shard_diff < min_shard_dif && shard_diff >= 0)|| min_shard_dif < 0){
+        if((shard_diff <= min_shard_dif && shard_diff >= 0)|| min_shard_dif < 0){
             min_shard_dif = shard_diff;
             start_adr = pom->mem_free_block;
             toReplace = pom;

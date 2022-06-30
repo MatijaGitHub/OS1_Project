@@ -54,6 +54,7 @@ public:
     static void w_sepci(uint64 sepc);
     static uint64 r_sepc();
     static uint64 r_sepci();
+    static uint64 r_siei();
     static void popSppSpie();
     static void mc_sip(uint64 mask);
     static uint64 prevSstatus;
@@ -61,6 +62,8 @@ public:
     static void userMaskHard();
     static void userUnmaskSoft();
     static void userUnmaskHard();
+    static void switchToSystemStack();
+    static void switchToUserStack();
 //    static void ms_sstatus(uint64 mask);
 
     static void callSys(uint64 opCode);

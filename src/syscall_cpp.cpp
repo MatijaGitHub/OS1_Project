@@ -3,58 +3,32 @@
 
 
 Thread::Thread(void (*body)(void *), void *arg) {
-    //Interrupt::mc_status(Interrupt::SSTATUS_SIE);
-    //Interrupt::lock();
-    //Interrupt::userMaskSoft();
-    //this->myHandle =(thread_t) new thread_t;
     int res = thread_init(&myHandle,body,arg);
     if(res < 0){
-        __putc('!');
-        __putc('\n');
+        ::putc('!');
+        ::putc('\n');
     }
-    //Interrupt::unlock();
-    //Interrupt::userUnmaskSoft();
-    //Interrupt::ms_status(Interrupt::SSTATUS_SIE);
 }
 Semaphore::Semaphore(unsigned int init) {
-    //Interrupt::mc_status(Interrupt::SSTATUS_SIE);
-    //Interrupt::lock();
-    //Interrupt::userMaskSoft();
-//    this->myHandle =(sem_t) new sem_t;
     int res = sem_open(&myHandle,init);
     if(res < 0){
-        __putc('!');
-        __putc('\n');
+        ::putc('!');
+        ::putc('\n');
     }
-    //Interrupt::ms_status(Interrupt::SSTATUS_SIE);
-    //Interrupt::unlock();
-    //Interrupt::userUnmaskSoft();
 }
 
 int Thread::start() {
-    //Interrupt::mc_status(Interrupt::SSTATUS_SIE);
-    //Interrupt::lock();
-    //Interrupt::userMaskSoft();
     if(this->myHandle->PCB == nullptr) return -1;
     ((PCB*)this->myHandle->PCB)->start();
-    //Interrupt::ms_status(Interrupt::SSTATUS_SIE);
-    //Interrupt::unlock();
-    //Interrupt::userUnmaskSoft();
     return 0;
 }
 
 void Thread::dispatch() {
-    //Interrupt::mc_status(Interrupt::SSTATUS_SIE);
-    //Interrupt::lock();
     thread_dispatch();
-    //Interrupt::ms_status(Interrupt::SSTATUS_SIE);
-    //Interrupt::unlock();
 }
 
 int Thread::sleep(time_t time) {
-    //Interrupt::lock();
     int res = time_sleep(time);
-    //Interrupt::unlock();
     return res;
 }
 
@@ -84,16 +58,11 @@ PeriodicThread::PeriodicThread(time_t period) : Thread(&periodicWrapper,new peri
 }
 
 Thread::Thread() {
-   //Interrupt::lock();
-    //Interrupt::userMaskSoft();
-    //this->myHandle =(thread_t) new thread_t;
     int res = thread_init(&myHandle,&wrapper, this);
     if(res < 0){
-        __putc('!');
-        __putc('\n');
+        ::putc('!');
+        ::putc('\n');
     }
-    //Interrupt::unlock();
-    //Interrupt::userUnmaskSoft();
 }
 
 
@@ -102,44 +71,20 @@ Thread::~Thread() {
 }
 
 void* operator new(size_t n){
-    //Interrupt::mc_status(Interrupt::SSTATUS_SIE);
-    //Interrupt::lock();
-    //Interrupt::userMaskSoft();
     void* ret =  mem_alloc(n);
-    //Interrupt::ms_status(Interrupt::SSTATUS_SIE);
-    //Interrupt::userUnmaskSoft();
-   //Interrupt::unlock();
     return ret;
 }
 void* operator new[](size_t n){
-    //Interrupt::mc_status(Interrupt::SSTATUS_SIE);
-    //Interrupt::lock();
-    //Interrupt::userMaskSoft();
     void* ret =  mem_alloc(n);
-    //Interrupt::ms_status(Interrupt::SSTATUS_SIE);
-   //Interrupt::unlock();
-    //Interrupt::userUnmaskSoft();
     return ret;
 }
 
 void operator delete (void* p) noexcept{
-    //Interrupt::mc_status(Interrupt::SSTATUS_SIE);
-    //Interrupt::lock();
-   // Interrupt::userMaskSoft();
     mem_free(p);
-    //Interrupt::ms_status(Interrupt::SSTATUS_SIE);
-    //Interrupt::unlock();
-    //Interrupt::userUnmaskSoft();
 }
 
 void operator delete[] (void * p) noexcept{
-    //Interrupt::mc_status(Interrupt::SSTATUS_SIE);
-    //Interrupt::lock();
-   // Interrupt::userMaskSoft();
     mem_free(p);
-    //Interrupt::ms_status(Interrupt::SSTATUS_SIE);
-    //Interrupt::unlock();
-   // Interrupt::userUnmaskSoft();
 }
 
 
@@ -147,29 +92,21 @@ void operator delete[] (void * p) noexcept{
 
 
 int Semaphore::wait() {
-    //Interrupt::lock();
     int res = sem_wait(this->myHandle);
-    //Interrupt::ms_status(Interrupt::SSTATUS_SIE);
     return res;
 }
 
 int Semaphore::signal() {
-    //Interrupt::mc_status(Interrupt::SSTATUS_SIE);
     int res = sem_signal(this->myHandle);
-    //Interrupt::ms_status(Interrupt::SSTATUS_SIE);
     return res;
 }
 
 
 char Console::getc() {
-    //Interrupt::lock();
     char c= ::getc();
-    //Interrupt::unlock();
     return c;
 }
 
 void Console::putc(char c) {
-   //Interrupt::lock();
     ::putc(c);
-    //Interrupt::unlock();
 }

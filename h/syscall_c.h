@@ -56,10 +56,10 @@ int sem_close (sem_t handle);
 int sem_wait (sem_t id);
 int sem_signal (sem_t id);
 int time_sleep (time_t);
-void initSems();
 const int EOF = -1;
 char getc ();
 void putc (char);
+void switchToUserMode();
 #ifdef __cplusplus
 }
 #endif

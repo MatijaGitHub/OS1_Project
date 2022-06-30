@@ -1,8 +1,7 @@
 #ifndef _syscall_cpp
 #define _syscall_cpp
 #include "syscall_c.h"
-#include "../lib/console.h"
-#include "../h/PCB.h"
+#include "./PCB.h"
 
 //void* ::operator new (size_t n);
 //void ::operator delete (void* p);

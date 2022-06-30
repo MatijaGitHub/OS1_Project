@@ -42,6 +42,7 @@ int Sem::value() {
 void Sem::block() {
     waiting_PCB->put(PCB::running);
     PCB::running->setBlocked(true);
+    PCB::timeLeft = 0;
     PCB::dispatch();
 }
 

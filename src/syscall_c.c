@@ -31,7 +31,7 @@ int thread_create (thread_t* handle, void(*start_routine)(void*), void* arg){
     arguments.arg1 = (uint64) handle;
     arguments.arg2 = (uint64) start_routine;
     arguments.arg3 = (uint64) arg;
-    void* adr = mem_alloc(DEFAULT_STACK_SIZE);
+    void* adr = mem_alloc(DEFAULT_STACK_SIZE * 2);
     arguments.arg4 = (uint64)adr;
     if(arguments.arg4 == 0) return -2;
     struct args* argsP = &arguments;
@@ -45,7 +45,7 @@ int thread_init (thread_t* handle, void(*start_routine)(void*), void* arg){
     arguments.arg1 = (uint64) handle;
     arguments.arg2 = (uint64) start_routine;
     arguments.arg3 = (uint64) arg;
-    void* adr = mem_alloc(DEFAULT_STACK_SIZE);
+    void* adr = mem_alloc(DEFAULT_STACK_SIZE * 2);
     arguments.arg4 = (uint64)adr;
     if(arguments.arg4 == 0) return -2;
     struct args* argsP = &arguments;
@@ -102,14 +102,6 @@ int time_sleep (time_t time){
     int res = (int) callSys(0x31,(void *)argsP,1);
     return res;
 }
-sem_t getSem,putSem,mutexPut,mutexGet;
-void initSems(){
-    sem_open(&getSem,0);
-    sem_open(&putSem,128);
-    sem_open(&mutexPut,1);
-    sem_open(&mutexGet,1);
-
-}
 char getc (){
 
     char c =  (char )callSys(0x41,0,0);
@@ -123,4 +115,8 @@ void putc (char c){
     callSys(0x42,(void *)argsP,1);
 
 
+}
+
+void switchToUserMode(){
+    callSys(0x50,0,0);
 }

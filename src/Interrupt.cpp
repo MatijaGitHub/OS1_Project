@@ -6,9 +6,8 @@
 
 uint64 Interrupt::prevSstatus = 2;
 int Interrupt::lock_var = 1;
-Sem* PutCharThread::waitForPutSignal;
-Sem* GetCharThread::waitForGetSignal;
 void Interrupt::handleSysCall() {
+    //switchToSystemStack();
 
     uint64 scause = r_scausei();
     if(scause == 0x0000000000000009UL || scause == 0x0000000000000008UL) {
@@ -20,10 +19,15 @@ void Interrupt::handleSysCall() {
         w_scausei(sscause);
         w_sepci(sepc);
         mc_sip(SIP_SSIP);
-        return;
+
 
     }
     else if(scause == 0x8000000000000001UL){
+        uint64 sie = r_siei();
+        if((sie & 2) == 0){
+            mc_sip(SIP_SSIP);
+            return;
+        }
         PCB::sleeping_list->decTime();
         while (PCB::sleeping_list->getTimeLeft() == 0){
             PCB* pcb = PCB::sleeping_list->get();
@@ -43,16 +47,21 @@ void Interrupt::handleSysCall() {
     }
     else if(scause == 0x8000000000000009UL){
         int irq = plic_claim();
-        if(irq == CONSOLE_IRQ){
+        if(irq == CONSOLE_IRQ && Cons::inputBuffer->getSize() < Cons::inputBuffer->getMaxSize()){
             while (*((char *)CONSOLE_STATUS) & CONSOLE_RX_STATUS_BIT){
                 char c = (*(char *) CONSOLE_RX_DATA);
                 Cons::inputBuffer->put(c);
             }
         }
         plic_complete(irq);
-       //console_handler();
+        mc_sip(SIP_SEIP);
     }
-
+    else mc_sip(SIP_SSIP);
+//    else if(scause == 0x0000000000000002UL){
+////        Cons::outputBuffer->put('!');
+////        mc_sip(SIP_SSIP);
+//    }
+    //switchToUserStack();
 }
 
 void Interrupt::callSys(uint64 opCode) {
@@ -82,6 +91,8 @@ void Interrupt::callSys(uint64 opCode) {
         __asm__ volatile ("mv %0,a2" : "=r"(body));
         __asm__ volatile ("mv %0,a6" : "=r"(args));
         __asm__ volatile ("mv %0,a7" : "=r"(stac));
+//        __asm__ volatile ("ld %0,104(s2)" : "=r"(args));
+//        __asm__ volatile ("ld %0,112(s2)" : "=r"(stac));
 
 
         (*(thread_t*)handle)->PCB = PCB::allocatePCB();
@@ -101,6 +112,8 @@ void Interrupt::callSys(uint64 opCode) {
         __asm__ volatile ("mv %0,a2" : "=r"(body));
         __asm__ volatile ("mv %0,a6" : "=r"(args));
         __asm__ volatile ("mv %0,a7" : "=r"(stac));
+//        __asm__ volatile ("ld %0, 104(s2)" : "=r"(args));
+//        __asm__ volatile ("ld %0, 112(s2)" : "=r"(stac));
         (*(thread_t*)handle)->PCB = PCB::allocatePCB();
         if((*(thread_t*)handle)->PCB == 0){
             res = -1;
@@ -221,6 +234,9 @@ void Interrupt::callSys(uint64 opCode) {
         //PutCharThread::waitForPutSignal->signal();
         return;
 
+    }
+    else if(opCode == 0x50){
+        mc_status(SSTATUS_SPP);
     }
 }
 
@@ -366,11 +382,29 @@ void Interrupt::userUnmaskHard(){
     __asm__ volatile("csrs sie, %[mask]" : : [mask]"r"(mask));
 }
 
-//void Interrupt::ms_sstatus(uint64 mask) {
-//    __asm__ volatile("csrc sip, %[mask]" : : [mask]"r"(mask));
-//
-//}
+void Interrupt::switchToSystemStack() {
+    if(PCB::running == nullptr)return;
+    uint64 sp, ssp = PCB::running->getSSP();
+    __asm__ volatile("mv %[sp],sp" :  [sp]"=r"(sp));
+    PCB::running->setSP(sp);
+    __asm__ volatile("mv sp, %[ssp]" : : [ssp]"r"(ssp));
 
+}
+
+void Interrupt::switchToUserStack() {
+    if(PCB::running == nullptr) return;
+    uint64 sp = PCB::running->getSP();
+    uint64 ssp;
+    __asm__ volatile("mv %[ssp] , sp" : [ssp]"=r"(ssp));
+    PCB::running->setSSP(ssp);
+    __asm__ volatile("mv sp, %[sp]" : : [sp]"r"(sp));
+}
+
+inline uint64 Interrupt::r_siei() {
+    uint64 sie;
+    __asm__ volatile ("csrr %[sie],sie":  [sie]"=r"(sie));
+    return sie;
+}
 
 
 

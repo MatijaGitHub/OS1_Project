@@ -4,7 +4,7 @@
 
 char CharBuffer::get() {
    getSem->wait();
-    mutexGet->wait();
+   mutexGet->wait();
     char c = buffer[head];
     head = (head + 1)%size;
     currSize--;
@@ -14,7 +14,7 @@ char CharBuffer::get() {
 }
 
 void CharBuffer::put(char c) {
-    if(this->currSize >= this->size) return;
+    //if(this->currSize >= this->size) return;
     putSem->wait();
     mutexPut->wait();
     buffer[tail] = c;
@@ -56,12 +56,7 @@ int CharBuffer::getMaxSize() {
 
 CharBuffer* Cons::inputBuffer;
 CharBuffer* Cons::outputBuffer;
-Cons* Cons::singleton;
 Cons::Cons() {
 
 }
 
-Cons *Cons::getConsole() {
-
-    return Cons::singleton;
-}

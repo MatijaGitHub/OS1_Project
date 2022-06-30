@@ -28,12 +28,10 @@ public:
     Cons();
     static CharBuffer* inputBuffer;
     static CharBuffer* outputBuffer;
-    static Cons* getConsole();
 };
 
 class PutCharThread : public Thread{
 public:
-    static Sem* waitForPutSignal;
     PutCharThread() : Thread(){
 
     }
@@ -44,15 +42,12 @@ private:
                 char c = Cons::outputBuffer->get();
                 *((char *) CONSOLE_TX_DATA) = c;
             }
-
-
         }
     }
 };
 
 class GetCharThread : public Thread{
 public:
-    static Sem* waitForGetSignal;
     GetCharThread() : Thread(){
 
     }

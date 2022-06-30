@@ -6,13 +6,12 @@
 #include "../h/MemoryAllocator.h"
 
 
-
-
 class PCB{
 public:
     struct Context{
         uint64 ra;
         uint64 sp;
+        uint64 ssp;
     };
     static PCB_List* sleeping_list;
     using Body = void(*)(void *);
@@ -39,11 +38,19 @@ public:
     void setTimeSlice(uint64 timeSlice);
     static void sleep(time_t time);
     bool unblockError;
+    static bool isMain;
+    static uint64 * allocateSystemStack();
+    uint64 getSSP();
+    uint64 getSP();
+    void setSSP(uint64 ssp);
+    void setSP(uint64 sp);
+
 
 
 private:
     PCB* next_scheduler;
     uint64 * stack;
+    uint64 * system_stack;
     void* args;
     Context context;
     uint64 timeSlice;
@@ -54,6 +61,8 @@ private:
     Body body;
     static void threadWrapper();
     static void contextSwitch(Context* old,Context* new_t);
+    static void ms_status(uint64 mask);
+    static void mc_status(uint64 mask);
 
 };
 
