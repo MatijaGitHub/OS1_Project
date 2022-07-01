@@ -17,19 +17,8 @@ void PCB::setNext(PCB *next) {
 
 PCB::PCB(Body body,void* args,uint64 * stac,uint64 timeSlice) {
     next_scheduler = nullptr;
-//    if(isMain){
-//        system_stack = stac;
-//        context.ssp = (uint64) &system_stack[DEFAULT_STACK_SIZE];
-//        stack = nullptr;
-//        context.sp = 0;
-//        isMain = false;
-//    }
-//    else{
-        stack = stac;
-        context.sp = (uint64) &stack[DEFAULT_STACK_SIZE * 2];
-//        system_stack = allocateSystemStack();
-//        context.ssp = (uint64) &system_stack[DEFAULT_STACK_SIZE];
-
+    stack = stac;
+    context.sp = (uint64) &stack[DEFAULT_STACK_SIZE * 2];
     context.ra = (uint64) &threadWrapper;
     this->body = body;
     this->timeSlice = timeSlice;
@@ -181,6 +170,10 @@ inline void PCB::ms_status(uint64 mask) {
 }
 inline void PCB::mc_status(uint64 mask) {
     __asm__ volatile("csrc sstatus, %[mask]" : : [mask]"r"(mask));
+}
+
+PCB::~PCB() {
+    delete stack;
 }
 
 

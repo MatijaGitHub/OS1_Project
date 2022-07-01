@@ -101,10 +101,14 @@ int Semaphore::signal() {
     return res;
 }
 
+Semaphore::~Semaphore() {
+    sem_close(this->myHandle);
+    delete this->myHandle;
+}
+
 
 char Console::getc() {
     char c = ::getc();
-    if(c  != 'a') ::putc('!');
     return c;
 }
 

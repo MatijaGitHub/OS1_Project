@@ -12,6 +12,7 @@ private:
 public:
     static void* allocateSem();
     Sem(int init);
+    ~Sem();
     void wait();
     void signal();
     int value();

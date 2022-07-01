@@ -77,37 +77,12 @@ void FreeShardList::allocate_mem(struct node* prev, struct node *here, size_t si
     }
 }
 
-void FreeShardList::printList() {
-    node* pom = head;
-    while(pom!= nullptr){
-        print((unsigned long )pom->size);
-
-        pom = pom->next;
-    }
-    putc('\n');
-}
-
-void FreeShardList::print(unsigned long n){
-    // If number is smaller than 0, put a - sign
-    // and change number to positive
-    if (n < 0) {
-        putc('-');
-        n = -n;
-    }
-
-    // Remove the last digit and recur
-    if (n/10)
-        print(n/10);
-
-    // Print the last digit
-    putc(n%10 + '0');
-}
 
 int FreeShardList::free_memory(void *address) {
 
     int result = 0;
     void* adrStart = (void*)((long*)address - 1);
-    if(adrStart < HEAP_START_ADDR || adrStart> HEAP_END_ADDR) return -1;
+    if(adrStart < HEAP_START_ADDR || adrStart>= HEAP_END_ADDR) return -1;
     size_t size = MEM_BLOCK_SIZE* (*(long*)adrStart);
     node* prev = nullptr;
     node* curr = head;
@@ -175,14 +150,4 @@ int FreeShardList::free_memory(void *address) {
 }
 
 
-long FreeShardList::toSigned(unsigned long x)
-{
-    if (x <= 2147483647)
-        return static_cast<long>(x);
-
-    if (x >= 2147483648)
-        return static_cast<long>(x - 2147483648) + 2147483648;
-
-    return -1;
-}
 

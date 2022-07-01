@@ -18,6 +18,7 @@ public:
     PCB* getNext();
     void setNext(PCB* next);
     PCB(Body body,void * args,uint64 * stac,uint64 timeSlice);
+    ~PCB();
     static PCB* running;
     void setFinished(bool f);
     bool checkFinished();

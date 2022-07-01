@@ -13,13 +13,16 @@ void Interrupt::handleSysCall() {
     if(scause == 0x0000000000000009UL || scause == 0x0000000000000008UL) {
         uint64 sepc = r_sepci() + 4;
         uint64 sscause = r_scausei();
-        uint64 opCode;
-        __asm__ volatile("mv %0,a0" : "=r"(opCode));
-        callSys(opCode);
+        uint64 opCode, arg1,arg2,arg3,arg4;
+        __asm__ volatile("ld %0,80(s0)" : "=r"(opCode));
+        __asm__ volatile("ld %0,88(s0)" : "=r"(arg1));
+        __asm__ volatile("ld %0,96(s0)" : "=r"(arg2));
+        __asm__ volatile("ld %0,104(s0)" : "=r"(arg3));
+        __asm__ volatile("ld %0,112(s0)" : "=r"(arg4));
+        callSys(opCode,arg1,arg2,arg3,arg4);
         w_scausei(sscause);
         w_sepci(sepc);
         mc_sip(SIP_SSIP);
-       // __asm__ volatile("sd a0, 80(sp)");
 
 
     }
@@ -61,10 +64,9 @@ void Interrupt::handleSysCall() {
     //switchToUserStack();
 }
 
-void Interrupt::callSys(uint64 opCode) {
+void Interrupt::callSys(uint64 opCode, uint64 arg1, uint64 arg2, uint64 arg3, uint64 arg4) {
     if(opCode == 0x1){
-        uint64 size;
-        __asm__ volatile ("mv %0,a1" : "=r"(size));
+        uint64 size = arg1;
         size*=MEM_BLOCK_SIZE;
         void* retAdr = MemoryAllocator::mem_alloc((size_t) size);
         long* header = (long*) retAdr;
@@ -76,22 +78,13 @@ void Interrupt::callSys(uint64 opCode) {
 
     }
     else if(opCode == 0x2){
-        uint64 adr;
-        __asm__ volatile ("mv %0,a1" : "=r"(adr));
+        uint64 adr = arg1;
         int res = MemoryAllocator::mem_free((void*) adr);
         __asm__ volatile("mv a0,%0" : : "r"((uint64)res));
         return;
     }
     else if(opCode == 0x10){
-        uint64 handle,body,args,stac,res;
-        __asm__ volatile ("mv %0,a1" : "=r"(handle));
-        __asm__ volatile ("mv %0,a2" : "=r"(body));
-        __asm__ volatile ("mv %0,a6" : "=r"(args));
-        __asm__ volatile ("mv %0,a7" : "=r"(stac));
-//        __asm__ volatile ("ld %0,104(s2)" : "=r"(args));
-//        __asm__ volatile ("ld %0,112(s2)" : "=r"(stac));
-
-
+        uint64 handle = arg1,body = arg2,args = arg3,stac = arg4,res;
         (*(thread_t*)handle)->PCB = PCB::allocatePCB();
         if((*(thread_t*)handle)->PCB == 0){
             res = -1;
@@ -104,13 +97,7 @@ void Interrupt::callSys(uint64 opCode) {
         return;
     }
     else if(opCode == 0x11){
-        uint64 handle,body,args,stac,res;
-        __asm__ volatile ("mv %0,a1" : "=r"(handle));
-        __asm__ volatile ("mv %0,a2" : "=r"(body));
-        __asm__ volatile ("mv %0,a6" : "=r"(args));
-        __asm__ volatile ("mv %0,a7" : "=r"(stac));
-//        __asm__ volatile ("ld %0, 104(s2)" : "=r"(args));
-//        __asm__ volatile ("ld %0, 112(s2)" : "=r"(stac));
+        uint64 handle = arg1,body = arg2,args = arg3,stac = arg4,res;
         (*(thread_t*)handle)->PCB = PCB::allocatePCB();
         if((*(thread_t*)handle)->PCB == 0){
             res = -1;
@@ -118,13 +105,11 @@ void Interrupt::callSys(uint64 opCode) {
             return;
         }
         *(PCB*)(*(thread_t*)handle)->PCB = PCB((PCB::Body)body,(void*)args,(uint64*)stac,DEFAULT_TIME_SLICE);
-        //PCB::timeLeft = 0;
         if(PCB::running == nullptr){
             PCB::running = (PCB*)(*(thread_t*)handle)->PCB;
         } else{
             Scheduler::put((PCB*)(*(thread_t*)handle)->PCB);
         }
-        //PCB::dispatch();
         res = 0;
         __asm__ volatile("mv a0,%0" : : "r"(res));
         return;
@@ -144,12 +129,9 @@ void Interrupt::callSys(uint64 opCode) {
     else if(opCode == 0x13){
         PCB::timeLeft = 0;
         PCB::dispatch();
-        //return;
     }
     else if(opCode == 0x21){
-        uint64 handle,init,res;
-        __asm__ volatile ("mv %0,a1" : "=r"(handle));
-        __asm__ volatile ("mv %0,a2" : "=r"(init));
+        uint64 handle = arg1,init = arg2,res;
         (*(sem_t *)handle)->Sem = Sem::allocateSem();
         if((*(sem_t *)handle)->Sem == 0){
             res = -1;
@@ -163,8 +145,7 @@ void Interrupt::callSys(uint64 opCode) {
 
     }
     else if(opCode == 0x22){
-        uint64 handle,res;
-        __asm__ volatile ("mv %0,a1" : "=r"(handle));
+        uint64 handle = arg1,res;
         if((Sem*)((sem_t)handle)->Sem!= nullptr) {
             ((Sem *) ((sem_t ) handle)->Sem)->deblockAll();
             res = 0;
@@ -176,8 +157,7 @@ void Interrupt::callSys(uint64 opCode) {
         return;
     }
     else if(opCode == 0x23){
-        uint64 handle,res;
-        __asm__ volatile ("mv %0,a1" : "=r"(handle));
+        uint64 handle = arg1,res;
         if((Sem*)((sem_t)handle)->Sem!= nullptr) {
             ((Sem *) ((sem_t ) handle)->Sem)->wait();
             if(!PCB::running->unblockError) {
@@ -195,8 +175,7 @@ void Interrupt::callSys(uint64 opCode) {
         return;
     }
     else if(opCode == 0x24){
-        uint64 handle,res;
-        __asm__ volatile ("mv %0,a1" : "=r"(handle));
+        uint64 handle = arg1,res;
         if((Sem*)((sem_t)handle)->Sem!= nullptr) {
             ((Sem *) ((sem_t ) handle)->Sem)->signal();
             res = 0;
@@ -208,8 +187,7 @@ void Interrupt::callSys(uint64 opCode) {
         return;
 
     } else if(opCode == 0x31){
-        uint64 time,res;
-        __asm__ volatile ("mv %0,a1" : "=r"(time));
+        uint64 time = arg1,res;
         PCB::sleep((time_t) time);
         PCB::timeLeft = 0;
         PCB::dispatch();
@@ -225,10 +203,8 @@ void Interrupt::callSys(uint64 opCode) {
         return;
     }
     else if(opCode == 0x42){
-        uint64 chr;
-        __asm__ volatile ("mv %0,a1" : "=r"(chr));
+        uint64 chr = arg1;
         Cons::outputBuffer->put((char)chr);
-        //PutCharThread::waitForPutSignal->signal();
         return;
 
     }

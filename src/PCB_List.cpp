@@ -122,3 +122,21 @@ void PCB_List::setNull() {
     this->head = nullptr;
     this->tail = nullptr;
 }
+
+PCB_List::~PCB_List() {
+    if(head == nullptr) return;
+    if(head->next == nullptr){
+        delete head;
+        head = nullptr;
+        tail = nullptr;
+    }
+    pcbnode* curr = head;
+    pcbnode* tmp = curr;
+    while (curr->next != nullptr){
+        curr = curr->next;
+        delete tmp;
+        tmp = curr;
+
+    }
+    delete tmp;
+}

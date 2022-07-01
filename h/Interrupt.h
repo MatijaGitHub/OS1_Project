@@ -66,7 +66,7 @@ public:
     static void switchToUserStack();
 //    static void ms_sstatus(uint64 mask);
 
-    static void callSys(uint64 opCode);
+    static void callSys(uint64 opCode, uint64 arg1, uint64 arg2, uint64 arg3, uint64 arg4);
 };
 
 

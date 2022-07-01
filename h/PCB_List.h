@@ -20,6 +20,7 @@ private:
     struct pcbnode *head,*tail;
 public:
     PCB_List();
+    ~PCB_List();
     void put(PCB* pcb);
     PCB* get();
     void putTime(PCB* pcb,time_t timeLeft);

@@ -79,3 +79,7 @@ void Sem::deblockAll() {
         Scheduler::put(pcb);
     }
 }
+
+Sem::~Sem() {
+    delete this->waiting_PCB;
+}

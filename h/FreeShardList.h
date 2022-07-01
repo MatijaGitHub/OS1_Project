@@ -23,9 +23,7 @@ protected:
 public:
         static void* find_best(size_t size);
         static int free_memory(void* address);
-        static void printList();
-        static void print(unsigned long n);
-        static long toSigned(unsigned long x);
+
 
         };
 

@@ -9,16 +9,9 @@ extern "C" {
 #endif
 
 class MemoryAllocator{
-        private:
-        //static FreeShardList* listFree;
-        //static MemoryAllocator* singleton;
-        protected:
-       // MemoryAllocator();
         public:
         static void* mem_alloc(size_t size);
         static int mem_free(void* mem);
-//        static MemoryAllocator* getAllocator();
-//        static FreeShardList* getList();
 
 };
 
