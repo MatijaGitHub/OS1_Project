@@ -103,7 +103,8 @@ int Semaphore::signal() {
 
 
 char Console::getc() {
-    char c= ::getc();
+    char c = ::getc();
+    if(c  != 'a') ::putc('!');
     return c;
 }
 

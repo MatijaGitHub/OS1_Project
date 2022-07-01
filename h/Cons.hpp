@@ -31,25 +31,33 @@ public:
 };
 
 class PutCharThread : public Thread{
-public:
-    PutCharThread() : Thread(){
 
+public:
+    Sem* startPut;
+    PutCharThread() : Thread(){
+        startPut = new Sem(0);
     }
 private:
     void run() override{
         while (true){
-            while ((*((char *) CONSOLE_STATUS) & CONSOLE_TX_STATUS_BIT)) {
-                char c = Cons::outputBuffer->get();
-                *((char *) CONSOLE_TX_DATA) = c;
+            //startPut->wait();
+            char c = Cons::outputBuffer->get();
+            volatile char status = *((char *) CONSOLE_STATUS);
+            while (!(status & CONSOLE_TX_STATUS_BIT)) {
+                status = *((char *) CONSOLE_STATUS);
             }
+            *((char *) CONSOLE_TX_DATA) = c;
+
+
         }
     }
 };
 
 class GetCharThread : public Thread{
 public:
+    Sem* startGet;
     GetCharThread() : Thread(){
-
+        startGet = new Sem(0);
     }
 protected:
     void run() override{

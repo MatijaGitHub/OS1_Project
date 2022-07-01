@@ -23,7 +23,7 @@ void *FreeShardList::find_best(size_t size) {
         prev = pom;
         pom = pom->next;
         long shard_diff = pom->size - size;
-        if((shard_diff <= min_shard_dif && shard_diff >= 0)|| min_shard_dif < 0){
+        if((shard_diff < min_shard_dif && shard_diff >= 0)|| min_shard_dif < 0){
             min_shard_dif = shard_diff;
             start_adr = pom->mem_free_block;
             toReplace = pom;
@@ -37,6 +37,7 @@ void *FreeShardList::find_best(size_t size) {
         return start_adr;
     }
     return nullptr;
+
 }
 
 
@@ -106,7 +107,7 @@ int FreeShardList::free_memory(void *address) {
 
     int result = 0;
     void* adrStart = (void*)((long*)address - 1);
-    if(adrStart < HEAP_START_ADDR || adrStart>=HEAP_END_ADDR) return -1;
+    if(adrStart < HEAP_START_ADDR || adrStart> HEAP_END_ADDR) return -1;
     size_t size = MEM_BLOCK_SIZE* (*(long*)adrStart);
     node* prev = nullptr;
     node* curr = head;

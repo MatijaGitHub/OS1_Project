@@ -19,6 +19,7 @@ void Interrupt::handleSysCall() {
         w_scausei(sscause);
         w_sepci(sepc);
         mc_sip(SIP_SSIP);
+       // __asm__ volatile("sd a0, 80(sp)");
 
 
     }
@@ -47,20 +48,16 @@ void Interrupt::handleSysCall() {
     }
     else if(scause == 0x8000000000000009UL){
         int irq = plic_claim();
-        if(irq == CONSOLE_IRQ && Cons::inputBuffer->getSize() < Cons::inputBuffer->getMaxSize()){
-            while (*((char *)CONSOLE_STATUS) & CONSOLE_RX_STATUS_BIT){
+        if(irq == CONSOLE_IRQ){
+            volatile char status = *((char *)CONSOLE_STATUS);
+            while (status & CONSOLE_RX_STATUS_BIT){
                 char c = (*(char *) CONSOLE_RX_DATA);
                 Cons::inputBuffer->put(c);
+                status = *((char *)CONSOLE_STATUS);
             }
         }
         plic_complete(irq);
-        mc_sip(SIP_SEIP);
     }
-    else mc_sip(SIP_SSIP);
-//    else if(scause == 0x0000000000000002UL){
-////        Cons::outputBuffer->put('!');
-////        mc_sip(SIP_SSIP);
-//    }
     //switchToUserStack();
 }
 

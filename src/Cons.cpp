@@ -14,7 +14,7 @@ char CharBuffer::get() {
 }
 
 void CharBuffer::put(char c) {
-    //if(this->currSize >= this->size) return;
+    if(this->currSize >= this->size) return;
     putSem->wait();
     mutexPut->wait();
     buffer[tail] = c;
