@@ -1,0 +1,2194 @@
+GAS LISTING /tmp/ccEAN7oS.s 			page 1
+
+
+   1              		.file	"PCB.cpp"
+   2              		.option pic
+   3              		.option norelax
+   4              		.text
+   5              	.Ltext0:
+   6              		.align	2
+   7              		.globl	_ZN3PCB7getNextEv
+   9              	_ZN3PCB7getNextEv:
+  10              	.LFB0:
+  11              		.file 1 "src/PCB.cpp"
+   1:src/PCB.cpp   **** #include "../h/PCB.h"
+   2:src/PCB.cpp   **** 
+   3:src/PCB.cpp   **** PCB* PCB::running = nullptr;
+   4:src/PCB.cpp   **** uint64 PCB::timeLeft = 0;
+   5:src/PCB.cpp   **** PCB_List* PCB::sleeping_list = nullptr;
+   6:src/PCB.cpp   **** int PCB::id_cnt = 0;
+   7:src/PCB.cpp   **** bool PCB::isMain = true;
+   8:src/PCB.cpp   **** bool PCB::isPeriodicBlocked = false;
+   9:src/PCB.cpp   **** PCB_List* PCB::perioThreads = nullptr;
+  10:src/PCB.cpp   **** 
+  11:src/PCB.cpp   **** 
+  12:src/PCB.cpp   **** PCB *PCB::getNext() {
+  12              		.loc 1 12 21
+  13              		.cfi_startproc
+  14              	.LVL0:
+  15 0000 130101FF 		addi	sp,sp,-16
+  16              		.cfi_def_cfa_offset 16
+  17 0004 23348100 		sd	s0,8(sp)
+  18              		.cfi_offset 8, -8
+  19 0008 13040101 		addi	s0,sp,16
+  20              		.cfi_def_cfa 8, 0
+  13:src/PCB.cpp   ****     return this->next_scheduler;
+  21              		.loc 1 13 5
+  14:src/PCB.cpp   **** }
+  22              		.loc 1 14 1 is_stmt 0
+  23 000c 03358500 		ld	a0,8(a0)
+  24              	.LVL1:
+  25 0010 03348100 		ld	s0,8(sp)
+  26              		.cfi_restore 8
+  27              		.cfi_def_cfa 2, 16
+  28 0014 13010101 		addi	sp,sp,16
+  29              		.cfi_def_cfa_offset 0
+  30 0018 67800000 		jr	ra
+  31              		.cfi_endproc
+  32              	.LFE0:
+  34              		.align	2
+  35              		.globl	_ZN3PCB7setNextEPS_
+  37              	_ZN3PCB7setNextEPS_:
+  38              	.LFB1:
+  15:src/PCB.cpp   **** 
+  16:src/PCB.cpp   **** void PCB::setNext(PCB *next) {
+  39              		.loc 1 16 30 is_stmt 1
+  40              		.cfi_startproc
+  41              	.LVL2:
+  42 001c 130101FF 		addi	sp,sp,-16
+  43              		.cfi_def_cfa_offset 16
+  44 0020 23348100 		sd	s0,8(sp)
+GAS LISTING /tmp/ccEAN7oS.s 			page 2
+
+
+  45              		.cfi_offset 8, -8
+  46 0024 13040101 		addi	s0,sp,16
+  47              		.cfi_def_cfa 8, 0
+  17:src/PCB.cpp   ****     this->next_scheduler = next;
+  48              		.loc 1 17 5
+  49              		.loc 1 17 26 is_stmt 0
+  50 0028 2334B500 		sd	a1,8(a0)
+  18:src/PCB.cpp   **** }
+  51              		.loc 1 18 1
+  52 002c 03348100 		ld	s0,8(sp)
+  53              		.cfi_restore 8
+  54              		.cfi_def_cfa 2, 16
+  55 0030 13010101 		addi	sp,sp,16
+  56              		.cfi_def_cfa_offset 0
+  57 0034 67800000 		jr	ra
+  58              		.cfi_endproc
+  59              	.LFE1:
+  61              		.align	2
+  62              		.globl	_ZN3PCBC2EPFvPvES0_Pmm
+  64              	_ZN3PCBC2EPFvPvES0_Pmm:
+  65              	.LFB3:
+  19:src/PCB.cpp   **** 
+  20:src/PCB.cpp   **** PCB::PCB(Body body,void* args,uint64 * stac,uint64 timeSlice) {
+  66              		.loc 1 20 1 is_stmt 1
+  67              		.cfi_startproc
+  68              	.LVL3:
+  69 0038 130101FF 		addi	sp,sp,-16
+  70              		.cfi_def_cfa_offset 16
+  71 003c 23348100 		sd	s0,8(sp)
+  72              		.cfi_offset 8, -8
+  73 0040 13040101 		addi	s0,sp,16
+  74              		.cfi_def_cfa 8, 0
+  75              	.LBB6:
+  21:src/PCB.cpp   ****     next_scheduler = nullptr;
+  76              		.loc 1 21 5
+  77              		.loc 1 21 20 is_stmt 0
+  78 0044 23340500 		sd	zero,8(a0)
+  22:src/PCB.cpp   ****     stack = stac;
+  79              		.loc 1 22 5 is_stmt 1
+  80              		.loc 1 22 11 is_stmt 0
+  81 0048 2338D500 		sd	a3,16(a0)
+  23:src/PCB.cpp   ****     context.sp = (uint64) &stack[DEFAULT_STACK_SIZE * 2];
+  82              		.loc 1 23 5 is_stmt 1
+  83              		.loc 1 23 27 is_stmt 0
+  84 004c B7070100 		li	a5,65536
+  85 0050 B386F600 		add	a3,a3,a5
+  86              	.LVL4:
+  87              		.loc 1 23 16
+  88 0054 2338D502 		sd	a3,48(a0)
+  24:src/PCB.cpp   ****     context.ra = (uint64) &threadWrapper;
+  89              		.loc 1 24 5 is_stmt 1
+  90              		.loc 1 24 16 is_stmt 0
+  91 0058 97070000 		lla	a5,_ZN3PCB13threadWrapperEv
+  91      93870700 
+  92 0060 2334F502 		sd	a5,40(a0)
+  25:src/PCB.cpp   ****     this->body = body;
+  93              		.loc 1 25 5 is_stmt 1
+GAS LISTING /tmp/ccEAN7oS.s 			page 3
+
+
+  94              		.loc 1 25 16 is_stmt 0
+  95 0064 2338B504 		sd	a1,80(a0)
+  26:src/PCB.cpp   ****     this->isPeriodic = false;
+  96              		.loc 1 26 5 is_stmt 1
+  97              		.loc 1 26 22 is_stmt 0
+  98 0068 A3000500 		sb	zero,1(a0)
+  27:src/PCB.cpp   ****     this->timeSlice = timeSlice;
+  99              		.loc 1 27 5 is_stmt 1
+ 100              		.loc 1 27 21 is_stmt 0
+ 101 006c 2330E504 		sd	a4,64(a0)
+  28:src/PCB.cpp   ****     this->args = args;
+ 102              		.loc 1 28 5 is_stmt 1
+ 103              		.loc 1 28 16 is_stmt 0
+ 104 0070 2330C502 		sd	a2,32(a0)
+  29:src/PCB.cpp   ****     finished = false;
+ 105              		.loc 1 29 5 is_stmt 1
+ 106              		.loc 1 29 14 is_stmt 0
+ 107 0074 23040504 		sb	zero,72(a0)
+  30:src/PCB.cpp   ****     isBlocked = false;
+ 108              		.loc 1 30 5 is_stmt 1
+ 109              		.loc 1 30 15 is_stmt 0
+ 110 0078 A3040504 		sb	zero,73(a0)
+  31:src/PCB.cpp   ****     isSleeping = false;
+ 111              		.loc 1 31 5 is_stmt 1
+ 112              		.loc 1 31 16 is_stmt 0
+ 113 007c 23050504 		sb	zero,74(a0)
+  32:src/PCB.cpp   ****     unblockError = false;
+ 114              		.loc 1 32 5 is_stmt 1
+ 115              		.loc 1 32 18 is_stmt 0
+ 116 0080 23000500 		sb	zero,0(a0)
+ 117              	.LBE6:
+  33:src/PCB.cpp   **** 
+  34:src/PCB.cpp   **** 
+  35:src/PCB.cpp   **** }
+ 118              		.loc 1 35 1
+ 119 0084 03348100 		ld	s0,8(sp)
+ 120              		.cfi_restore 8
+ 121              		.cfi_def_cfa 2, 16
+ 122 0088 13010101 		addi	sp,sp,16
+ 123              		.cfi_def_cfa_offset 0
+ 124 008c 67800000 		jr	ra
+ 125              		.cfi_endproc
+ 126              	.LFE3:
+ 128              		.globl	_ZN3PCBC1EPFvPvES0_Pmm
+ 129              		.set	_ZN3PCBC1EPFvPvES0_Pmm,_ZN3PCBC2EPFvPvES0_Pmm
+ 130              		.align	2
+ 131              		.globl	_ZN3PCB11setFinishedEb
+ 133              	_ZN3PCB11setFinishedEb:
+ 134              	.LFB6:
+  36:src/PCB.cpp   **** 
+  37:src/PCB.cpp   **** void PCB::threadWrapper() {
+  38:src/PCB.cpp   ****     Interrupt::popSppSpie();
+  39:src/PCB.cpp   ****     void* args = running->getArgs();
+  40:src/PCB.cpp   ****     running->body(args);
+  41:src/PCB.cpp   ****     thread_exit();
+  42:src/PCB.cpp   **** 
+  43:src/PCB.cpp   **** }
+GAS LISTING /tmp/ccEAN7oS.s 			page 4
+
+
+  44:src/PCB.cpp   **** 
+  45:src/PCB.cpp   **** void PCB::setFinished(bool f) {
+ 135              		.loc 1 45 31 is_stmt 1
+ 136              		.cfi_startproc
+ 137              	.LVL5:
+ 138 0090 130101FF 		addi	sp,sp,-16
+ 139              		.cfi_def_cfa_offset 16
+ 140 0094 23348100 		sd	s0,8(sp)
+ 141              		.cfi_offset 8, -8
+ 142 0098 13040101 		addi	s0,sp,16
+ 143              		.cfi_def_cfa 8, 0
+  46:src/PCB.cpp   ****     finished = f;
+ 144              		.loc 1 46 5
+ 145              		.loc 1 46 14 is_stmt 0
+ 146 009c 2304B504 		sb	a1,72(a0)
+  47:src/PCB.cpp   **** }
+ 147              		.loc 1 47 1
+ 148 00a0 03348100 		ld	s0,8(sp)
+ 149              		.cfi_restore 8
+ 150              		.cfi_def_cfa 2, 16
+ 151 00a4 13010101 		addi	sp,sp,16
+ 152              		.cfi_def_cfa_offset 0
+ 153 00a8 67800000 		jr	ra
+ 154              		.cfi_endproc
+ 155              	.LFE6:
+ 157              		.align	2
+ 158              		.globl	_ZN3PCB13checkFinishedEv
+ 160              	_ZN3PCB13checkFinishedEv:
+ 161              	.LFB7:
+  48:src/PCB.cpp   **** 
+  49:src/PCB.cpp   **** bool PCB::checkFinished() {
+ 162              		.loc 1 49 27 is_stmt 1
+ 163              		.cfi_startproc
+ 164              	.LVL6:
+ 165 00ac 130101FF 		addi	sp,sp,-16
+ 166              		.cfi_def_cfa_offset 16
+ 167 00b0 23348100 		sd	s0,8(sp)
+ 168              		.cfi_offset 8, -8
+ 169 00b4 13040101 		addi	s0,sp,16
+ 170              		.cfi_def_cfa 8, 0
+  50:src/PCB.cpp   ****     return finished;
+ 171              		.loc 1 50 5
+  51:src/PCB.cpp   **** }
+ 172              		.loc 1 51 1 is_stmt 0
+ 173 00b8 03458504 		lbu	a0,72(a0)
+ 174              	.LVL7:
+ 175 00bc 03348100 		ld	s0,8(sp)
+ 176              		.cfi_restore 8
+ 177              		.cfi_def_cfa 2, 16
+ 178 00c0 13010101 		addi	sp,sp,16
+ 179              		.cfi_def_cfa_offset 0
+ 180 00c4 67800000 		jr	ra
+ 181              		.cfi_endproc
+ 182              	.LFE7:
+ 184              		.align	2
+ 185              		.globl	_ZN3PCB7setArgsEPv
+ 187              	_ZN3PCB7setArgsEPv:
+GAS LISTING /tmp/ccEAN7oS.s 			page 5
+
+
+ 188              	.LFB9:
+  52:src/PCB.cpp   **** 
+  53:src/PCB.cpp   **** void PCB::dispatch() {
+  54:src/PCB.cpp   ****     PCB* old = running;
+  55:src/PCB.cpp   ****     if(old->isPeriodic && PCB::isPeriodicBlocked) {
+  56:src/PCB.cpp   ****         PCB::perioThreads->put(old);
+  57:src/PCB.cpp   ****     }
+  58:src/PCB.cpp   ****     else if(!old->checkFinished()&&!old->checkBlocked()&&!old->checkSleeping())Scheduler::put(old);
+  59:src/PCB.cpp   ****     running = Scheduler::get();
+  60:src/PCB.cpp   ****     if(running->my_id == '0') ms_status(Interrupt::SSTATUS_SPP);
+  61:src/PCB.cpp   ****     else mc_status(Interrupt::SSTATUS_SPP);
+  62:src/PCB.cpp   ****     contextSwitch(&old->context,&running->context);
+  63:src/PCB.cpp   **** 
+  64:src/PCB.cpp   **** }
+  65:src/PCB.cpp   **** 
+  66:src/PCB.cpp   **** void PCB::setArgs(void *arg) {
+ 189              		.loc 1 66 30 is_stmt 1
+ 190              		.cfi_startproc
+ 191              	.LVL8:
+ 192 00c8 130101FF 		addi	sp,sp,-16
+ 193              		.cfi_def_cfa_offset 16
+ 194 00cc 23348100 		sd	s0,8(sp)
+ 195              		.cfi_offset 8, -8
+ 196 00d0 13040101 		addi	s0,sp,16
+ 197              		.cfi_def_cfa 8, 0
+  67:src/PCB.cpp   ****     this->args = arg;
+ 198              		.loc 1 67 5
+ 199              		.loc 1 67 16 is_stmt 0
+ 200 00d4 2330B502 		sd	a1,32(a0)
+  68:src/PCB.cpp   **** }
+ 201              		.loc 1 68 1
+ 202 00d8 03348100 		ld	s0,8(sp)
+ 203              		.cfi_restore 8
+ 204              		.cfi_def_cfa 2, 16
+ 205 00dc 13010101 		addi	sp,sp,16
+ 206              		.cfi_def_cfa_offset 0
+ 207 00e0 67800000 		jr	ra
+ 208              		.cfi_endproc
+ 209              	.LFE9:
+ 211              		.align	2
+ 212              		.globl	_ZN3PCB7getArgsEv
+ 214              	_ZN3PCB7getArgsEv:
+ 215              	.LFB10:
+  69:src/PCB.cpp   **** 
+  70:src/PCB.cpp   **** void *PCB::getArgs() {
+ 216              		.loc 1 70 22 is_stmt 1
+ 217              		.cfi_startproc
+ 218              	.LVL9:
+ 219 00e4 130101FF 		addi	sp,sp,-16
+ 220              		.cfi_def_cfa_offset 16
+ 221 00e8 23348100 		sd	s0,8(sp)
+ 222              		.cfi_offset 8, -8
+ 223 00ec 13040101 		addi	s0,sp,16
+ 224              		.cfi_def_cfa 8, 0
+  71:src/PCB.cpp   ****     return this->args;
+ 225              		.loc 1 71 5
+  72:src/PCB.cpp   **** }
+GAS LISTING /tmp/ccEAN7oS.s 			page 6
+
+
+ 226              		.loc 1 72 1 is_stmt 0
+ 227 00f0 03350502 		ld	a0,32(a0)
+ 228              	.LVL10:
+ 229 00f4 03348100 		ld	s0,8(sp)
+ 230              		.cfi_restore 8
+ 231              		.cfi_def_cfa 2, 16
+ 232 00f8 13010101 		addi	sp,sp,16
+ 233              		.cfi_def_cfa_offset 0
+ 234 00fc 67800000 		jr	ra
+ 235              		.cfi_endproc
+ 236              	.LFE10:
+ 238              		.align	2
+ 239              		.globl	_ZN3PCB13threadWrapperEv
+ 241              	_ZN3PCB13threadWrapperEv:
+ 242              	.LFB5:
+  37:src/PCB.cpp   ****     Interrupt::popSppSpie();
+ 243              		.loc 1 37 27 is_stmt 1
+ 244              		.cfi_startproc
+ 245 0100 130101FE 		addi	sp,sp,-32
+ 246              		.cfi_def_cfa_offset 32
+ 247 0104 233C1100 		sd	ra,24(sp)
+ 248 0108 23388100 		sd	s0,16(sp)
+ 249 010c 23349100 		sd	s1,8(sp)
+ 250              		.cfi_offset 1, -8
+ 251              		.cfi_offset 8, -16
+ 252              		.cfi_offset 9, -24
+ 253 0110 13040102 		addi	s0,sp,32
+ 254              		.cfi_def_cfa 8, 0
+  38:src/PCB.cpp   ****     void* args = running->getArgs();
+ 255              		.loc 1 38 5
+  38:src/PCB.cpp   ****     void* args = running->getArgs();
+ 256              		.loc 1 38 26 is_stmt 0
+ 257 0114 97000000 		call	_ZN9Interrupt10popSppSpieEv@plt
+ 257      E7800000 
+ 258              	.LVL11:
+  39:src/PCB.cpp   ****     running->body(args);
+ 259              		.loc 1 39 5 is_stmt 1
+  39:src/PCB.cpp   ****     running->body(args);
+ 260              		.loc 1 39 34 is_stmt 0
+ 261 011c 97040000 		ld	s1,.LANCHOR0
+ 261      83B40400 
+ 262 0124 13850400 		mv	a0,s1
+ 263 0128 97000000 		call	_ZN3PCB7getArgsEv
+ 263      E7800000 
+ 264              	.LVL12:
+  40:src/PCB.cpp   ****     thread_exit();
+ 265              		.loc 1 40 5 is_stmt 1
+  40:src/PCB.cpp   ****     thread_exit();
+ 266              		.loc 1 40 14 is_stmt 0
+ 267 0130 83B70405 		ld	a5,80(s1)
+  40:src/PCB.cpp   ****     thread_exit();
+ 268              		.loc 1 40 18
+ 269 0134 E7800700 		jalr	a5
+ 270              	.LVL13:
+  41:src/PCB.cpp   **** 
+ 271              		.loc 1 41 5 is_stmt 1
+  41:src/PCB.cpp   **** 
+GAS LISTING /tmp/ccEAN7oS.s 			page 7
+
+
+ 272              		.loc 1 41 16 is_stmt 0
+ 273 0138 97000000 		call	thread_exit@plt
+ 273      E7800000 
+ 274              	.LVL14:
+  43:src/PCB.cpp   **** 
+ 275              		.loc 1 43 1
+ 276 0140 83308101 		ld	ra,24(sp)
+ 277              		.cfi_restore 1
+ 278 0144 03340101 		ld	s0,16(sp)
+ 279              		.cfi_restore 8
+ 280              		.cfi_def_cfa 2, 32
+ 281 0148 83348100 		ld	s1,8(sp)
+ 282              		.cfi_restore 9
+ 283 014c 13010102 		addi	sp,sp,32
+ 284              		.cfi_def_cfa_offset 0
+ 285 0150 67800000 		jr	ra
+ 286              		.cfi_endproc
+ 287              	.LFE5:
+ 289              		.align	2
+ 290              		.globl	_ZN3PCB11allocatePCBEv
+ 292              	_ZN3PCB11allocatePCBEv:
+ 293              	.LFB12:
+  73:src/PCB.cpp   **** 
+  74:src/PCB.cpp   **** void PCB::start() {
+  75:src/PCB.cpp   ****     if(running == nullptr) {
+  76:src/PCB.cpp   ****         running = this;
+  77:src/PCB.cpp   ****         running->setId('m');
+  78:src/PCB.cpp   ****     }
+  79:src/PCB.cpp   ****     else {
+  80:src/PCB.cpp   ****         this->setId('0' + PCB::id_cnt++);
+  81:src/PCB.cpp   ****         Scheduler::put(this);
+  82:src/PCB.cpp   **** 
+  83:src/PCB.cpp   ****     }
+  84:src/PCB.cpp   **** }
+  85:src/PCB.cpp   **** 
+  86:src/PCB.cpp   **** void *PCB::allocatePCB() {
+ 294              		.loc 1 86 26 is_stmt 1
+ 295              		.cfi_startproc
+ 296 0154 130101FF 		addi	sp,sp,-16
+ 297              		.cfi_def_cfa_offset 16
+ 298 0158 23341100 		sd	ra,8(sp)
+ 299 015c 23308100 		sd	s0,0(sp)
+ 300              		.cfi_offset 1, -8
+ 301              		.cfi_offset 8, -16
+ 302 0160 13040101 		addi	s0,sp,16
+ 303              		.cfi_def_cfa 8, 0
+  87:src/PCB.cpp   ****     uint64 size = sizeof (PCB) + ALLOCATED_HEADER_SIZE;
+ 304              		.loc 1 87 5
+ 305              	.LVL15:
+  88:src/PCB.cpp   ****     uint64 inBlocks = size/MEM_BLOCK_SIZE;
+ 306              		.loc 1 88 5
+  89:src/PCB.cpp   ****     if(size%MEM_BLOCK_SIZE!=0){
+ 307              		.loc 1 89 5
+  90:src/PCB.cpp   ****         inBlocks++;
+ 308              		.loc 1 90 9
+  91:src/PCB.cpp   ****     }
+  92:src/PCB.cpp   ****     inBlocks*=MEM_BLOCK_SIZE;
+GAS LISTING /tmp/ccEAN7oS.s 			page 8
+
+
+ 309              		.loc 1 92 5
+  93:src/PCB.cpp   ****     void* retAdr = MemoryAllocator::mem_alloc((size_t) inBlocks);
+ 310              		.loc 1 93 5
+ 311              		.loc 1 93 46 is_stmt 0
+ 312 0164 13050008 		li	a0,128
+ 313 0168 97000000 		call	_ZN15MemoryAllocator9mem_allocEm@plt
+ 313      E7800000 
+ 314              	.LVL16:
+  94:src/PCB.cpp   ****     long* header = (long*) retAdr;
+ 315              		.loc 1 94 5 is_stmt 1
+  95:src/PCB.cpp   ****     inBlocks/=MEM_BLOCK_SIZE;
+ 316              		.loc 1 95 5
+  96:src/PCB.cpp   ****     *header = inBlocks;
+ 317              		.loc 1 96 5
+ 318              		.loc 1 96 13 is_stmt 0
+ 319 0170 93072000 		li	a5,2
+ 320 0174 2330F500 		sd	a5,0(a0)
+  97:src/PCB.cpp   ****     header++;
+ 321              		.loc 1 97 5 is_stmt 1
+ 322              	.LVL17:
+  98:src/PCB.cpp   ****     void* ret = (void*)header;
+ 323              		.loc 1 98 5
+  99:src/PCB.cpp   ****     return ret;
+ 324              		.loc 1 99 5
+ 100:src/PCB.cpp   **** }
+ 325              		.loc 1 100 1 is_stmt 0
+ 326 0178 13058500 		addi	a0,a0,8
+ 327              	.LVL18:
+ 328 017c 83308100 		ld	ra,8(sp)
+ 329              		.cfi_restore 1
+ 330 0180 03340100 		ld	s0,0(sp)
+ 331              		.cfi_restore 8
+ 332              		.cfi_def_cfa 2, 16
+ 333 0184 13010101 		addi	sp,sp,16
+ 334              		.cfi_def_cfa_offset 0
+ 335 0188 67800000 		jr	ra
+ 336              		.cfi_endproc
+ 337              	.LFE12:
+ 339              		.align	2
+ 340              		.globl	_ZN3PCB10setContextEmm
+ 342              	_ZN3PCB10setContextEmm:
+ 343              	.LFB13:
+ 101:src/PCB.cpp   **** 
+ 102:src/PCB.cpp   **** void PCB::setContext(uint64 ra, uint64 sp) {
+ 344              		.loc 1 102 44 is_stmt 1
+ 345              		.cfi_startproc
+ 346              	.LVL19:
+ 347 018c 130101FF 		addi	sp,sp,-16
+ 348              		.cfi_def_cfa_offset 16
+ 349 0190 23348100 		sd	s0,8(sp)
+ 350              		.cfi_offset 8, -8
+ 351 0194 13040101 		addi	s0,sp,16
+ 352              		.cfi_def_cfa 8, 0
+ 103:src/PCB.cpp   ****     this->context.ra = ra;
+ 353              		.loc 1 103 5
+ 354              		.loc 1 103 22 is_stmt 0
+ 355 0198 2334B502 		sd	a1,40(a0)
+GAS LISTING /tmp/ccEAN7oS.s 			page 9
+
+
+ 104:src/PCB.cpp   ****     this->context.sp = sp;
+ 356              		.loc 1 104 5 is_stmt 1
+ 357              		.loc 1 104 22 is_stmt 0
+ 358 019c 2338C502 		sd	a2,48(a0)
+ 105:src/PCB.cpp   **** }
+ 359              		.loc 1 105 1
+ 360 01a0 03348100 		ld	s0,8(sp)
+ 361              		.cfi_restore 8
+ 362              		.cfi_def_cfa 2, 16
+ 363 01a4 13010101 		addi	sp,sp,16
+ 364              		.cfi_def_cfa_offset 0
+ 365 01a8 67800000 		jr	ra
+ 366              		.cfi_endproc
+ 367              	.LFE13:
+ 369              		.align	2
+ 370              		.globl	_ZN3PCB12checkBlockedEv
+ 372              	_ZN3PCB12checkBlockedEv:
+ 373              	.LFB14:
+ 106:src/PCB.cpp   **** 
+ 107:src/PCB.cpp   **** bool PCB::checkBlocked() {
+ 374              		.loc 1 107 26 is_stmt 1
+ 375              		.cfi_startproc
+ 376              	.LVL20:
+ 377 01ac 130101FF 		addi	sp,sp,-16
+ 378              		.cfi_def_cfa_offset 16
+ 379 01b0 23348100 		sd	s0,8(sp)
+ 380              		.cfi_offset 8, -8
+ 381 01b4 13040101 		addi	s0,sp,16
+ 382              		.cfi_def_cfa 8, 0
+ 108:src/PCB.cpp   ****     return isBlocked;
+ 383              		.loc 1 108 5
+ 109:src/PCB.cpp   **** }
+ 384              		.loc 1 109 1 is_stmt 0
+ 385 01b8 03459504 		lbu	a0,73(a0)
+ 386              	.LVL21:
+ 387 01bc 03348100 		ld	s0,8(sp)
+ 388              		.cfi_restore 8
+ 389              		.cfi_def_cfa 2, 16
+ 390 01c0 13010101 		addi	sp,sp,16
+ 391              		.cfi_def_cfa_offset 0
+ 392 01c4 67800000 		jr	ra
+ 393              		.cfi_endproc
+ 394              	.LFE14:
+ 396              		.align	2
+ 397              		.globl	_ZN3PCB10setBlockedEb
+ 399              	_ZN3PCB10setBlockedEb:
+ 400              	.LFB15:
+ 110:src/PCB.cpp   **** 
+ 111:src/PCB.cpp   **** void PCB::setBlocked(bool f) {
+ 401              		.loc 1 111 30 is_stmt 1
+ 402              		.cfi_startproc
+ 403              	.LVL22:
+ 404 01c8 130101FF 		addi	sp,sp,-16
+ 405              		.cfi_def_cfa_offset 16
+ 406 01cc 23348100 		sd	s0,8(sp)
+ 407              		.cfi_offset 8, -8
+ 408 01d0 13040101 		addi	s0,sp,16
+GAS LISTING /tmp/ccEAN7oS.s 			page 10
+
+
+ 409              		.cfi_def_cfa 8, 0
+ 112:src/PCB.cpp   ****     isBlocked = f;
+ 410              		.loc 1 112 5
+ 411              		.loc 1 112 15 is_stmt 0
+ 412 01d4 A304B504 		sb	a1,73(a0)
+ 113:src/PCB.cpp   **** }
+ 413              		.loc 1 113 1
+ 414 01d8 03348100 		ld	s0,8(sp)
+ 415              		.cfi_restore 8
+ 416              		.cfi_def_cfa 2, 16
+ 417 01dc 13010101 		addi	sp,sp,16
+ 418              		.cfi_def_cfa_offset 0
+ 419 01e0 67800000 		jr	ra
+ 420              		.cfi_endproc
+ 421              	.LFE15:
+ 423              		.align	2
+ 424              		.globl	_ZN3PCB5setIdEc
+ 426              	_ZN3PCB5setIdEc:
+ 427              	.LFB16:
+ 114:src/PCB.cpp   **** 
+ 115:src/PCB.cpp   **** void PCB::setId(char id) {
+ 428              		.loc 1 115 26 is_stmt 1
+ 429              		.cfi_startproc
+ 430              	.LVL23:
+ 431 01e4 130101FF 		addi	sp,sp,-16
+ 432              		.cfi_def_cfa_offset 16
+ 433 01e8 23348100 		sd	s0,8(sp)
+ 434              		.cfi_offset 8, -8
+ 435 01ec 13040101 		addi	s0,sp,16
+ 436              		.cfi_def_cfa 8, 0
+ 116:src/PCB.cpp   ****     this->my_id = id;
+ 437              		.loc 1 116 5
+ 438              		.loc 1 116 17 is_stmt 0
+ 439 01f0 A305B504 		sb	a1,75(a0)
+ 117:src/PCB.cpp   **** }
+ 440              		.loc 1 117 1
+ 441 01f4 03348100 		ld	s0,8(sp)
+ 442              		.cfi_restore 8
+ 443              		.cfi_def_cfa 2, 16
+ 444 01f8 13010101 		addi	sp,sp,16
+ 445              		.cfi_def_cfa_offset 0
+ 446 01fc 67800000 		jr	ra
+ 447              		.cfi_endproc
+ 448              	.LFE16:
+ 450              		.align	2
+ 451              		.globl	_ZN3PCB5startEv
+ 453              	_ZN3PCB5startEv:
+ 454              	.LFB11:
+  74:src/PCB.cpp   ****     if(running == nullptr) {
+ 455              		.loc 1 74 19 is_stmt 1
+ 456              		.cfi_startproc
+ 457              	.LVL24:
+ 458 0200 130101FE 		addi	sp,sp,-32
+ 459              		.cfi_def_cfa_offset 32
+ 460 0204 233C1100 		sd	ra,24(sp)
+ 461 0208 23388100 		sd	s0,16(sp)
+ 462 020c 23349100 		sd	s1,8(sp)
+GAS LISTING /tmp/ccEAN7oS.s 			page 11
+
+
+ 463              		.cfi_offset 1, -8
+ 464              		.cfi_offset 8, -16
+ 465              		.cfi_offset 9, -24
+ 466 0210 13040102 		addi	s0,sp,32
+ 467              		.cfi_def_cfa 8, 0
+ 468 0214 93040500 		mv	s1,a0
+  75:src/PCB.cpp   ****         running = this;
+ 469              		.loc 1 75 5
+  75:src/PCB.cpp   ****         running = this;
+ 470              		.loc 1 75 16 is_stmt 0
+ 471 0218 97070000 		ld	a5,.LANCHOR0
+ 471      83B70700 
+  75:src/PCB.cpp   ****         running = this;
+ 472              		.loc 1 75 5
+ 473 0220 63840704 		beqz	a5,.L31
+  80:src/PCB.cpp   ****         Scheduler::put(this);
+ 474              		.loc 1 80 9 is_stmt 1
+  80:src/PCB.cpp   ****         Scheduler::put(this);
+ 475              		.loc 1 80 38 is_stmt 0
+ 476 0224 97070000 		lla	a5,.LANCHOR0
+ 476      93870700 
+ 477 022c 83A58700 		lw	a1,8(a5)
+ 478 0230 1B871500 		addiw	a4,a1,1
+ 479 0234 23A4E700 		sw	a4,8(a5)
+  80:src/PCB.cpp   ****         Scheduler::put(this);
+ 480              		.loc 1 80 20
+ 481 0238 9B850503 		addiw	a1,a1,48
+ 482 023c 93F5F50F 		andi	a1,a1,0xff
+ 483 0240 97000000 		call	_ZN3PCB5setIdEc
+ 483      E7800000 
+ 484              	.LVL25:
+  81:src/PCB.cpp   **** 
+ 485              		.loc 1 81 9 is_stmt 1
+  81:src/PCB.cpp   **** 
+ 486              		.loc 1 81 23 is_stmt 0
+ 487 0248 13850400 		mv	a0,s1
+ 488 024c 97000000 		call	_ZN9Scheduler3putEP3PCB@plt
+ 488      E7800000 
+ 489              	.LVL26:
+ 490              	.L27:
+  84:src/PCB.cpp   **** 
+ 491              		.loc 1 84 1
+ 492 0254 83308101 		ld	ra,24(sp)
+ 493              		.cfi_remember_state
+ 494              		.cfi_restore 1
+ 495 0258 03340101 		ld	s0,16(sp)
+ 496              		.cfi_restore 8
+ 497              		.cfi_def_cfa 2, 32
+ 498 025c 83348100 		ld	s1,8(sp)
+ 499              		.cfi_restore 9
+ 500              	.LVL27:
+ 501 0260 13010102 		addi	sp,sp,32
+ 502              		.cfi_def_cfa_offset 0
+ 503 0264 67800000 		jr	ra
+ 504              	.LVL28:
+ 505              	.L31:
+ 506              		.cfi_restore_state
+GAS LISTING /tmp/ccEAN7oS.s 			page 12
+
+
+  76:src/PCB.cpp   ****         running->setId('m');
+ 507              		.loc 1 76 9 is_stmt 1
+  76:src/PCB.cpp   ****         running->setId('m');
+ 508              		.loc 1 76 17 is_stmt 0
+ 509 0268 97070000 		sd	a0,.LANCHOR0,a5
+ 509      23B0A700 
+  77:src/PCB.cpp   ****     }
+ 510              		.loc 1 77 9 is_stmt 1
+  77:src/PCB.cpp   ****     }
+ 511              		.loc 1 77 23 is_stmt 0
+ 512 0270 9305D006 		li	a1,109
+ 513 0274 97000000 		call	_ZN3PCB5setIdEc
+ 513      E7800000 
+ 514              	.LVL29:
+ 515 027c 6FF09FFD 		j	.L27
+ 516              		.cfi_endproc
+ 517              	.LFE11:
+ 519              		.align	2
+ 520              		.globl	_ZNK3PCB12getTimeSliceEv
+ 522              	_ZNK3PCB12getTimeSliceEv:
+ 523              	.LFB17:
+ 118:src/PCB.cpp   **** 
+ 119:src/PCB.cpp   **** 
+ 120:src/PCB.cpp   **** 
+ 121:src/PCB.cpp   **** uint64 PCB::getTimeSlice() const {
+ 524              		.loc 1 121 34 is_stmt 1
+ 525              		.cfi_startproc
+ 526              	.LVL30:
+ 527 0280 130101FF 		addi	sp,sp,-16
+ 528              		.cfi_def_cfa_offset 16
+ 529 0284 23348100 		sd	s0,8(sp)
+ 530              		.cfi_offset 8, -8
+ 531 0288 13040101 		addi	s0,sp,16
+ 532              		.cfi_def_cfa 8, 0
+ 122:src/PCB.cpp   ****     return timeSlice;
+ 533              		.loc 1 122 5
+ 123:src/PCB.cpp   **** }
+ 534              		.loc 1 123 1 is_stmt 0
+ 535 028c 03350504 		ld	a0,64(a0)
+ 536              	.LVL31:
+ 537 0290 03348100 		ld	s0,8(sp)
+ 538              		.cfi_restore 8
+ 539              		.cfi_def_cfa 2, 16
+ 540 0294 13010101 		addi	sp,sp,16
+ 541              		.cfi_def_cfa_offset 0
+ 542 0298 67800000 		jr	ra
+ 543              		.cfi_endproc
+ 544              	.LFE17:
+ 546              		.align	2
+ 547              		.globl	_ZN3PCB12setTimeSliceEm
+ 549              	_ZN3PCB12setTimeSliceEm:
+ 550              	.LFB18:
+ 124:src/PCB.cpp   **** 
+ 125:src/PCB.cpp   **** void PCB::setTimeSlice(uint64 timeSlice) {
+ 551              		.loc 1 125 42 is_stmt 1
+ 552              		.cfi_startproc
+ 553              	.LVL32:
+GAS LISTING /tmp/ccEAN7oS.s 			page 13
+
+
+ 554 029c 130101FF 		addi	sp,sp,-16
+ 555              		.cfi_def_cfa_offset 16
+ 556 02a0 23348100 		sd	s0,8(sp)
+ 557              		.cfi_offset 8, -8
+ 558 02a4 13040101 		addi	s0,sp,16
+ 559              		.cfi_def_cfa 8, 0
+ 126:src/PCB.cpp   ****     PCB::timeSlice = timeSlice;
+ 560              		.loc 1 126 5
+ 561              		.loc 1 126 20 is_stmt 0
+ 562 02a8 2330B504 		sd	a1,64(a0)
+ 127:src/PCB.cpp   **** }
+ 563              		.loc 1 127 1
+ 564 02ac 03348100 		ld	s0,8(sp)
+ 565              		.cfi_restore 8
+ 566              		.cfi_def_cfa 2, 16
+ 567 02b0 13010101 		addi	sp,sp,16
+ 568              		.cfi_def_cfa_offset 0
+ 569 02b4 67800000 		jr	ra
+ 570              		.cfi_endproc
+ 571              	.LFE18:
+ 573              		.align	2
+ 574              		.globl	_ZN3PCB11setSleepingEb
+ 576              	_ZN3PCB11setSleepingEb:
+ 577              	.LFB20:
+ 128:src/PCB.cpp   **** 
+ 129:src/PCB.cpp   **** void PCB::sleep(time_t time) {
+ 130:src/PCB.cpp   ****     PCB::sleeping_list->putTime(running,time);
+ 131:src/PCB.cpp   ****     running->setSleeping(true);
+ 132:src/PCB.cpp   ****     //PCB::dispatch();
+ 133:src/PCB.cpp   **** }
+ 134:src/PCB.cpp   **** 
+ 135:src/PCB.cpp   **** void PCB::setSleeping(bool f) {
+ 578              		.loc 1 135 31 is_stmt 1
+ 579              		.cfi_startproc
+ 580              	.LVL33:
+ 581 02b8 130101FF 		addi	sp,sp,-16
+ 582              		.cfi_def_cfa_offset 16
+ 583 02bc 23348100 		sd	s0,8(sp)
+ 584              		.cfi_offset 8, -8
+ 585 02c0 13040101 		addi	s0,sp,16
+ 586              		.cfi_def_cfa 8, 0
+ 136:src/PCB.cpp   ****     isSleeping = f;
+ 587              		.loc 1 136 5
+ 588              		.loc 1 136 16 is_stmt 0
+ 589 02c4 2305B504 		sb	a1,74(a0)
+ 137:src/PCB.cpp   **** }
+ 590              		.loc 1 137 1
+ 591 02c8 03348100 		ld	s0,8(sp)
+ 592              		.cfi_restore 8
+ 593              		.cfi_def_cfa 2, 16
+ 594 02cc 13010101 		addi	sp,sp,16
+ 595              		.cfi_def_cfa_offset 0
+ 596 02d0 67800000 		jr	ra
+ 597              		.cfi_endproc
+ 598              	.LFE20:
+ 600              		.align	2
+ 601              		.globl	_ZN3PCB5sleepEm
+GAS LISTING /tmp/ccEAN7oS.s 			page 14
+
+
+ 603              	_ZN3PCB5sleepEm:
+ 604              	.LFB19:
+ 129:src/PCB.cpp   ****     PCB::sleeping_list->putTime(running,time);
+ 605              		.loc 1 129 30 is_stmt 1
+ 606              		.cfi_startproc
+ 607              	.LVL34:
+ 608 02d4 130101FE 		addi	sp,sp,-32
+ 609              		.cfi_def_cfa_offset 32
+ 610 02d8 233C1100 		sd	ra,24(sp)
+ 611 02dc 23388100 		sd	s0,16(sp)
+ 612 02e0 23349100 		sd	s1,8(sp)
+ 613              		.cfi_offset 1, -8
+ 614              		.cfi_offset 8, -16
+ 615              		.cfi_offset 9, -24
+ 616 02e4 13040102 		addi	s0,sp,32
+ 617              		.cfi_def_cfa 8, 0
+ 618 02e8 13060500 		mv	a2,a0
+ 130:src/PCB.cpp   ****     running->setSleeping(true);
+ 619              		.loc 1 130 5
+ 130:src/PCB.cpp   ****     running->setSleeping(true);
+ 620              		.loc 1 130 32 is_stmt 0
+ 621 02ec 97040000 		lla	s1,.LANCHOR0
+ 621      93840400 
+ 622 02f4 83B50400 		ld	a1,0(s1)
+ 623 02f8 03B50401 		ld	a0,16(s1)
+ 624              	.LVL35:
+ 625 02fc 97000000 		call	_ZN8PCB_List7putTimeEP3PCBm@plt
+ 625      E7800000 
+ 626              	.LVL36:
+ 131:src/PCB.cpp   ****     //PCB::dispatch();
+ 627              		.loc 1 131 5 is_stmt 1
+ 131:src/PCB.cpp   ****     //PCB::dispatch();
+ 628              		.loc 1 131 25 is_stmt 0
+ 629 0304 93051000 		li	a1,1
+ 630 0308 03B50400 		ld	a0,0(s1)
+ 631 030c 97000000 		call	_ZN3PCB11setSleepingEb
+ 631      E7800000 
+ 632              	.LVL37:
+ 133:src/PCB.cpp   **** 
+ 633              		.loc 1 133 1
+ 634 0314 83308101 		ld	ra,24(sp)
+ 635              		.cfi_restore 1
+ 636 0318 03340101 		ld	s0,16(sp)
+ 637              		.cfi_restore 8
+ 638              		.cfi_def_cfa 2, 32
+ 639 031c 83348100 		ld	s1,8(sp)
+ 640              		.cfi_restore 9
+ 641 0320 13010102 		addi	sp,sp,32
+ 642              		.cfi_def_cfa_offset 0
+ 643 0324 67800000 		jr	ra
+ 644              		.cfi_endproc
+ 645              	.LFE19:
+ 647              		.align	2
+ 648              		.globl	_ZN3PCB13checkSleepingEv
+ 650              	_ZN3PCB13checkSleepingEv:
+ 651              	.LFB21:
+ 138:src/PCB.cpp   **** 
+GAS LISTING /tmp/ccEAN7oS.s 			page 15
+
+
+ 139:src/PCB.cpp   **** bool PCB::checkSleeping() {
+ 652              		.loc 1 139 27 is_stmt 1
+ 653              		.cfi_startproc
+ 654              	.LVL38:
+ 655 0328 130101FF 		addi	sp,sp,-16
+ 656              		.cfi_def_cfa_offset 16
+ 657 032c 23348100 		sd	s0,8(sp)
+ 658              		.cfi_offset 8, -8
+ 659 0330 13040101 		addi	s0,sp,16
+ 660              		.cfi_def_cfa 8, 0
+ 140:src/PCB.cpp   ****     return isSleeping;
+ 661              		.loc 1 140 5
+ 141:src/PCB.cpp   **** }
+ 662              		.loc 1 141 1 is_stmt 0
+ 663 0334 0345A504 		lbu	a0,74(a0)
+ 664              	.LVL39:
+ 665 0338 03348100 		ld	s0,8(sp)
+ 666              		.cfi_restore 8
+ 667              		.cfi_def_cfa 2, 16
+ 668 033c 13010101 		addi	sp,sp,16
+ 669              		.cfi_def_cfa_offset 0
+ 670 0340 67800000 		jr	ra
+ 671              		.cfi_endproc
+ 672              	.LFE21:
+ 674              		.align	2
+ 675              		.globl	_ZN3PCB8dispatchEv
+ 677              	_ZN3PCB8dispatchEv:
+ 678              	.LFB8:
+  53:src/PCB.cpp   ****     PCB* old = running;
+ 679              		.loc 1 53 22 is_stmt 1
+ 680              		.cfi_startproc
+ 681 0344 130101FE 		addi	sp,sp,-32
+ 682              		.cfi_def_cfa_offset 32
+ 683 0348 233C1100 		sd	ra,24(sp)
+ 684 034c 23388100 		sd	s0,16(sp)
+ 685 0350 23349100 		sd	s1,8(sp)
+ 686              		.cfi_offset 1, -8
+ 687              		.cfi_offset 8, -16
+ 688              		.cfi_offset 9, -24
+ 689 0354 13040102 		addi	s0,sp,32
+ 690              		.cfi_def_cfa 8, 0
+  54:src/PCB.cpp   ****     if(old->isPeriodic && PCB::isPeriodicBlocked) {
+ 691              		.loc 1 54 5
+  54:src/PCB.cpp   ****     if(old->isPeriodic && PCB::isPeriodicBlocked) {
+ 692              		.loc 1 54 10 is_stmt 0
+ 693 0358 97040000 		ld	s1,.LANCHOR0
+ 693      83B40400 
+ 694              	.LVL40:
+  55:src/PCB.cpp   ****         PCB::perioThreads->put(old);
+ 695              		.loc 1 55 5 is_stmt 1
+  55:src/PCB.cpp   ****         PCB::perioThreads->put(old);
+ 696              		.loc 1 55 13 is_stmt 0
+ 697 0360 83C71400 		lbu	a5,1(s1)
+  55:src/PCB.cpp   ****         PCB::perioThreads->put(old);
+ 698              		.loc 1 55 5
+ 699 0364 63880700 		beqz	a5,.L43
+  55:src/PCB.cpp   ****         PCB::perioThreads->put(old);
+GAS LISTING /tmp/ccEAN7oS.s 			page 16
+
+
+ 700              		.loc 1 55 24 discriminator 1
+ 701 0368 97070000 		lbu	a5,.LANCHOR0+24
+ 701      83C70700 
+ 702 0370 63920704 		bnez	a5,.L48
+ 703              	.L43:
+  58:src/PCB.cpp   ****     running = Scheduler::get();
+ 704              		.loc 1 58 10 is_stmt 1
+  58:src/PCB.cpp   ****     running = Scheduler::get();
+ 705              		.loc 1 58 32 is_stmt 0
+ 706 0374 13850400 		mv	a0,s1
+ 707 0378 97000000 		call	_ZN3PCB13checkFinishedEv
+ 707      E7800000 
+ 708              	.LVL41:
+  58:src/PCB.cpp   ****     running = Scheduler::get();
+ 709              		.loc 1 58 56
+ 710 0380 63140504 		bnez	a0,.L44
+  58:src/PCB.cpp   ****     running = Scheduler::get();
+ 711              		.loc 1 58 54 discriminator 1
+ 712 0384 13850400 		mv	a0,s1
+ 713 0388 97000000 		call	_ZN3PCB12checkBlockedEv
+ 713      E7800000 
+ 714              	.LVL42:
+  58:src/PCB.cpp   ****     running = Scheduler::get();
+ 715              		.loc 1 58 34 discriminator 1
+ 716 0390 631C0502 		bnez	a0,.L44
+  58:src/PCB.cpp   ****     running = Scheduler::get();
+ 717              		.loc 1 58 77 discriminator 3
+ 718 0394 13850400 		mv	a0,s1
+ 719 0398 97000000 		call	_ZN3PCB13checkSleepingEv
+ 719      E7800000 
+ 720              	.LVL43:
+  58:src/PCB.cpp   ****     running = Scheduler::get();
+ 721              		.loc 1 58 56 discriminator 3
+ 722 03a0 63140502 		bnez	a0,.L44
+  58:src/PCB.cpp   ****     running = Scheduler::get();
+ 723              		.loc 1 58 80 is_stmt 1
+  58:src/PCB.cpp   ****     running = Scheduler::get();
+ 724              		.loc 1 58 94 is_stmt 0
+ 725 03a4 13850400 		mv	a0,s1
+ 726 03a8 97000000 		call	_ZN9Scheduler3putEP3PCB@plt
+ 726      E7800000 
+ 727              	.LVL44:
+ 728 03b0 6F008001 		j	.L44
+ 729              	.L48:
+  56:src/PCB.cpp   ****     }
+ 730              		.loc 1 56 9 is_stmt 1
+  56:src/PCB.cpp   ****     }
+ 731              		.loc 1 56 31 is_stmt 0
+ 732 03b4 93850400 		mv	a1,s1
+ 733 03b8 17050000 		ld	a0,.LANCHOR0+32
+ 733      03350500 
+ 734 03c0 97000000 		call	_ZN8PCB_List3putEP3PCB@plt
+ 734      E7800000 
+ 735              	.LVL45:
+ 736              	.L44:
+  59:src/PCB.cpp   ****     if(running->my_id == '0') ms_status(Interrupt::SSTATUS_SPP);
+ 737              		.loc 1 59 5 is_stmt 1
+GAS LISTING /tmp/ccEAN7oS.s 			page 17
+
+
+  59:src/PCB.cpp   ****     if(running->my_id == '0') ms_status(Interrupt::SSTATUS_SPP);
+ 738              		.loc 1 59 29 is_stmt 0
+ 739 03c8 97000000 		call	_ZN9Scheduler3getEv@plt
+ 739      E7800000 
+ 740              	.LVL46:
+  59:src/PCB.cpp   ****     if(running->my_id == '0') ms_status(Interrupt::SSTATUS_SPP);
+ 741              		.loc 1 59 13
+ 742 03d0 97070000 		sd	a0,.LANCHOR0,a5
+ 742      23B0A700 
+  60:src/PCB.cpp   ****     else mc_status(Interrupt::SSTATUS_SPP);
+ 743              		.loc 1 60 5 is_stmt 1
+  60:src/PCB.cpp   ****     else mc_status(Interrupt::SSTATUS_SPP);
+ 744              		.loc 1 60 17 is_stmt 0
+ 745 03d8 0347B504 		lbu	a4,75(a0)
+  60:src/PCB.cpp   ****     else mc_status(Interrupt::SSTATUS_SPP);
+ 746              		.loc 1 60 5
+ 747 03dc 93070003 		li	a5,48
+ 748 03e0 6308F702 		beq	a4,a5,.L49
+  61:src/PCB.cpp   ****     contextSwitch(&old->context,&running->context);
+ 749              		.loc 1 61 10 is_stmt 1
+ 750              	.LVL47:
+ 751              	.LBB7:
+ 752              	.LBB8:
+ 142:src/PCB.cpp   **** 
+ 143:src/PCB.cpp   **** uint64 *PCB::allocateSystemStack() {
+ 144:src/PCB.cpp   ****     uint64 size = DEFAULT_STACK_SIZE;
+ 145:src/PCB.cpp   ****     size_t sizeB = ((size + ALLOCATED_HEADER_SIZE)/MEM_BLOCK_SIZE);
+ 146:src/PCB.cpp   ****     if((size + ALLOCATED_HEADER_SIZE)%MEM_BLOCK_SIZE > 0){
+ 147:src/PCB.cpp   ****         sizeB++;
+ 148:src/PCB.cpp   ****     }
+ 149:src/PCB.cpp   ****     sizeB*=MEM_BLOCK_SIZE;
+ 150:src/PCB.cpp   ****     void* retAdr = MemoryAllocator::mem_alloc((size_t) sizeB);
+ 151:src/PCB.cpp   ****     long* header = (long*) retAdr;
+ 152:src/PCB.cpp   ****     sizeB/=MEM_BLOCK_SIZE;
+ 153:src/PCB.cpp   ****     *header = sizeB;
+ 154:src/PCB.cpp   ****     header++;
+ 155:src/PCB.cpp   ****     return (uint64 *)header;
+ 156:src/PCB.cpp   **** }
+ 157:src/PCB.cpp   **** 
+ 158:src/PCB.cpp   **** uint64 PCB::getSSP() {
+ 159:src/PCB.cpp   ****     return this->context.ssp;
+ 160:src/PCB.cpp   **** }
+ 161:src/PCB.cpp   **** 
+ 162:src/PCB.cpp   **** uint64 PCB::getSP() {
+ 163:src/PCB.cpp   ****     return this->context.sp;
+ 164:src/PCB.cpp   **** }
+ 165:src/PCB.cpp   **** 
+ 166:src/PCB.cpp   **** void PCB::setSSP(uint64 ssp) {
+ 167:src/PCB.cpp   ****     this->context.ssp = ssp;
+ 168:src/PCB.cpp   **** }
+ 169:src/PCB.cpp   **** 
+ 170:src/PCB.cpp   **** void PCB::setSP(uint64 sp) {
+ 171:src/PCB.cpp   ****     this->context.sp = sp;
+ 172:src/PCB.cpp   **** }
+ 173:src/PCB.cpp   **** 
+ 174:src/PCB.cpp   **** inline void PCB::ms_status(uint64 mask) {
+ 175:src/PCB.cpp   ****     __asm__ volatile("csrs sstatus, %[mask]" : : [mask]"r"(mask));
+GAS LISTING /tmp/ccEAN7oS.s 			page 18
+
+
+ 176:src/PCB.cpp   **** }
+ 177:src/PCB.cpp   **** inline void PCB::mc_status(uint64 mask) {
+ 178:src/PCB.cpp   ****     __asm__ volatile("csrc sstatus, %[mask]" : : [mask]"r"(mask));
+ 753              		.loc 1 178 5
+ 754              		.loc 1 178 66 is_stmt 0
+ 755 03e4 93070010 		li	a5,256
+ 756              	#APP
+ 757              	# 178 "src/PCB.cpp" 1
+ 179              	}
+ 758              		csrc sstatus, a5
+ 759              	# 0 "" 2
+ 760              	.LVL48:
+ 761              	#NO_APP
+ 762              	.L46:
+ 763              	.LBE8:
+ 764              	.LBE7:
+  62:src/PCB.cpp   **** 
+ 765              		.loc 1 62 5 is_stmt 1
+  62:src/PCB.cpp   **** 
+ 766              		.loc 1 62 18 is_stmt 0
+ 767 03ec 93058502 		addi	a1,a0,40
+ 768 03f0 13858402 		addi	a0,s1,40
+ 769 03f4 97000000 		call	_ZN3PCB13contextSwitchEPNS_7ContextES1_@plt
+ 769      E7800000 
+ 770              	.LVL49:
+  64:src/PCB.cpp   **** 
+ 771              		.loc 1 64 1
+ 772 03fc 83308101 		ld	ra,24(sp)
+ 773              		.cfi_remember_state
+ 774              		.cfi_restore 1
+ 775 0400 03340101 		ld	s0,16(sp)
+ 776              		.cfi_restore 8
+ 777              		.cfi_def_cfa 2, 32
+ 778 0404 83348100 		ld	s1,8(sp)
+ 779              		.cfi_restore 9
+ 780              	.LVL50:
+ 781 0408 13010102 		addi	sp,sp,32
+ 782              		.cfi_def_cfa_offset 0
+ 783 040c 67800000 		jr	ra
+ 784              	.LVL51:
+ 785              	.L49:
+ 786              		.cfi_restore_state
+  60:src/PCB.cpp   ****     else mc_status(Interrupt::SSTATUS_SPP);
+ 787              		.loc 1 60 31 is_stmt 1
+ 788              	.LBB9:
+ 789              	.LBB10:
+ 175:src/PCB.cpp   **** }
+ 790              		.loc 1 175 5
+ 175:src/PCB.cpp   **** }
+ 791              		.loc 1 175 66 is_stmt 0
+ 792 0410 93070010 		li	a5,256
+ 793              	#APP
+ 794              	# 175 "src/PCB.cpp" 1
+ 176:src/PCB.cpp   **** inline void PCB::mc_status(uint64 mask) {
+ 795              		csrs sstatus, a5
+ 796              	# 0 "" 2
+ 797              		.loc 1 176 1
+GAS LISTING /tmp/ccEAN7oS.s 			page 19
+
+
+ 798              	#NO_APP
+ 799 0418 6FF05FFD 		j	.L46
+ 800              	.LBE10:
+ 801              	.LBE9:
+ 802              		.cfi_endproc
+ 803              	.LFE8:
+ 805              		.align	2
+ 806              		.globl	_ZN3PCB19allocateSystemStackEv
+ 808              	_ZN3PCB19allocateSystemStackEv:
+ 809              	.LFB22:
+ 143:src/PCB.cpp   ****     uint64 size = DEFAULT_STACK_SIZE;
+ 810              		.loc 1 143 36 is_stmt 1
+ 811              		.cfi_startproc
+ 812 041c 130101FF 		addi	sp,sp,-16
+ 813              		.cfi_def_cfa_offset 16
+ 814 0420 23341100 		sd	ra,8(sp)
+ 815 0424 23308100 		sd	s0,0(sp)
+ 816              		.cfi_offset 1, -8
+ 817              		.cfi_offset 8, -16
+ 818 0428 13040101 		addi	s0,sp,16
+ 819              		.cfi_def_cfa 8, 0
+ 144:src/PCB.cpp   ****     size_t sizeB = ((size + ALLOCATED_HEADER_SIZE)/MEM_BLOCK_SIZE);
+ 820              		.loc 1 144 5
+ 821              	.LVL52:
+ 145:src/PCB.cpp   ****     if((size + ALLOCATED_HEADER_SIZE)%MEM_BLOCK_SIZE > 0){
+ 822              		.loc 1 145 5
+ 146:src/PCB.cpp   ****         sizeB++;
+ 823              		.loc 1 146 5
+ 147:src/PCB.cpp   ****     }
+ 824              		.loc 1 147 9
+ 149:src/PCB.cpp   ****     void* retAdr = MemoryAllocator::mem_alloc((size_t) sizeB);
+ 825              		.loc 1 149 5
+ 150:src/PCB.cpp   ****     long* header = (long*) retAdr;
+ 826              		.loc 1 150 5
+ 150:src/PCB.cpp   ****     long* header = (long*) retAdr;
+ 827              		.loc 1 150 46 is_stmt 0
+ 828 042c 37150000 		li	a0,4096
+ 829 0430 13050504 		addi	a0,a0,64
+ 830 0434 97000000 		call	_ZN15MemoryAllocator9mem_allocEm@plt
+ 830      E7800000 
+ 831              	.LVL53:
+ 151:src/PCB.cpp   ****     sizeB/=MEM_BLOCK_SIZE;
+ 832              		.loc 1 151 5 is_stmt 1
+ 152:src/PCB.cpp   ****     *header = sizeB;
+ 833              		.loc 1 152 5
+ 153:src/PCB.cpp   ****     header++;
+ 834              		.loc 1 153 5
+ 153:src/PCB.cpp   ****     header++;
+ 835              		.loc 1 153 13 is_stmt 0
+ 836 043c 93071004 		li	a5,65
+ 837 0440 2330F500 		sd	a5,0(a0)
+ 154:src/PCB.cpp   ****     return (uint64 *)header;
+ 838              		.loc 1 154 5 is_stmt 1
+ 839              	.LVL54:
+ 155:src/PCB.cpp   **** }
+ 840              		.loc 1 155 5
+ 156:src/PCB.cpp   **** 
+GAS LISTING /tmp/ccEAN7oS.s 			page 20
+
+
+ 841              		.loc 1 156 1 is_stmt 0
+ 842 0444 13058500 		addi	a0,a0,8
+ 843              	.LVL55:
+ 844 0448 83308100 		ld	ra,8(sp)
+ 845              		.cfi_restore 1
+ 846 044c 03340100 		ld	s0,0(sp)
+ 847              		.cfi_restore 8
+ 848              		.cfi_def_cfa 2, 16
+ 849 0450 13010101 		addi	sp,sp,16
+ 850              		.cfi_def_cfa_offset 0
+ 851 0454 67800000 		jr	ra
+ 852              		.cfi_endproc
+ 853              	.LFE22:
+ 855              		.align	2
+ 856              		.globl	_ZN3PCB6getSSPEv
+ 858              	_ZN3PCB6getSSPEv:
+ 859              	.LFB23:
+ 158:src/PCB.cpp   ****     return this->context.ssp;
+ 860              		.loc 1 158 22 is_stmt 1
+ 861              		.cfi_startproc
+ 862              	.LVL56:
+ 863 0458 130101FF 		addi	sp,sp,-16
+ 864              		.cfi_def_cfa_offset 16
+ 865 045c 23348100 		sd	s0,8(sp)
+ 866              		.cfi_offset 8, -8
+ 867 0460 13040101 		addi	s0,sp,16
+ 868              		.cfi_def_cfa 8, 0
+ 159:src/PCB.cpp   **** }
+ 869              		.loc 1 159 5
+ 160:src/PCB.cpp   **** 
+ 870              		.loc 1 160 1 is_stmt 0
+ 871 0464 03358503 		ld	a0,56(a0)
+ 872              	.LVL57:
+ 873 0468 03348100 		ld	s0,8(sp)
+ 874              		.cfi_restore 8
+ 875              		.cfi_def_cfa 2, 16
+ 876 046c 13010101 		addi	sp,sp,16
+ 877              		.cfi_def_cfa_offset 0
+ 878 0470 67800000 		jr	ra
+ 879              		.cfi_endproc
+ 880              	.LFE23:
+ 882              		.align	2
+ 883              		.globl	_ZN3PCB5getSPEv
+ 885              	_ZN3PCB5getSPEv:
+ 886              	.LFB24:
+ 162:src/PCB.cpp   ****     return this->context.sp;
+ 887              		.loc 1 162 21 is_stmt 1
+ 888              		.cfi_startproc
+ 889              	.LVL58:
+ 890 0474 130101FF 		addi	sp,sp,-16
+ 891              		.cfi_def_cfa_offset 16
+ 892 0478 23348100 		sd	s0,8(sp)
+ 893              		.cfi_offset 8, -8
+ 894 047c 13040101 		addi	s0,sp,16
+ 895              		.cfi_def_cfa 8, 0
+ 163:src/PCB.cpp   **** }
+ 896              		.loc 1 163 5
+GAS LISTING /tmp/ccEAN7oS.s 			page 21
+
+
+ 164:src/PCB.cpp   **** 
+ 897              		.loc 1 164 1 is_stmt 0
+ 898 0480 03350503 		ld	a0,48(a0)
+ 899              	.LVL59:
+ 900 0484 03348100 		ld	s0,8(sp)
+ 901              		.cfi_restore 8
+ 902              		.cfi_def_cfa 2, 16
+ 903 0488 13010101 		addi	sp,sp,16
+ 904              		.cfi_def_cfa_offset 0
+ 905 048c 67800000 		jr	ra
+ 906              		.cfi_endproc
+ 907              	.LFE24:
+ 909              		.align	2
+ 910              		.globl	_ZN3PCB6setSSPEm
+ 912              	_ZN3PCB6setSSPEm:
+ 913              	.LFB25:
+ 166:src/PCB.cpp   ****     this->context.ssp = ssp;
+ 914              		.loc 1 166 30 is_stmt 1
+ 915              		.cfi_startproc
+ 916              	.LVL60:
+ 917 0490 130101FF 		addi	sp,sp,-16
+ 918              		.cfi_def_cfa_offset 16
+ 919 0494 23348100 		sd	s0,8(sp)
+ 920              		.cfi_offset 8, -8
+ 921 0498 13040101 		addi	s0,sp,16
+ 922              		.cfi_def_cfa 8, 0
+ 167:src/PCB.cpp   **** }
+ 923              		.loc 1 167 5
+ 167:src/PCB.cpp   **** }
+ 924              		.loc 1 167 23 is_stmt 0
+ 925 049c 233CB502 		sd	a1,56(a0)
+ 168:src/PCB.cpp   **** 
+ 926              		.loc 1 168 1
+ 927 04a0 03348100 		ld	s0,8(sp)
+ 928              		.cfi_restore 8
+ 929              		.cfi_def_cfa 2, 16
+ 930 04a4 13010101 		addi	sp,sp,16
+ 931              		.cfi_def_cfa_offset 0
+ 932 04a8 67800000 		jr	ra
+ 933              		.cfi_endproc
+ 934              	.LFE25:
+ 936              		.align	2
+ 937              		.globl	_ZN3PCB5setSPEm
+ 939              	_ZN3PCB5setSPEm:
+ 940              	.LFB26:
+ 170:src/PCB.cpp   ****     this->context.sp = sp;
+ 941              		.loc 1 170 28 is_stmt 1
+ 942              		.cfi_startproc
+ 943              	.LVL61:
+ 944 04ac 130101FF 		addi	sp,sp,-16
+ 945              		.cfi_def_cfa_offset 16
+ 946 04b0 23348100 		sd	s0,8(sp)
+ 947              		.cfi_offset 8, -8
+ 948 04b4 13040101 		addi	s0,sp,16
+ 949              		.cfi_def_cfa 8, 0
+ 171:src/PCB.cpp   **** }
+ 950              		.loc 1 171 5
+GAS LISTING /tmp/ccEAN7oS.s 			page 22
+
+
+ 171:src/PCB.cpp   **** }
+ 951              		.loc 1 171 22 is_stmt 0
+ 952 04b8 2338B502 		sd	a1,48(a0)
+ 172:src/PCB.cpp   **** 
+ 953              		.loc 1 172 1
+ 954 04bc 03348100 		ld	s0,8(sp)
+ 955              		.cfi_restore 8
+ 956              		.cfi_def_cfa 2, 16
+ 957 04c0 13010101 		addi	sp,sp,16
+ 958              		.cfi_def_cfa_offset 0
+ 959 04c4 67800000 		jr	ra
+ 960              		.cfi_endproc
+ 961              	.LFE26:
+ 963              		.globl	_ZN3PCB12perioThreadsE
+ 964              		.globl	_ZN3PCB17isPeriodicBlockedE
+ 965              		.globl	_ZN3PCB6isMainE
+ 966              		.globl	_ZN3PCB6id_cntE
+ 967              		.globl	_ZN3PCB13sleeping_listE
+ 968              		.globl	_ZN3PCB8timeLeftE
+ 969              		.globl	_ZN3PCB7runningE
+ 970              		.data
+ 973              	_ZN3PCB6isMainE:
+ 974 0000 01       		.byte	1
+ 975              		.bss
+ 976              		.align	3
+ 977              		.set	.LANCHOR0,. + 0
+ 980              	_ZN3PCB7runningE:
+ 981 0000 00000000 		.zero	8
+ 981      00000000 
+ 984              	_ZN3PCB6id_cntE:
+ 985 0008 00000000 		.zero	4
+ 986 000c 00000000 		.zero	4
+ 989              	_ZN3PCB13sleeping_listE:
+ 990 0010 00000000 		.zero	8
+ 990      00000000 
+ 993              	_ZN3PCB17isPeriodicBlockedE:
+ 994 0018 00       		.zero	1
+ 995 0019 00000000 		.zero	7
+ 995      000000
+ 998              	_ZN3PCB12perioThreadsE:
+ 999 0020 00000000 		.zero	8
+ 999      00000000 
+ 1002              	_ZN3PCB8timeLeftE:
+ 1003 0028 00000000 		.zero	8
+ 1003      00000000 
+ 1004              		.text
+ 1005              	.Letext0:
+ 1006              		.file 2 "src/../h/../lib/hw.h"
+ 1007              		.file 3 "src/../h/../h/syscall_c.h"
+ 1008              		.file 4 "src/../h/../h/../h/../h/PCB_List.h"
+ 1009              		.file 5 "src/../h/PCB.h"
+ 1010              		.file 6 "src/../h/../h/../h/../h/MemoryAllocator.h"
+ 1011              		.file 7 "src/../h/../h/Interrupt.h"
+ 1012              		.file 8 "src/../h/../h/Scheduler.h"
+GAS LISTING /tmp/ccEAN7oS.s 			page 23
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 PCB.cpp
+     /tmp/ccEAN7oS.s:9      .text:0000000000000000 _ZN3PCB7getNextEv
+     /tmp/ccEAN7oS.s:13     .text:0000000000000000 .L0 
+     /tmp/ccEAN7oS.s:15     .text:0000000000000000 .L0 
+     /tmp/ccEAN7oS.s:16     .text:0000000000000004 .L0 
+     /tmp/ccEAN7oS.s:18     .text:0000000000000008 .L0 
+     /tmp/ccEAN7oS.s:20     .text:000000000000000c .L0 
+     /tmp/ccEAN7oS.s:22     .text:000000000000000c .L0 
+     /tmp/ccEAN7oS.s:23     .text:000000000000000c .L0 
+     /tmp/ccEAN7oS.s:26     .text:0000000000000014 .L0 
+     /tmp/ccEAN7oS.s:27     .text:0000000000000014 .L0 
+     /tmp/ccEAN7oS.s:29     .text:0000000000000018 .L0 
+     /tmp/ccEAN7oS.s:31     .text:000000000000001c .L0 
+     /tmp/ccEAN7oS.s:37     .text:000000000000001c _ZN3PCB7setNextEPS_
+     /tmp/ccEAN7oS.s:40     .text:000000000000001c .L0 
+     /tmp/ccEAN7oS.s:42     .text:000000000000001c .L0 
+     /tmp/ccEAN7oS.s:43     .text:0000000000000020 .L0 
+     /tmp/ccEAN7oS.s:45     .text:0000000000000024 .L0 
+     /tmp/ccEAN7oS.s:47     .text:0000000000000028 .L0 
+     /tmp/ccEAN7oS.s:49     .text:0000000000000028 .L0 
+     /tmp/ccEAN7oS.s:50     .text:0000000000000028 .L0 
+     /tmp/ccEAN7oS.s:52     .text:000000000000002c .L0 
+     /tmp/ccEAN7oS.s:53     .text:0000000000000030 .L0 
+     /tmp/ccEAN7oS.s:54     .text:0000000000000030 .L0 
+     /tmp/ccEAN7oS.s:56     .text:0000000000000034 .L0 
+     /tmp/ccEAN7oS.s:58     .text:0000000000000038 .L0 
+     /tmp/ccEAN7oS.s:64     .text:0000000000000038 _ZN3PCBC2EPFvPvES0_Pmm
+     /tmp/ccEAN7oS.s:67     .text:0000000000000038 .L0 
+     /tmp/ccEAN7oS.s:69     .text:0000000000000038 .L0 
+     /tmp/ccEAN7oS.s:70     .text:000000000000003c .L0 
+     /tmp/ccEAN7oS.s:72     .text:0000000000000040 .L0 
+     /tmp/ccEAN7oS.s:74     .text:0000000000000044 .L0 
+     /tmp/ccEAN7oS.s:77     .text:0000000000000044 .L0 
+     /tmp/ccEAN7oS.s:78     .text:0000000000000044 .L0 
+     /tmp/ccEAN7oS.s:80     .text:0000000000000048 .L0 
+     /tmp/ccEAN7oS.s:81     .text:0000000000000048 .L0 
+     /tmp/ccEAN7oS.s:83     .text:000000000000004c .L0 
+     /tmp/ccEAN7oS.s:84     .text:000000000000004c .L0 
+     /tmp/ccEAN7oS.s:88     .text:0000000000000054 .L0 
+     /tmp/ccEAN7oS.s:90     .text:0000000000000058 .L0 
+     /tmp/ccEAN7oS.s:241    .text:0000000000000100 _ZN3PCB13threadWrapperEv
+     /tmp/ccEAN7oS.s:91     .text:0000000000000058 .L0 
+     /tmp/ccEAN7oS.s:94     .text:0000000000000064 .L0 
+     /tmp/ccEAN7oS.s:95     .text:0000000000000064 .L0 
+     /tmp/ccEAN7oS.s:97     .text:0000000000000068 .L0 
+     /tmp/ccEAN7oS.s:98     .text:0000000000000068 .L0 
+     /tmp/ccEAN7oS.s:100    .text:000000000000006c .L0 
+     /tmp/ccEAN7oS.s:101    .text:000000000000006c .L0 
+     /tmp/ccEAN7oS.s:103    .text:0000000000000070 .L0 
+     /tmp/ccEAN7oS.s:104    .text:0000000000000070 .L0 
+     /tmp/ccEAN7oS.s:106    .text:0000000000000074 .L0 
+     /tmp/ccEAN7oS.s:107    .text:0000000000000074 .L0 
+     /tmp/ccEAN7oS.s:109    .text:0000000000000078 .L0 
+     /tmp/ccEAN7oS.s:110    .text:0000000000000078 .L0 
+     /tmp/ccEAN7oS.s:112    .text:000000000000007c .L0 
+     /tmp/ccEAN7oS.s:113    .text:000000000000007c .L0 
+GAS LISTING /tmp/ccEAN7oS.s 			page 24
+
+
+     /tmp/ccEAN7oS.s:115    .text:0000000000000080 .L0 
+     /tmp/ccEAN7oS.s:116    .text:0000000000000080 .L0 
+     /tmp/ccEAN7oS.s:119    .text:0000000000000084 .L0 
+     /tmp/ccEAN7oS.s:120    .text:0000000000000088 .L0 
+     /tmp/ccEAN7oS.s:121    .text:0000000000000088 .L0 
+     /tmp/ccEAN7oS.s:123    .text:000000000000008c .L0 
+     /tmp/ccEAN7oS.s:125    .text:0000000000000090 .L0 
+     /tmp/ccEAN7oS.s:64     .text:0000000000000038 _ZN3PCBC1EPFvPvES0_Pmm
+     /tmp/ccEAN7oS.s:133    .text:0000000000000090 _ZN3PCB11setFinishedEb
+     /tmp/ccEAN7oS.s:136    .text:0000000000000090 .L0 
+     /tmp/ccEAN7oS.s:138    .text:0000000000000090 .L0 
+     /tmp/ccEAN7oS.s:139    .text:0000000000000094 .L0 
+     /tmp/ccEAN7oS.s:141    .text:0000000000000098 .L0 
+     /tmp/ccEAN7oS.s:143    .text:000000000000009c .L0 
+     /tmp/ccEAN7oS.s:145    .text:000000000000009c .L0 
+     /tmp/ccEAN7oS.s:146    .text:000000000000009c .L0 
+     /tmp/ccEAN7oS.s:148    .text:00000000000000a0 .L0 
+     /tmp/ccEAN7oS.s:149    .text:00000000000000a4 .L0 
+     /tmp/ccEAN7oS.s:150    .text:00000000000000a4 .L0 
+     /tmp/ccEAN7oS.s:152    .text:00000000000000a8 .L0 
+     /tmp/ccEAN7oS.s:154    .text:00000000000000ac .L0 
+     /tmp/ccEAN7oS.s:160    .text:00000000000000ac _ZN3PCB13checkFinishedEv
+     /tmp/ccEAN7oS.s:163    .text:00000000000000ac .L0 
+     /tmp/ccEAN7oS.s:165    .text:00000000000000ac .L0 
+     /tmp/ccEAN7oS.s:166    .text:00000000000000b0 .L0 
+     /tmp/ccEAN7oS.s:168    .text:00000000000000b4 .L0 
+     /tmp/ccEAN7oS.s:170    .text:00000000000000b8 .L0 
+     /tmp/ccEAN7oS.s:172    .text:00000000000000b8 .L0 
+     /tmp/ccEAN7oS.s:173    .text:00000000000000b8 .L0 
+     /tmp/ccEAN7oS.s:176    .text:00000000000000c0 .L0 
+     /tmp/ccEAN7oS.s:177    .text:00000000000000c0 .L0 
+     /tmp/ccEAN7oS.s:179    .text:00000000000000c4 .L0 
+     /tmp/ccEAN7oS.s:181    .text:00000000000000c8 .L0 
+     /tmp/ccEAN7oS.s:187    .text:00000000000000c8 _ZN3PCB7setArgsEPv
+     /tmp/ccEAN7oS.s:190    .text:00000000000000c8 .L0 
+     /tmp/ccEAN7oS.s:192    .text:00000000000000c8 .L0 
+     /tmp/ccEAN7oS.s:193    .text:00000000000000cc .L0 
+     /tmp/ccEAN7oS.s:195    .text:00000000000000d0 .L0 
+     /tmp/ccEAN7oS.s:197    .text:00000000000000d4 .L0 
+     /tmp/ccEAN7oS.s:199    .text:00000000000000d4 .L0 
+     /tmp/ccEAN7oS.s:200    .text:00000000000000d4 .L0 
+     /tmp/ccEAN7oS.s:202    .text:00000000000000d8 .L0 
+     /tmp/ccEAN7oS.s:203    .text:00000000000000dc .L0 
+     /tmp/ccEAN7oS.s:204    .text:00000000000000dc .L0 
+     /tmp/ccEAN7oS.s:206    .text:00000000000000e0 .L0 
+     /tmp/ccEAN7oS.s:208    .text:00000000000000e4 .L0 
+     /tmp/ccEAN7oS.s:214    .text:00000000000000e4 _ZN3PCB7getArgsEv
+     /tmp/ccEAN7oS.s:217    .text:00000000000000e4 .L0 
+     /tmp/ccEAN7oS.s:219    .text:00000000000000e4 .L0 
+     /tmp/ccEAN7oS.s:220    .text:00000000000000e8 .L0 
+     /tmp/ccEAN7oS.s:222    .text:00000000000000ec .L0 
+     /tmp/ccEAN7oS.s:224    .text:00000000000000f0 .L0 
+     /tmp/ccEAN7oS.s:226    .text:00000000000000f0 .L0 
+     /tmp/ccEAN7oS.s:227    .text:00000000000000f0 .L0 
+     /tmp/ccEAN7oS.s:230    .text:00000000000000f8 .L0 
+     /tmp/ccEAN7oS.s:231    .text:00000000000000f8 .L0 
+     /tmp/ccEAN7oS.s:233    .text:00000000000000fc .L0 
+GAS LISTING /tmp/ccEAN7oS.s 			page 25
+
+
+     /tmp/ccEAN7oS.s:235    .text:0000000000000100 .L0 
+     /tmp/ccEAN7oS.s:244    .text:0000000000000100 .L0 
+     /tmp/ccEAN7oS.s:245    .text:0000000000000100 .L0 
+     /tmp/ccEAN7oS.s:246    .text:0000000000000104 .L0 
+     /tmp/ccEAN7oS.s:250    .text:0000000000000110 .L0 
+     /tmp/ccEAN7oS.s:251    .text:0000000000000110 .L0 
+     /tmp/ccEAN7oS.s:252    .text:0000000000000110 .L0 
+     /tmp/ccEAN7oS.s:254    .text:0000000000000114 .L0 
+     /tmp/ccEAN7oS.s:256    .text:0000000000000114 .L0 
+     /tmp/ccEAN7oS.s:257    .text:0000000000000114 .L0 
+     /tmp/ccEAN7oS.s:260    .text:000000000000011c .L0 
+     /tmp/ccEAN7oS.s:261    .text:000000000000011c .L0 
+     /tmp/ccEAN7oS.s:266    .text:0000000000000130 .L0 
+     /tmp/ccEAN7oS.s:267    .text:0000000000000130 .L0 
+     /tmp/ccEAN7oS.s:269    .text:0000000000000134 .L0 
+     /tmp/ccEAN7oS.s:272    .text:0000000000000138 .L0 
+     /tmp/ccEAN7oS.s:273    .text:0000000000000138 .L0 
+     /tmp/ccEAN7oS.s:276    .text:0000000000000140 .L0 
+     /tmp/ccEAN7oS.s:277    .text:0000000000000144 .L0 
+     /tmp/ccEAN7oS.s:279    .text:0000000000000148 .L0 
+     /tmp/ccEAN7oS.s:280    .text:0000000000000148 .L0 
+     /tmp/ccEAN7oS.s:282    .text:000000000000014c .L0 
+     /tmp/ccEAN7oS.s:284    .text:0000000000000150 .L0 
+     /tmp/ccEAN7oS.s:286    .text:0000000000000154 .L0 
+     /tmp/ccEAN7oS.s:292    .text:0000000000000154 _ZN3PCB11allocatePCBEv
+     /tmp/ccEAN7oS.s:295    .text:0000000000000154 .L0 
+     /tmp/ccEAN7oS.s:296    .text:0000000000000154 .L0 
+     /tmp/ccEAN7oS.s:297    .text:0000000000000158 .L0 
+     /tmp/ccEAN7oS.s:300    .text:0000000000000160 .L0 
+     /tmp/ccEAN7oS.s:301    .text:0000000000000160 .L0 
+     /tmp/ccEAN7oS.s:303    .text:0000000000000164 .L0 
+     /tmp/ccEAN7oS.s:306    .text:0000000000000164 .L0 
+     /tmp/ccEAN7oS.s:307    .text:0000000000000164 .L0 
+     /tmp/ccEAN7oS.s:308    .text:0000000000000164 .L0 
+     /tmp/ccEAN7oS.s:309    .text:0000000000000164 .L0 
+     /tmp/ccEAN7oS.s:310    .text:0000000000000164 .L0 
+     /tmp/ccEAN7oS.s:311    .text:0000000000000164 .L0 
+     /tmp/ccEAN7oS.s:312    .text:0000000000000164 .L0 
+     /tmp/ccEAN7oS.s:316    .text:0000000000000170 .L0 
+     /tmp/ccEAN7oS.s:317    .text:0000000000000170 .L0 
+     /tmp/ccEAN7oS.s:318    .text:0000000000000170 .L0 
+     /tmp/ccEAN7oS.s:319    .text:0000000000000170 .L0 
+     /tmp/ccEAN7oS.s:323    .text:0000000000000178 .L0 
+     /tmp/ccEAN7oS.s:324    .text:0000000000000178 .L0 
+     /tmp/ccEAN7oS.s:325    .text:0000000000000178 .L0 
+     /tmp/ccEAN7oS.s:326    .text:0000000000000178 .L0 
+     /tmp/ccEAN7oS.s:329    .text:0000000000000180 .L0 
+     /tmp/ccEAN7oS.s:331    .text:0000000000000184 .L0 
+     /tmp/ccEAN7oS.s:332    .text:0000000000000184 .L0 
+     /tmp/ccEAN7oS.s:334    .text:0000000000000188 .L0 
+     /tmp/ccEAN7oS.s:336    .text:000000000000018c .L0 
+     /tmp/ccEAN7oS.s:342    .text:000000000000018c _ZN3PCB10setContextEmm
+     /tmp/ccEAN7oS.s:345    .text:000000000000018c .L0 
+     /tmp/ccEAN7oS.s:347    .text:000000000000018c .L0 
+     /tmp/ccEAN7oS.s:348    .text:0000000000000190 .L0 
+     /tmp/ccEAN7oS.s:350    .text:0000000000000194 .L0 
+     /tmp/ccEAN7oS.s:352    .text:0000000000000198 .L0 
+GAS LISTING /tmp/ccEAN7oS.s 			page 26
+
+
+     /tmp/ccEAN7oS.s:354    .text:0000000000000198 .L0 
+     /tmp/ccEAN7oS.s:355    .text:0000000000000198 .L0 
+     /tmp/ccEAN7oS.s:357    .text:000000000000019c .L0 
+     /tmp/ccEAN7oS.s:358    .text:000000000000019c .L0 
+     /tmp/ccEAN7oS.s:360    .text:00000000000001a0 .L0 
+     /tmp/ccEAN7oS.s:361    .text:00000000000001a4 .L0 
+     /tmp/ccEAN7oS.s:362    .text:00000000000001a4 .L0 
+     /tmp/ccEAN7oS.s:364    .text:00000000000001a8 .L0 
+     /tmp/ccEAN7oS.s:366    .text:00000000000001ac .L0 
+     /tmp/ccEAN7oS.s:372    .text:00000000000001ac _ZN3PCB12checkBlockedEv
+     /tmp/ccEAN7oS.s:375    .text:00000000000001ac .L0 
+     /tmp/ccEAN7oS.s:377    .text:00000000000001ac .L0 
+     /tmp/ccEAN7oS.s:378    .text:00000000000001b0 .L0 
+     /tmp/ccEAN7oS.s:380    .text:00000000000001b4 .L0 
+     /tmp/ccEAN7oS.s:382    .text:00000000000001b8 .L0 
+     /tmp/ccEAN7oS.s:384    .text:00000000000001b8 .L0 
+     /tmp/ccEAN7oS.s:385    .text:00000000000001b8 .L0 
+     /tmp/ccEAN7oS.s:388    .text:00000000000001c0 .L0 
+     /tmp/ccEAN7oS.s:389    .text:00000000000001c0 .L0 
+     /tmp/ccEAN7oS.s:391    .text:00000000000001c4 .L0 
+     /tmp/ccEAN7oS.s:393    .text:00000000000001c8 .L0 
+     /tmp/ccEAN7oS.s:399    .text:00000000000001c8 _ZN3PCB10setBlockedEb
+     /tmp/ccEAN7oS.s:402    .text:00000000000001c8 .L0 
+     /tmp/ccEAN7oS.s:404    .text:00000000000001c8 .L0 
+     /tmp/ccEAN7oS.s:405    .text:00000000000001cc .L0 
+     /tmp/ccEAN7oS.s:407    .text:00000000000001d0 .L0 
+     /tmp/ccEAN7oS.s:409    .text:00000000000001d4 .L0 
+     /tmp/ccEAN7oS.s:411    .text:00000000000001d4 .L0 
+     /tmp/ccEAN7oS.s:412    .text:00000000000001d4 .L0 
+     /tmp/ccEAN7oS.s:414    .text:00000000000001d8 .L0 
+     /tmp/ccEAN7oS.s:415    .text:00000000000001dc .L0 
+     /tmp/ccEAN7oS.s:416    .text:00000000000001dc .L0 
+     /tmp/ccEAN7oS.s:418    .text:00000000000001e0 .L0 
+     /tmp/ccEAN7oS.s:420    .text:00000000000001e4 .L0 
+     /tmp/ccEAN7oS.s:426    .text:00000000000001e4 _ZN3PCB5setIdEc
+     /tmp/ccEAN7oS.s:429    .text:00000000000001e4 .L0 
+     /tmp/ccEAN7oS.s:431    .text:00000000000001e4 .L0 
+     /tmp/ccEAN7oS.s:432    .text:00000000000001e8 .L0 
+     /tmp/ccEAN7oS.s:434    .text:00000000000001ec .L0 
+     /tmp/ccEAN7oS.s:436    .text:00000000000001f0 .L0 
+     /tmp/ccEAN7oS.s:438    .text:00000000000001f0 .L0 
+     /tmp/ccEAN7oS.s:439    .text:00000000000001f0 .L0 
+     /tmp/ccEAN7oS.s:441    .text:00000000000001f4 .L0 
+     /tmp/ccEAN7oS.s:442    .text:00000000000001f8 .L0 
+     /tmp/ccEAN7oS.s:443    .text:00000000000001f8 .L0 
+     /tmp/ccEAN7oS.s:445    .text:00000000000001fc .L0 
+     /tmp/ccEAN7oS.s:447    .text:0000000000000200 .L0 
+     /tmp/ccEAN7oS.s:453    .text:0000000000000200 _ZN3PCB5startEv
+     /tmp/ccEAN7oS.s:456    .text:0000000000000200 .L0 
+     /tmp/ccEAN7oS.s:458    .text:0000000000000200 .L0 
+     /tmp/ccEAN7oS.s:459    .text:0000000000000204 .L0 
+     /tmp/ccEAN7oS.s:463    .text:0000000000000210 .L0 
+     /tmp/ccEAN7oS.s:464    .text:0000000000000210 .L0 
+     /tmp/ccEAN7oS.s:465    .text:0000000000000210 .L0 
+     /tmp/ccEAN7oS.s:467    .text:0000000000000214 .L0 
+     /tmp/ccEAN7oS.s:470    .text:0000000000000218 .L0 
+     /tmp/ccEAN7oS.s:471    .text:0000000000000218 .L0 
+GAS LISTING /tmp/ccEAN7oS.s 			page 27
+
+
+     /tmp/ccEAN7oS.s:473    .text:0000000000000220 .L0 
+     /tmp/ccEAN7oS.s:475    .text:0000000000000224 .L0 
+     /tmp/ccEAN7oS.s:476    .text:0000000000000224 .L0 
+     /tmp/ccEAN7oS.s:481    .text:0000000000000238 .L0 
+     /tmp/ccEAN7oS.s:486    .text:0000000000000248 .L0 
+     /tmp/ccEAN7oS.s:487    .text:0000000000000248 .L0 
+     /tmp/ccEAN7oS.s:492    .text:0000000000000254 .L0 
+     /tmp/ccEAN7oS.s:493    .text:0000000000000258 .L0 
+     /tmp/ccEAN7oS.s:494    .text:0000000000000258 .L0 
+     /tmp/ccEAN7oS.s:496    .text:000000000000025c .L0 
+     /tmp/ccEAN7oS.s:497    .text:000000000000025c .L0 
+     /tmp/ccEAN7oS.s:499    .text:0000000000000260 .L0 
+     /tmp/ccEAN7oS.s:502    .text:0000000000000264 .L0 
+     /tmp/ccEAN7oS.s:506    .text:0000000000000268 .L0 
+     /tmp/ccEAN7oS.s:508    .text:0000000000000268 .L0 
+     /tmp/ccEAN7oS.s:509    .text:0000000000000268 .L0 
+     /tmp/ccEAN7oS.s:511    .text:0000000000000270 .L0 
+     /tmp/ccEAN7oS.s:512    .text:0000000000000270 .L0 
+     /tmp/ccEAN7oS.s:516    .text:0000000000000280 .L0 
+     /tmp/ccEAN7oS.s:522    .text:0000000000000280 _ZNK3PCB12getTimeSliceEv
+     /tmp/ccEAN7oS.s:525    .text:0000000000000280 .L0 
+     /tmp/ccEAN7oS.s:527    .text:0000000000000280 .L0 
+     /tmp/ccEAN7oS.s:528    .text:0000000000000284 .L0 
+     /tmp/ccEAN7oS.s:530    .text:0000000000000288 .L0 
+     /tmp/ccEAN7oS.s:532    .text:000000000000028c .L0 
+     /tmp/ccEAN7oS.s:534    .text:000000000000028c .L0 
+     /tmp/ccEAN7oS.s:535    .text:000000000000028c .L0 
+     /tmp/ccEAN7oS.s:538    .text:0000000000000294 .L0 
+     /tmp/ccEAN7oS.s:539    .text:0000000000000294 .L0 
+     /tmp/ccEAN7oS.s:541    .text:0000000000000298 .L0 
+     /tmp/ccEAN7oS.s:543    .text:000000000000029c .L0 
+     /tmp/ccEAN7oS.s:549    .text:000000000000029c _ZN3PCB12setTimeSliceEm
+     /tmp/ccEAN7oS.s:552    .text:000000000000029c .L0 
+     /tmp/ccEAN7oS.s:554    .text:000000000000029c .L0 
+     /tmp/ccEAN7oS.s:555    .text:00000000000002a0 .L0 
+     /tmp/ccEAN7oS.s:557    .text:00000000000002a4 .L0 
+     /tmp/ccEAN7oS.s:559    .text:00000000000002a8 .L0 
+     /tmp/ccEAN7oS.s:561    .text:00000000000002a8 .L0 
+     /tmp/ccEAN7oS.s:562    .text:00000000000002a8 .L0 
+     /tmp/ccEAN7oS.s:564    .text:00000000000002ac .L0 
+     /tmp/ccEAN7oS.s:565    .text:00000000000002b0 .L0 
+     /tmp/ccEAN7oS.s:566    .text:00000000000002b0 .L0 
+     /tmp/ccEAN7oS.s:568    .text:00000000000002b4 .L0 
+     /tmp/ccEAN7oS.s:570    .text:00000000000002b8 .L0 
+     /tmp/ccEAN7oS.s:576    .text:00000000000002b8 _ZN3PCB11setSleepingEb
+     /tmp/ccEAN7oS.s:579    .text:00000000000002b8 .L0 
+     /tmp/ccEAN7oS.s:581    .text:00000000000002b8 .L0 
+     /tmp/ccEAN7oS.s:582    .text:00000000000002bc .L0 
+     /tmp/ccEAN7oS.s:584    .text:00000000000002c0 .L0 
+     /tmp/ccEAN7oS.s:586    .text:00000000000002c4 .L0 
+     /tmp/ccEAN7oS.s:588    .text:00000000000002c4 .L0 
+     /tmp/ccEAN7oS.s:589    .text:00000000000002c4 .L0 
+     /tmp/ccEAN7oS.s:591    .text:00000000000002c8 .L0 
+     /tmp/ccEAN7oS.s:592    .text:00000000000002cc .L0 
+     /tmp/ccEAN7oS.s:593    .text:00000000000002cc .L0 
+     /tmp/ccEAN7oS.s:595    .text:00000000000002d0 .L0 
+     /tmp/ccEAN7oS.s:597    .text:00000000000002d4 .L0 
+GAS LISTING /tmp/ccEAN7oS.s 			page 28
+
+
+     /tmp/ccEAN7oS.s:603    .text:00000000000002d4 _ZN3PCB5sleepEm
+     /tmp/ccEAN7oS.s:606    .text:00000000000002d4 .L0 
+     /tmp/ccEAN7oS.s:608    .text:00000000000002d4 .L0 
+     /tmp/ccEAN7oS.s:609    .text:00000000000002d8 .L0 
+     /tmp/ccEAN7oS.s:613    .text:00000000000002e4 .L0 
+     /tmp/ccEAN7oS.s:614    .text:00000000000002e4 .L0 
+     /tmp/ccEAN7oS.s:615    .text:00000000000002e4 .L0 
+     /tmp/ccEAN7oS.s:617    .text:00000000000002e8 .L0 
+     /tmp/ccEAN7oS.s:620    .text:00000000000002ec .L0 
+     /tmp/ccEAN7oS.s:621    .text:00000000000002ec .L0 
+     /tmp/ccEAN7oS.s:628    .text:0000000000000304 .L0 
+     /tmp/ccEAN7oS.s:629    .text:0000000000000304 .L0 
+     /tmp/ccEAN7oS.s:634    .text:0000000000000314 .L0 
+     /tmp/ccEAN7oS.s:635    .text:0000000000000318 .L0 
+     /tmp/ccEAN7oS.s:637    .text:000000000000031c .L0 
+     /tmp/ccEAN7oS.s:638    .text:000000000000031c .L0 
+     /tmp/ccEAN7oS.s:640    .text:0000000000000320 .L0 
+     /tmp/ccEAN7oS.s:642    .text:0000000000000324 .L0 
+     /tmp/ccEAN7oS.s:644    .text:0000000000000328 .L0 
+     /tmp/ccEAN7oS.s:650    .text:0000000000000328 _ZN3PCB13checkSleepingEv
+     /tmp/ccEAN7oS.s:653    .text:0000000000000328 .L0 
+     /tmp/ccEAN7oS.s:655    .text:0000000000000328 .L0 
+     /tmp/ccEAN7oS.s:656    .text:000000000000032c .L0 
+     /tmp/ccEAN7oS.s:658    .text:0000000000000330 .L0 
+     /tmp/ccEAN7oS.s:660    .text:0000000000000334 .L0 
+     /tmp/ccEAN7oS.s:662    .text:0000000000000334 .L0 
+     /tmp/ccEAN7oS.s:663    .text:0000000000000334 .L0 
+     /tmp/ccEAN7oS.s:666    .text:000000000000033c .L0 
+     /tmp/ccEAN7oS.s:667    .text:000000000000033c .L0 
+     /tmp/ccEAN7oS.s:669    .text:0000000000000340 .L0 
+     /tmp/ccEAN7oS.s:671    .text:0000000000000344 .L0 
+     /tmp/ccEAN7oS.s:677    .text:0000000000000344 _ZN3PCB8dispatchEv
+     /tmp/ccEAN7oS.s:680    .text:0000000000000344 .L0 
+     /tmp/ccEAN7oS.s:681    .text:0000000000000344 .L0 
+     /tmp/ccEAN7oS.s:682    .text:0000000000000348 .L0 
+     /tmp/ccEAN7oS.s:686    .text:0000000000000354 .L0 
+     /tmp/ccEAN7oS.s:687    .text:0000000000000354 .L0 
+     /tmp/ccEAN7oS.s:688    .text:0000000000000354 .L0 
+     /tmp/ccEAN7oS.s:690    .text:0000000000000358 .L0 
+     /tmp/ccEAN7oS.s:692    .text:0000000000000358 .L0 
+     /tmp/ccEAN7oS.s:693    .text:0000000000000358 .L0 
+     /tmp/ccEAN7oS.s:696    .text:0000000000000360 .L0 
+     /tmp/ccEAN7oS.s:697    .text:0000000000000360 .L0 
+     /tmp/ccEAN7oS.s:699    .text:0000000000000364 .L0 
+     /tmp/ccEAN7oS.s:701    .text:0000000000000368 .L0 
+     /tmp/ccEAN7oS.s:705    .text:0000000000000374 .L0 
+     /tmp/ccEAN7oS.s:706    .text:0000000000000374 .L0 
+     /tmp/ccEAN7oS.s:710    .text:0000000000000380 .L0 
+     /tmp/ccEAN7oS.s:712    .text:0000000000000384 .L0 
+     /tmp/ccEAN7oS.s:716    .text:0000000000000390 .L0 
+     /tmp/ccEAN7oS.s:718    .text:0000000000000394 .L0 
+     /tmp/ccEAN7oS.s:722    .text:00000000000003a0 .L0 
+     /tmp/ccEAN7oS.s:724    .text:00000000000003a4 .L0 
+     /tmp/ccEAN7oS.s:725    .text:00000000000003a4 .L0 
+     /tmp/ccEAN7oS.s:731    .text:00000000000003b4 .L0 
+     /tmp/ccEAN7oS.s:732    .text:00000000000003b4 .L0 
+     /tmp/ccEAN7oS.s:738    .text:00000000000003c8 .L0 
+GAS LISTING /tmp/ccEAN7oS.s 			page 29
+
+
+     /tmp/ccEAN7oS.s:739    .text:00000000000003c8 .L0 
+     /tmp/ccEAN7oS.s:742    .text:00000000000003d0 .L0 
+     /tmp/ccEAN7oS.s:744    .text:00000000000003d8 .L0 
+     /tmp/ccEAN7oS.s:745    .text:00000000000003d8 .L0 
+     /tmp/ccEAN7oS.s:747    .text:00000000000003dc .L0 
+     /tmp/ccEAN7oS.s:753    .text:00000000000003e4 .L0 
+     /tmp/ccEAN7oS.s:754    .text:00000000000003e4 .L0 
+     /tmp/ccEAN7oS.s:755    .text:00000000000003e4 .L0 
+     /tmp/ccEAN7oS.s:766    .text:00000000000003ec .L0 
+     /tmp/ccEAN7oS.s:767    .text:00000000000003ec .L0 
+     /tmp/ccEAN7oS.s:772    .text:00000000000003fc .L0 
+     /tmp/ccEAN7oS.s:773    .text:0000000000000400 .L0 
+     /tmp/ccEAN7oS.s:774    .text:0000000000000400 .L0 
+     /tmp/ccEAN7oS.s:776    .text:0000000000000404 .L0 
+     /tmp/ccEAN7oS.s:777    .text:0000000000000404 .L0 
+     /tmp/ccEAN7oS.s:779    .text:0000000000000408 .L0 
+     /tmp/ccEAN7oS.s:782    .text:000000000000040c .L0 
+     /tmp/ccEAN7oS.s:786    .text:0000000000000410 .L0 
+     /tmp/ccEAN7oS.s:790    .text:0000000000000410 .L0 
+     /tmp/ccEAN7oS.s:791    .text:0000000000000410 .L0 
+     /tmp/ccEAN7oS.s:792    .text:0000000000000410 .L0 
+     /tmp/ccEAN7oS.s:799    .text:0000000000000418 .L0 
+     /tmp/ccEAN7oS.s:802    .text:000000000000041c .L0 
+     /tmp/ccEAN7oS.s:808    .text:000000000000041c _ZN3PCB19allocateSystemStackEv
+     /tmp/ccEAN7oS.s:811    .text:000000000000041c .L0 
+     /tmp/ccEAN7oS.s:812    .text:000000000000041c .L0 
+     /tmp/ccEAN7oS.s:813    .text:0000000000000420 .L0 
+     /tmp/ccEAN7oS.s:816    .text:0000000000000428 .L0 
+     /tmp/ccEAN7oS.s:817    .text:0000000000000428 .L0 
+     /tmp/ccEAN7oS.s:819    .text:000000000000042c .L0 
+     /tmp/ccEAN7oS.s:822    .text:000000000000042c .L0 
+     /tmp/ccEAN7oS.s:823    .text:000000000000042c .L0 
+     /tmp/ccEAN7oS.s:824    .text:000000000000042c .L0 
+     /tmp/ccEAN7oS.s:825    .text:000000000000042c .L0 
+     /tmp/ccEAN7oS.s:826    .text:000000000000042c .L0 
+     /tmp/ccEAN7oS.s:827    .text:000000000000042c .L0 
+     /tmp/ccEAN7oS.s:828    .text:000000000000042c .L0 
+     /tmp/ccEAN7oS.s:833    .text:000000000000043c .L0 
+     /tmp/ccEAN7oS.s:834    .text:000000000000043c .L0 
+     /tmp/ccEAN7oS.s:835    .text:000000000000043c .L0 
+     /tmp/ccEAN7oS.s:836    .text:000000000000043c .L0 
+     /tmp/ccEAN7oS.s:840    .text:0000000000000444 .L0 
+     /tmp/ccEAN7oS.s:841    .text:0000000000000444 .L0 
+     /tmp/ccEAN7oS.s:842    .text:0000000000000444 .L0 
+     /tmp/ccEAN7oS.s:845    .text:000000000000044c .L0 
+     /tmp/ccEAN7oS.s:847    .text:0000000000000450 .L0 
+     /tmp/ccEAN7oS.s:848    .text:0000000000000450 .L0 
+     /tmp/ccEAN7oS.s:850    .text:0000000000000454 .L0 
+     /tmp/ccEAN7oS.s:852    .text:0000000000000458 .L0 
+     /tmp/ccEAN7oS.s:858    .text:0000000000000458 _ZN3PCB6getSSPEv
+     /tmp/ccEAN7oS.s:861    .text:0000000000000458 .L0 
+     /tmp/ccEAN7oS.s:863    .text:0000000000000458 .L0 
+     /tmp/ccEAN7oS.s:864    .text:000000000000045c .L0 
+     /tmp/ccEAN7oS.s:866    .text:0000000000000460 .L0 
+     /tmp/ccEAN7oS.s:868    .text:0000000000000464 .L0 
+     /tmp/ccEAN7oS.s:870    .text:0000000000000464 .L0 
+     /tmp/ccEAN7oS.s:871    .text:0000000000000464 .L0 
+GAS LISTING /tmp/ccEAN7oS.s 			page 30
+
+
+     /tmp/ccEAN7oS.s:874    .text:000000000000046c .L0 
+     /tmp/ccEAN7oS.s:875    .text:000000000000046c .L0 
+     /tmp/ccEAN7oS.s:877    .text:0000000000000470 .L0 
+     /tmp/ccEAN7oS.s:879    .text:0000000000000474 .L0 
+     /tmp/ccEAN7oS.s:885    .text:0000000000000474 _ZN3PCB5getSPEv
+     /tmp/ccEAN7oS.s:888    .text:0000000000000474 .L0 
+     /tmp/ccEAN7oS.s:890    .text:0000000000000474 .L0 
+     /tmp/ccEAN7oS.s:891    .text:0000000000000478 .L0 
+     /tmp/ccEAN7oS.s:893    .text:000000000000047c .L0 
+     /tmp/ccEAN7oS.s:895    .text:0000000000000480 .L0 
+     /tmp/ccEAN7oS.s:897    .text:0000000000000480 .L0 
+     /tmp/ccEAN7oS.s:898    .text:0000000000000480 .L0 
+     /tmp/ccEAN7oS.s:901    .text:0000000000000488 .L0 
+     /tmp/ccEAN7oS.s:902    .text:0000000000000488 .L0 
+     /tmp/ccEAN7oS.s:904    .text:000000000000048c .L0 
+     /tmp/ccEAN7oS.s:906    .text:0000000000000490 .L0 
+     /tmp/ccEAN7oS.s:912    .text:0000000000000490 _ZN3PCB6setSSPEm
+     /tmp/ccEAN7oS.s:915    .text:0000000000000490 .L0 
+     /tmp/ccEAN7oS.s:917    .text:0000000000000490 .L0 
+     /tmp/ccEAN7oS.s:918    .text:0000000000000494 .L0 
+     /tmp/ccEAN7oS.s:920    .text:0000000000000498 .L0 
+     /tmp/ccEAN7oS.s:922    .text:000000000000049c .L0 
+     /tmp/ccEAN7oS.s:924    .text:000000000000049c .L0 
+     /tmp/ccEAN7oS.s:925    .text:000000000000049c .L0 
+     /tmp/ccEAN7oS.s:927    .text:00000000000004a0 .L0 
+     /tmp/ccEAN7oS.s:928    .text:00000000000004a4 .L0 
+     /tmp/ccEAN7oS.s:929    .text:00000000000004a4 .L0 
+     /tmp/ccEAN7oS.s:931    .text:00000000000004a8 .L0 
+     /tmp/ccEAN7oS.s:933    .text:00000000000004ac .L0 
+     /tmp/ccEAN7oS.s:939    .text:00000000000004ac _ZN3PCB5setSPEm
+     /tmp/ccEAN7oS.s:942    .text:00000000000004ac .L0 
+     /tmp/ccEAN7oS.s:944    .text:00000000000004ac .L0 
+     /tmp/ccEAN7oS.s:945    .text:00000000000004b0 .L0 
+     /tmp/ccEAN7oS.s:947    .text:00000000000004b4 .L0 
+     /tmp/ccEAN7oS.s:949    .text:00000000000004b8 .L0 
+     /tmp/ccEAN7oS.s:951    .text:00000000000004b8 .L0 
+     /tmp/ccEAN7oS.s:952    .text:00000000000004b8 .L0 
+     /tmp/ccEAN7oS.s:954    .text:00000000000004bc .L0 
+     /tmp/ccEAN7oS.s:955    .text:00000000000004c0 .L0 
+     /tmp/ccEAN7oS.s:956    .text:00000000000004c0 .L0 
+     /tmp/ccEAN7oS.s:958    .text:00000000000004c4 .L0 
+     /tmp/ccEAN7oS.s:960    .text:00000000000004c8 .L0 
+     /tmp/ccEAN7oS.s:998    .bss:0000000000000020 _ZN3PCB12perioThreadsE
+     /tmp/ccEAN7oS.s:993    .bss:0000000000000018 _ZN3PCB17isPeriodicBlockedE
+     /tmp/ccEAN7oS.s:973    .data:0000000000000000 _ZN3PCB6isMainE
+     /tmp/ccEAN7oS.s:984    .bss:0000000000000008 _ZN3PCB6id_cntE
+     /tmp/ccEAN7oS.s:989    .bss:0000000000000010 _ZN3PCB13sleeping_listE
+     /tmp/ccEAN7oS.s:1002   .bss:0000000000000028 _ZN3PCB8timeLeftE
+     /tmp/ccEAN7oS.s:980    .bss:0000000000000000 _ZN3PCB7runningE
+     /tmp/ccEAN7oS.s:977    .bss:0000000000000000 .LANCHOR0
+     /tmp/ccEAN7oS.s:1013   .text:00000000000004c8 .L0 
+     /tmp/ccEAN7oS.s:91     .text:0000000000000058 .L0 
+     /tmp/ccEAN7oS.s:261    .text:000000000000011c .L0 
+     /tmp/ccEAN7oS.s:471    .text:0000000000000218 .L0 
+     /tmp/ccEAN7oS.s:476    .text:0000000000000224 .L0 
+     /tmp/ccEAN7oS.s:509    .text:0000000000000268 .L0 
+     /tmp/ccEAN7oS.s:621    .text:00000000000002ec .L0 
+GAS LISTING /tmp/ccEAN7oS.s 			page 31
+
+
+     /tmp/ccEAN7oS.s:693    .text:0000000000000358 .L0 
+     /tmp/ccEAN7oS.s:701    .text:0000000000000368 .L0 
+     /tmp/ccEAN7oS.s:733    .text:00000000000003b8 .L0 
+     /tmp/ccEAN7oS.s:742    .text:00000000000003d0 .L0 
+     /tmp/ccEAN7oS.s:505    .text:0000000000000268 .L31
+     /tmp/ccEAN7oS.s:490    .text:0000000000000254 .L27
+     /tmp/ccEAN7oS.s:703    .text:0000000000000374 .L43
+     /tmp/ccEAN7oS.s:729    .text:00000000000003b4 .L48
+     /tmp/ccEAN7oS.s:736    .text:00000000000003c8 .L44
+     /tmp/ccEAN7oS.s:785    .text:0000000000000410 .L49
+     /tmp/ccEAN7oS.s:762    .text:00000000000003ec .L46
+     /tmp/ccEAN7oS.s:3237   .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccEAN7oS.s:5108   .debug_str:0000000000000b22 .LASF208
+     /tmp/ccEAN7oS.s:5140   .debug_str:0000000000000d0c .LASF209
+     /tmp/ccEAN7oS.s:5126   .debug_str:0000000000000c89 .LASF210
+     /tmp/ccEAN7oS.s:5      .text:0000000000000000 .Ltext0
+     /tmp/ccEAN7oS.s:1005   .text:00000000000004c8 .Letext0
+     /tmp/ccEAN7oS.s:4748   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccEAN7oS.s:4924   .debug_str:0000000000000571 .LASF0
+     /tmp/ccEAN7oS.s:4950   .debug_str:000000000000065a .LASF1
+     /tmp/ccEAN7oS.s:5050   .debug_str:000000000000098f .LASF2
+     /tmp/ccEAN7oS.s:5060   .debug_str:00000000000009d1 .LASF4
+     /tmp/ccEAN7oS.s:4932   .debug_str:00000000000005a5 .LASF3
+     /tmp/ccEAN7oS.s:4764   .debug_str:0000000000000059 .LASF5
+     /tmp/ccEAN7oS.s:5030   .debug_str:00000000000008ea .LASF6
+     /tmp/ccEAN7oS.s:5016   .debug_str:0000000000000863 .LASF7
+     /tmp/ccEAN7oS.s:4940   .debug_str:0000000000000607 .LASF8
+     /tmp/ccEAN7oS.s:4886   .debug_str:0000000000000406 .LASF9
+     /tmp/ccEAN7oS.s:4896   .debug_str:0000000000000458 .LASF10
+     /tmp/ccEAN7oS.s:4804   .debug_str:00000000000001ad .LASF11
+     /tmp/ccEAN7oS.s:4876   .debug_str:00000000000003c3 .LASF12
+     /tmp/ccEAN7oS.s:4822   .debug_str:000000000000024e .LASF13
+     /tmp/ccEAN7oS.s:4802   .debug_str:000000000000019d .LASF14
+     /tmp/ccEAN7oS.s:5084   .debug_str:0000000000000a8a .LASF15
+     /tmp/ccEAN7oS.s:4856   .debug_str:0000000000000330 .LASF16
+     /tmp/ccEAN7oS.s:5078   .debug_str:0000000000000a50 .LASF17
+     /tmp/ccEAN7oS.s:5006   .debug_str:000000000000081f .LASF18
+     /tmp/ccEAN7oS.s:5008   .debug_str:0000000000000835 .LASF21
+     /tmp/ccEAN7oS.s:4974   .debug_str:0000000000000715 .LASF22
+     /tmp/ccEAN7oS.s:4768   .debug_str:0000000000000068 .LASF24
+     /tmp/ccEAN7oS.s:5090   .debug_str:0000000000000ab4 .LASF57
+     /tmp/ccEAN7oS.s:4976   .debug_str:000000000000071f .LASF59
+     /tmp/ccEAN7oS.s:5112   .debug_str:0000000000000c04 .LASF211
+     /tmp/ccEAN7oS.s:4816   .debug_str:000000000000021e .LASF19
+     /tmp/ccEAN7oS.s:4806   .debug_str:00000000000001bc .LASF20
+     /tmp/ccEAN7oS.s:4812   .debug_str:00000000000001f8 .LASF212
+     /tmp/ccEAN7oS.s:5156   .debug_str:0000000000000d73 .LASF26
+     /tmp/ccEAN7oS.s:4784   .debug_str:0000000000000129 .LASF30
+     /tmp/ccEAN7oS.s:4872   .debug_str:000000000000039a .LASF32
+     /tmp/ccEAN7oS.s:4846   .debug_str:00000000000002e1 .LASF23
+     /tmp/ccEAN7oS.s:5122   .debug_str:0000000000000c5b .LASF25
+     /tmp/ccEAN7oS.s:4980   .debug_str:0000000000000746 .LASF97
+     /tmp/ccEAN7oS.s:5004   .debug_str:000000000000081a .LASF213
+     /tmp/ccEAN7oS.s:5104   .debug_str:0000000000000b07 .LASF27
+     /tmp/ccEAN7oS.s:4788   .debug_str:000000000000014a .LASF28
+     /tmp/ccEAN7oS.s:4902   .debug_str:000000000000048e .LASF29
+     /tmp/ccEAN7oS.s:4900   .debug_str:0000000000000480 .LASF31
+GAS LISTING /tmp/ccEAN7oS.s 			page 32
+
+
+     /tmp/ccEAN7oS.s:4952   .debug_str:000000000000066d .LASF33
+     /tmp/ccEAN7oS.s:5128   .debug_str:0000000000000cac .LASF34
+     /tmp/ccEAN7oS.s:4892   .debug_str:000000000000042f .LASF35
+     /tmp/ccEAN7oS.s:4922   .debug_str:0000000000000563 .LASF36
+     /tmp/ccEAN7oS.s:4942   .debug_str:000000000000061a .LASF37
+     /tmp/ccEAN7oS.s:4840   .debug_str:00000000000002bc .LASF111
+     /tmp/ccEAN7oS.s:4772   .debug_str:00000000000000a3 .LASF113
+     /tmp/ccEAN7oS.s:4766   .debug_str:0000000000000060 .LASF38
+     /tmp/ccEAN7oS.s:5106   .debug_str:0000000000000b0f .LASF39
+     /tmp/ccEAN7oS.s:5012   .debug_str:000000000000084e .LASF40
+     /tmp/ccEAN7oS.s:5062   .debug_str:00000000000009d8 .LASF41
+     /tmp/ccEAN7oS.s:5174   .debug_str:0000000000000e0a .LASF42
+     /tmp/ccEAN7oS.s:4966   .debug_str:00000000000006e7 .LASF43
+     /tmp/ccEAN7oS.s:4860   .debug_str:000000000000034d .LASF62
+     /tmp/ccEAN7oS.s:5042   .debug_str:000000000000094f .LASF64
+     /tmp/ccEAN7oS.s:4776   .debug_str:00000000000000d0 .LASF44
+     /tmp/ccEAN7oS.s:5068   .debug_str:0000000000000a03 .LASF45
+     /tmp/ccEAN7oS.s:5186   .debug_str:0000000000000e42 .LASF46
+     /tmp/ccEAN7oS.s:5086   .debug_str:0000000000000a96 .LASF47
+     /tmp/ccEAN7oS.s:5094   .debug_str:0000000000000acc .LASF48
+     /tmp/ccEAN7oS.s:4964   .debug_str:00000000000006d1 .LASF49
+     /tmp/ccEAN7oS.s:5088   .debug_str:0000000000000aae .LASF50
+     /tmp/ccEAN7oS.s:5098   .debug_str:0000000000000adc .LASF51
+     /tmp/ccEAN7oS.s:5102   .debug_str:0000000000000b00 .LASF52
+     /tmp/ccEAN7oS.s:4960   .debug_str:00000000000006bc .LASF53
+     /tmp/ccEAN7oS.s:4824   .debug_str:000000000000025e .LASF54
+     /tmp/ccEAN7oS.s:4838   .debug_str:00000000000002af .LASF55
+     /tmp/ccEAN7oS.s:5056   .debug_str:00000000000009af .LASF56
+     /tmp/ccEAN7oS.s:4956   .debug_str:000000000000069d .LASF58
+     /tmp/ccEAN7oS.s:5020   .debug_str:0000000000000892 .LASF60
+     /tmp/ccEAN7oS.s:5014   .debug_str:0000000000000856 .LASF74
+     /tmp/ccEAN7oS.s:4832   .debug_str:0000000000000296 .LASF61
+     /tmp/ccEAN7oS.s:5100   .debug_str:0000000000000aec .LASF63
+     /tmp/ccEAN7oS.s:4986   .debug_str:0000000000000780 .LASF65
+     /tmp/ccEAN7oS.s:4798   .debug_str:000000000000018c .LASF66
+     /tmp/ccEAN7oS.s:5170   .debug_str:0000000000000de4 .LASF67
+     /tmp/ccEAN7oS.s:4836   .debug_str:00000000000002a9 .LASF68
+     /tmp/ccEAN7oS.s:5136   .debug_str:0000000000000cf6 .LASF69
+     /tmp/ccEAN7oS.s:4982   .debug_str:000000000000075d .LASF70
+     /tmp/ccEAN7oS.s:5026   .debug_str:00000000000008c1 .LASF71
+     /tmp/ccEAN7oS.s:4760   .debug_str:0000000000000033 .LASF72
+     /tmp/ccEAN7oS.s:4906   .debug_str:00000000000004b0 .LASF73
+     /tmp/ccEAN7oS.s:4970   .debug_str:00000000000006fe .LASF75
+     /tmp/ccEAN7oS.s:5064   .debug_str:00000000000009ea .LASF76
+     /tmp/ccEAN7oS.s:4780   .debug_str:00000000000000f4 .LASF77
+     /tmp/ccEAN7oS.s:5092   .debug_str:0000000000000abd .LASF78
+     /tmp/ccEAN7oS.s:5180   .debug_str:0000000000000e2b .LASF79
+     /tmp/ccEAN7oS.s:5132   .debug_str:0000000000000ccf .LASF80
+     /tmp/ccEAN7oS.s:5144   .debug_str:0000000000000d21 .LASF81
+     /tmp/ccEAN7oS.s:4946   .debug_str:0000000000000640 .LASF82
+     /tmp/ccEAN7oS.s:5118   .debug_str:0000000000000c38 .LASF83
+     /tmp/ccEAN7oS.s:5076   .debug_str:0000000000000a47 .LASF84
+     /tmp/ccEAN7oS.s:5052   .debug_str:000000000000099d .LASF85
+     /tmp/ccEAN7oS.s:4904   .debug_str:00000000000004a5 .LASF86
+     /tmp/ccEAN7oS.s:4978   .debug_str:0000000000000740 .LASF87
+     /tmp/ccEAN7oS.s:4756   .debug_str:0000000000000025 .LASF88
+     /tmp/ccEAN7oS.s:4792   .debug_str:0000000000000160 .LASF214
+GAS LISTING /tmp/ccEAN7oS.s 			page 33
+
+
+     /tmp/ccEAN7oS.s:4778   .debug_str:00000000000000db .LASF215
+     /tmp/ccEAN7oS.s:4828   .debug_str:000000000000027c .LASF89
+     /tmp/ccEAN7oS.s:4782   .debug_str:0000000000000101 .LASF91
+     /tmp/ccEAN7oS.s:4800   .debug_str:0000000000000193 .LASF90
+     /tmp/ccEAN7oS.s:4882   .debug_str:00000000000003e8 .LASF92
+     /tmp/ccEAN7oS.s:4928   .debug_str:0000000000000591 .LASF151
+     /tmp/ccEAN7oS.s:5116   .debug_str:0000000000000c24 .LASF216
+     /tmp/ccEAN7oS.s:5010   .debug_str:0000000000000845 .LASF93
+     /tmp/ccEAN7oS.s:5082   .debug_str:0000000000000a85 .LASF94
+     /tmp/ccEAN7oS.s:4992   .debug_str:00000000000007c6 .LASF95
+     /tmp/ccEAN7oS.s:5000   .debug_str:00000000000007ff .LASF96
+     /tmp/ccEAN7oS.s:4918   .debug_str:0000000000000527 .LASF98
+     /tmp/ccEAN7oS.s:4926   .debug_str:000000000000057e .LASF217
+     /tmp/ccEAN7oS.s:4878   .debug_str:00000000000003d2 .LASF99
+     /tmp/ccEAN7oS.s:4914   .debug_str:00000000000004ed .LASF100
+     /tmp/ccEAN7oS.s:5166   .debug_str:0000000000000dc6 .LASF101
+     /tmp/ccEAN7oS.s:4936   .debug_str:00000000000005d3 .LASF102
+     /tmp/ccEAN7oS.s:5038   .debug_str:0000000000000930 .LASF103
+     /tmp/ccEAN7oS.s:5130   .debug_str:0000000000000cb8 .LASF104
+     /tmp/ccEAN7oS.s:5074   .debug_str:0000000000000a3f .LASF105
+     /tmp/ccEAN7oS.s:4752   .debug_str:0000000000000009 .LASF106
+     /tmp/ccEAN7oS.s:5058   .debug_str:00000000000009c7 .LASF107
+     /tmp/ccEAN7oS.s:4844   .debug_str:00000000000002d3 .LASF218
+     /tmp/ccEAN7oS.s:4870   .debug_str:000000000000038e .LASF108
+     /tmp/ccEAN7oS.s:4944   .debug_str:0000000000000633 .LASF109
+     /tmp/ccEAN7oS.s:4834   .debug_str:000000000000029d .LASF110
+     /tmp/ccEAN7oS.s:4880   .debug_str:00000000000003da .LASF112
+     /tmp/ccEAN7oS.s:4988   .debug_str:000000000000079f .LASF114
+     /tmp/ccEAN7oS.s:5070   .debug_str:0000000000000a1a .LASF115
+     /tmp/ccEAN7oS.s:4814   .debug_str:0000000000000200 .LASF116
+     /tmp/ccEAN7oS.s:5164   .debug_str:0000000000000dbd .LASF117
+     /tmp/ccEAN7oS.s:5182   .debug_str:0000000000000e31 .LASF118
+     /tmp/ccEAN7oS.s:5172   .debug_str:0000000000000df5 .LASF119
+     /tmp/ccEAN7oS.s:5178   .debug_str:0000000000000e24 .LASF120
+     /tmp/ccEAN7oS.s:4808   .debug_str:00000000000001c1 .LASF121
+     /tmp/ccEAN7oS.s:4830   .debug_str:000000000000028a .LASF122
+     /tmp/ccEAN7oS.s:4994   .debug_str:00000000000007cb .LASF123
+     /tmp/ccEAN7oS.s:4842   .debug_str:00000000000002c5 .LASF124
+     /tmp/ccEAN7oS.s:5080   .debug_str:0000000000000a66 .LASF125
+     /tmp/ccEAN7oS.s:4990   .debug_str:00000000000007be .LASF126
+     /tmp/ccEAN7oS.s:4938   .debug_str:00000000000005ef .LASF127
+     /tmp/ccEAN7oS.s:5046   .debug_str:000000000000096e .LASF128
+     /tmp/ccEAN7oS.s:5032   .debug_str:00000000000008f1 .LASF129
+     /tmp/ccEAN7oS.s:5044   .debug_str:0000000000000966 .LASF130
+     /tmp/ccEAN7oS.s:5048   .debug_str:0000000000000977 .LASF131
+     /tmp/ccEAN7oS.s:4758   .debug_str:000000000000002a .LASF132
+     /tmp/ccEAN7oS.s:5120   .debug_str:0000000000000c42 .LASF133
+     /tmp/ccEAN7oS.s:4850   .debug_str:00000000000002f2 .LASF134
+     /tmp/ccEAN7oS.s:5034   .debug_str:000000000000090a .LASF135
+     /tmp/ccEAN7oS.s:4890   .debug_str:0000000000000425 .LASF136
+     /tmp/ccEAN7oS.s:5146   .debug_str:0000000000000d26 .LASF137
+     /tmp/ccEAN7oS.s:4750   .debug_str:0000000000000000 .LASF138
+     /tmp/ccEAN7oS.s:4786   .debug_str:0000000000000131 .LASF139
+     /tmp/ccEAN7oS.s:5002   .debug_str:0000000000000810 .LASF140
+     /tmp/ccEAN7oS.s:4770   .debug_str:0000000000000089 .LASF141
+     /tmp/ccEAN7oS.s:5192   .debug_str:0000000000000e5e .LASF142
+     /tmp/ccEAN7oS.s:4794   .debug_str:000000000000016e .LASF143
+GAS LISTING /tmp/ccEAN7oS.s 			page 34
+
+
+     /tmp/ccEAN7oS.s:4790   .debug_str:0000000000000156 .LASF144
+     /tmp/ccEAN7oS.s:5124   .debug_str:0000000000000c6f .LASF145
+     /tmp/ccEAN7oS.s:5142   .debug_str:0000000000000d18 .LASF146
+     /tmp/ccEAN7oS.s:4958   .debug_str:00000000000006a3 .LASF147
+     /tmp/ccEAN7oS.s:4930   .debug_str:000000000000059b .LASF148
+     /tmp/ccEAN7oS.s:4898   .debug_str:0000000000000466 .LASF149
+     /tmp/ccEAN7oS.s:5022   .debug_str:00000000000008a2 .LASF150
+     /tmp/ccEAN7oS.s:5150   .debug_str:0000000000000d47 .LASF152
+     /tmp/ccEAN7oS.s:4908   .debug_str:00000000000004c0 .LASF153
+     /tmp/ccEAN7oS.s:4774   .debug_str:00000000000000b6 .LASF154
+     /tmp/ccEAN7oS.s:4998   .debug_str:00000000000007f8 .LASF155
+     /tmp/ccEAN7oS.s:4954   .debug_str:0000000000000686 .LASF156
+     /tmp/ccEAN7oS.s:5188   .debug_str:0000000000000e4f .LASF157
+     /tmp/ccEAN7oS.s:4912   .debug_str:00000000000004d5 .LASF158
+     /tmp/ccEAN7oS.s:5148   .debug_str:0000000000000d40 .LASF159
+     /tmp/ccEAN7oS.s:5040   .debug_str:0000000000000938 .LASF160
+     /tmp/ccEAN7oS.s:4962   .debug_str:00000000000006c9 .LASF161
+     /tmp/ccEAN7oS.s:5114   .debug_str:0000000000000c0c .LASF162
+     /tmp/ccEAN7oS.s:4968   .debug_str:00000000000006f7 .LASF163
+     /tmp/ccEAN7oS.s:5160   .debug_str:0000000000000d95 .LASF164
+     /tmp/ccEAN7oS.s:4910   .debug_str:00000000000004ca .LASF165
+     /tmp/ccEAN7oS.s:4934   .debug_str:00000000000005b7 .LASF166
+     /tmp/ccEAN7oS.s:5066   .debug_str:00000000000009fc .LASF167
+     /tmp/ccEAN7oS.s:4818   .debug_str:0000000000000227 .LASF168
+     /tmp/ccEAN7oS.s:5184   .debug_str:0000000000000e36 .LASF169
+     /tmp/ccEAN7oS.s:5036   .debug_str:0000000000000923 .LASF170
+     /tmp/ccEAN7oS.s:5110   .debug_str:0000000000000be6 .LASF171
+     /tmp/ccEAN7oS.s:5154   .debug_str:0000000000000d66 .LASF172
+     /tmp/ccEAN7oS.s:4916   .debug_str:0000000000000509 .LASF173
+     /tmp/ccEAN7oS.s:4888   .debug_str:0000000000000416 .LASF174
+     /tmp/ccEAN7oS.s:4810   .debug_str:00000000000001d8 .LASF175
+     /tmp/ccEAN7oS.s:4866   .debug_str:0000000000000368 .LASF176
+     /tmp/ccEAN7oS.s:4762   .debug_str:0000000000000039 .LASF177
+     /tmp/ccEAN7oS.s:5158   .debug_str:0000000000000d81 .LASF178
+     /tmp/ccEAN7oS.s:4920   .debug_str:000000000000053e .LASF179
+     /tmp/ccEAN7oS.s:4948   .debug_str:0000000000000648 .LASF180
+     /tmp/ccEAN7oS.s:4854   .debug_str:000000000000030d .LASF181
+     /tmp/ccEAN7oS.s:4852   .debug_str:00000000000002fb .LASF182
+     /tmp/ccEAN7oS.s:5054   .debug_str:00000000000009a7 .LASF183
+     /tmp/ccEAN7oS.s:4984   .debug_str:0000000000000764 .LASF184
+     /tmp/ccEAN7oS.s:4864   .debug_str:0000000000000363 .LASF185
+     /tmp/ccEAN7oS.s:4884   .debug_str:00000000000003fc .LASF186
+     /tmp/ccEAN7oS.s:5028   .debug_str:00000000000008d2 .LASF219
+     /tmp/ccEAN7oS.s:5176   .debug_str:0000000000000e10 .LASF220
+     /tmp/ccEAN7oS.s:4862   .debug_str:0000000000000359 .LASF187
+     /tmp/ccEAN7oS.s:5134   .debug_str:0000000000000cdc .LASF188
+     /tmp/ccEAN7oS.s:5168   .debug_str:0000000000000dd2 .LASF189
+     /tmp/ccEAN7oS.s:5096   .debug_str:0000000000000ad7 .LASF190
+     /tmp/ccEAN7oS.s:5162   .debug_str:0000000000000dac .LASF191
+     /tmp/ccEAN7oS.s:4894   .debug_str:0000000000000446 .LASF192
+     /tmp/ccEAN7oS.s:5072   .debug_str:0000000000000a27 .LASF193
+     /tmp/ccEAN7oS.s:4820   .debug_str:000000000000023e .LASF194
+     /tmp/ccEAN7oS.s:4996   .debug_str:00000000000007e8 .LASF195
+     /tmp/ccEAN7oS.s:5018   .debug_str:0000000000000876 .LASF196
+     /tmp/ccEAN7oS.s:4868   .debug_str:0000000000000377 .LASF197
+     /tmp/ccEAN7oS.s:5152   .debug_str:0000000000000d61 .LASF198
+     /tmp/ccEAN7oS.s:940    .text:00000000000004ac .LFB26
+GAS LISTING /tmp/ccEAN7oS.s 			page 35
+
+
+     /tmp/ccEAN7oS.s:961    .text:00000000000004c8 .LFE26
+     /tmp/ccEAN7oS.s:4754   .debug_str:0000000000000020 .LASF199
+     /tmp/ccEAN7oS.s:913    .text:0000000000000490 .LFB25
+     /tmp/ccEAN7oS.s:934    .text:00000000000004ac .LFE25
+     /tmp/ccEAN7oS.s:886    .text:0000000000000474 .LFB24
+     /tmp/ccEAN7oS.s:907    .text:0000000000000490 .LFE24
+     /tmp/ccEAN7oS.s:4442   .debug_loc:0000000000000000 .LLST20
+     /tmp/ccEAN7oS.s:859    .text:0000000000000458 .LFB23
+     /tmp/ccEAN7oS.s:880    .text:0000000000000474 .LFE23
+     /tmp/ccEAN7oS.s:4456   .debug_loc:0000000000000039 .LLST19
+     /tmp/ccEAN7oS.s:809    .text:000000000000041c .LFB22
+     /tmp/ccEAN7oS.s:853    .text:0000000000000458 .LFE22
+     /tmp/ccEAN7oS.s:4826   .debug_str:0000000000000277 .LASF200
+     /tmp/ccEAN7oS.s:5138   .debug_str:0000000000000d06 .LASF201
+     /tmp/ccEAN7oS.s:4470   .debug_loc:0000000000000072 .LLST16
+     /tmp/ccEAN7oS.s:4858   .debug_str:0000000000000346 .LASF202
+     /tmp/ccEAN7oS.s:4485   .debug_loc:00000000000000ad .LLST17
+     /tmp/ccEAN7oS.s:5190   .debug_str:0000000000000e57 .LASF203
+     /tmp/ccEAN7oS.s:4498   .debug_loc:00000000000000e5 .LLST18
+     /tmp/ccEAN7oS.s:831    .text:000000000000043c .LVL53
+     /tmp/ccEAN7oS.s:4848   .debug_str:00000000000002e9 .LASF204
+     /tmp/ccEAN7oS.s:651    .text:0000000000000328 .LFB21
+     /tmp/ccEAN7oS.s:672    .text:0000000000000344 .LFE21
+     /tmp/ccEAN7oS.s:4515   .debug_loc:0000000000000130 .LLST13
+     /tmp/ccEAN7oS.s:577    .text:00000000000002b8 .LFB20
+     /tmp/ccEAN7oS.s:598    .text:00000000000002d4 .LFE20
+     /tmp/ccEAN7oS.s:604    .text:00000000000002d4 .LFB19
+     /tmp/ccEAN7oS.s:645    .text:0000000000000328 .LFE19
+     /tmp/ccEAN7oS.s:5024   .debug_str:00000000000008bc .LASF205
+     /tmp/ccEAN7oS.s:4529   .debug_loc:0000000000000169 .LLST12
+     /tmp/ccEAN7oS.s:626    .text:0000000000000304 .LVL36
+     /tmp/ccEAN7oS.s:632    .text:0000000000000314 .LVL37
+     /tmp/ccEAN7oS.s:550    .text:000000000000029c .LFB18
+     /tmp/ccEAN7oS.s:571    .text:00000000000002b8 .LFE18
+     /tmp/ccEAN7oS.s:523    .text:0000000000000280 .LFB17
+     /tmp/ccEAN7oS.s:544    .text:000000000000029c .LFE17
+     /tmp/ccEAN7oS.s:4547   .debug_loc:00000000000001b5 .LLST11
+     /tmp/ccEAN7oS.s:427    .text:00000000000001e4 .LFB16
+     /tmp/ccEAN7oS.s:448    .text:0000000000000200 .LFE16
+     /tmp/ccEAN7oS.s:400    .text:00000000000001c8 .LFB15
+     /tmp/ccEAN7oS.s:421    .text:00000000000001e4 .LFE15
+     /tmp/ccEAN7oS.s:373    .text:00000000000001ac .LFB14
+     /tmp/ccEAN7oS.s:394    .text:00000000000001c8 .LFE14
+     /tmp/ccEAN7oS.s:4561   .debug_loc:00000000000001ee .LLST9
+     /tmp/ccEAN7oS.s:343    .text:000000000000018c .LFB13
+     /tmp/ccEAN7oS.s:367    .text:00000000000001ac .LFE13
+     /tmp/ccEAN7oS.s:293    .text:0000000000000154 .LFB12
+     /tmp/ccEAN7oS.s:337    .text:000000000000018c .LFE12
+     /tmp/ccEAN7oS.s:5194   .debug_str:0000000000000e67 .LASF206
+     /tmp/ccEAN7oS.s:4575   .debug_loc:0000000000000227 .LLST5
+     /tmp/ccEAN7oS.s:4589   .debug_loc:0000000000000260 .LLST6
+     /tmp/ccEAN7oS.s:4602   .debug_loc:0000000000000298 .LLST7
+     /tmp/ccEAN7oS.s:4619   .debug_loc:00000000000002e3 .LLST8
+     /tmp/ccEAN7oS.s:314    .text:0000000000000170 .LVL16
+     /tmp/ccEAN7oS.s:454    .text:0000000000000200 .LFB11
+     /tmp/ccEAN7oS.s:517    .text:0000000000000280 .LFE11
+     /tmp/ccEAN7oS.s:4632   .debug_loc:000000000000031b .LLST10
+GAS LISTING /tmp/ccEAN7oS.s 			page 36
+
+
+     /tmp/ccEAN7oS.s:484    .text:0000000000000248 .LVL25
+     /tmp/ccEAN7oS.s:489    .text:0000000000000254 .LVL26
+     /tmp/ccEAN7oS.s:514    .text:000000000000027c .LVL29
+     /tmp/ccEAN7oS.s:215    .text:00000000000000e4 .LFB10
+     /tmp/ccEAN7oS.s:236    .text:0000000000000100 .LFE10
+     /tmp/ccEAN7oS.s:4654   .debug_loc:000000000000037a .LLST3
+     /tmp/ccEAN7oS.s:188    .text:00000000000000c8 .LFB9
+     /tmp/ccEAN7oS.s:209    .text:00000000000000e4 .LFE9
+     /tmp/ccEAN7oS.s:678    .text:0000000000000344 .LFB8
+     /tmp/ccEAN7oS.s:803    .text:000000000000041c .LFE8
+     /tmp/ccEAN7oS.s:4668   .debug_loc:00000000000003b3 .LLST14
+     /tmp/ccEAN7oS.s:751    .text:00000000000003e4 .LBB7
+     /tmp/ccEAN7oS.s:764    .text:00000000000003ec .LBE7
+     /tmp/ccEAN7oS.s:4679   .debug_loc:00000000000003e9 .LLST15
+     /tmp/ccEAN7oS.s:788    .text:0000000000000410 .LBB9
+     /tmp/ccEAN7oS.s:801    .text:000000000000041c .LBE9
+     /tmp/ccEAN7oS.s:708    .text:0000000000000380 .LVL41
+     /tmp/ccEAN7oS.s:714    .text:0000000000000390 .LVL42
+     /tmp/ccEAN7oS.s:720    .text:00000000000003a0 .LVL43
+     /tmp/ccEAN7oS.s:727    .text:00000000000003b0 .LVL44
+     /tmp/ccEAN7oS.s:735    .text:00000000000003c8 .LVL45
+     /tmp/ccEAN7oS.s:740    .text:00000000000003d0 .LVL46
+     /tmp/ccEAN7oS.s:770    .text:00000000000003fc .LVL49
+     /tmp/ccEAN7oS.s:161    .text:00000000000000ac .LFB7
+     /tmp/ccEAN7oS.s:182    .text:00000000000000c8 .LFE7
+     /tmp/ccEAN7oS.s:4688   .debug_loc:000000000000040f .LLST2
+     /tmp/ccEAN7oS.s:134    .text:0000000000000090 .LFB6
+     /tmp/ccEAN7oS.s:155    .text:00000000000000ac .LFE6
+     /tmp/ccEAN7oS.s:242    .text:0000000000000100 .LFB5
+     /tmp/ccEAN7oS.s:287    .text:0000000000000154 .LFE5
+     /tmp/ccEAN7oS.s:4702   .debug_loc:0000000000000448 .LLST4
+     /tmp/ccEAN7oS.s:258    .text:000000000000011c .LVL11
+     /tmp/ccEAN7oS.s:264    .text:0000000000000130 .LVL12
+     /tmp/ccEAN7oS.s:274    .text:0000000000000140 .LVL14
+     /tmp/ccEAN7oS.s:4796   .debug_str:0000000000000187 .LASF207
+     /tmp/ccEAN7oS.s:4874   .debug_str:00000000000003ac .LASF221
+     /tmp/ccEAN7oS.s:65     .text:0000000000000038 .LFB3
+     /tmp/ccEAN7oS.s:126    .text:0000000000000090 .LFE3
+     /tmp/ccEAN7oS.s:4709   .debug_loc:000000000000046b .LLST1
+     /tmp/ccEAN7oS.s:38     .text:000000000000001c .LFB1
+     /tmp/ccEAN7oS.s:59     .text:0000000000000038 .LFE1
+     /tmp/ccEAN7oS.s:10     .text:0000000000000000 .LFB0
+     /tmp/ccEAN7oS.s:32     .text:000000000000001c .LFE0
+     /tmp/ccEAN7oS.s:4721   .debug_loc:00000000000004a2 .LLST0
+     /tmp/ccEAN7oS.s:4972   .debug_str:0000000000000709 .LASF222
+     /tmp/ccEAN7oS.s:889    .text:0000000000000474 .LVL58
+     /tmp/ccEAN7oS.s:899    .text:0000000000000484 .LVL59
+     /tmp/ccEAN7oS.s:862    .text:0000000000000458 .LVL56
+     /tmp/ccEAN7oS.s:872    .text:0000000000000468 .LVL57
+     /tmp/ccEAN7oS.s:821    .text:000000000000042c .LVL52
+     /tmp/ccEAN7oS.s:843    .text:0000000000000448 .LVL55
+     /tmp/ccEAN7oS.s:839    .text:0000000000000444 .LVL54
+     /tmp/ccEAN7oS.s:654    .text:0000000000000328 .LVL38
+     /tmp/ccEAN7oS.s:664    .text:0000000000000338 .LVL39
+     /tmp/ccEAN7oS.s:607    .text:00000000000002d4 .LVL34
+     /tmp/ccEAN7oS.s:624    .text:00000000000002fc .LVL35
+     /tmp/ccEAN7oS.s:526    .text:0000000000000280 .LVL30
+GAS LISTING /tmp/ccEAN7oS.s 			page 37
+
+
+     /tmp/ccEAN7oS.s:536    .text:0000000000000290 .LVL31
+     /tmp/ccEAN7oS.s:376    .text:00000000000001ac .LVL20
+     /tmp/ccEAN7oS.s:386    .text:00000000000001bc .LVL21
+     /tmp/ccEAN7oS.s:305    .text:0000000000000164 .LVL15
+     /tmp/ccEAN7oS.s:327    .text:000000000000017c .LVL18
+     /tmp/ccEAN7oS.s:322    .text:0000000000000178 .LVL17
+     /tmp/ccEAN7oS.s:457    .text:0000000000000200 .LVL24
+     /tmp/ccEAN7oS.s:500    .text:0000000000000260 .LVL27
+     /tmp/ccEAN7oS.s:504    .text:0000000000000268 .LVL28
+     /tmp/ccEAN7oS.s:218    .text:00000000000000e4 .LVL9
+     /tmp/ccEAN7oS.s:228    .text:00000000000000f4 .LVL10
+     /tmp/ccEAN7oS.s:694    .text:0000000000000360 .LVL40
+     /tmp/ccEAN7oS.s:780    .text:0000000000000408 .LVL50
+     /tmp/ccEAN7oS.s:784    .text:0000000000000410 .LVL51
+     /tmp/ccEAN7oS.s:750    .text:00000000000003e4 .LVL47
+     /tmp/ccEAN7oS.s:760    .text:00000000000003ec .LVL48
+     /tmp/ccEAN7oS.s:164    .text:00000000000000ac .LVL6
+     /tmp/ccEAN7oS.s:174    .text:00000000000000bc .LVL7
+     /tmp/ccEAN7oS.s:270    .text:0000000000000138 .LVL13
+     /tmp/ccEAN7oS.s:68     .text:0000000000000038 .LVL3
+     /tmp/ccEAN7oS.s:86     .text:0000000000000054 .LVL4
+     /tmp/ccEAN7oS.s:14     .text:0000000000000000 .LVL0
+     /tmp/ccEAN7oS.s:24     .text:0000000000000010 .LVL1
+     /tmp/ccEAN7oS.s:1014   .debug_info:0000000000000000 .Ldebug_info0
+
+UNDEFINED SYMBOLS
+_ZN9Interrupt10popSppSpieEv
+thread_exit
+_ZN15MemoryAllocator9mem_allocEm
+_ZN9Scheduler3putEP3PCB
+_ZN8PCB_List7putTimeEP3PCBm
+_ZN8PCB_List3putEP3PCB
+_ZN9Scheduler3getEv
+_ZN3PCB13contextSwitchEPNS_7ContextES1_
