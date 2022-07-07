@@ -1,0 +1,1671 @@
+GAS LISTING /tmp/ccLAsTJa.s 			page 1
+
+
+   1              		.file	"syscall_c.c"
+   2              		.option nopic
+   3              		.option norelax
+   4              		.text
+   5              	.Ltext0:
+   6              		.cfi_sections	.debug_frame
+   7              		.align	2
+   8              		.globl	mem_alloc
+  10              	mem_alloc:
+  11              	.LFB0:
+  12              		.file 1 "src/syscall_c.c"
+   1:src/syscall_c.c **** #include "../h/syscall_c.h"
+   2:src/syscall_c.c **** 
+   3:src/syscall_c.c **** 
+   4:src/syscall_c.c **** 
+   5:src/syscall_c.c **** 
+   6:src/syscall_c.c **** 
+   7:src/syscall_c.c **** 
+   8:src/syscall_c.c **** void* mem_alloc(size_t size){
+  13              		.loc 1 8 29
+  14              		.cfi_startproc
+  15              	.LVL0:
+  16 0000 130101FD 		addi	sp,sp,-48
+  17              		.cfi_def_cfa_offset 48
+  18 0004 23341102 		sd	ra,40(sp)
+  19 0008 23308102 		sd	s0,32(sp)
+  20              		.cfi_offset 1, -8
+  21              		.cfi_offset 8, -16
+  22 000c 13040103 		addi	s0,sp,48
+  23              		.cfi_def_cfa 8, 0
+   9:src/syscall_c.c ****     size_t sizeB = ((size + ALLOCATED_HEADER_SIZE)/MEM_BLOCK_SIZE);
+  24              		.loc 1 9 5
+  25              		.loc 1 9 27 is_stmt 0
+  26 0010 13058500 		addi	a0,a0,8
+  27              	.LVL1:
+  28              		.loc 1 9 12
+  29 0014 93576500 		srli	a5,a0,6
+  30              	.LVL2:
+  10:src/syscall_c.c ****     if((size + ALLOCATED_HEADER_SIZE)%MEM_BLOCK_SIZE > 0){
+  31              		.loc 1 10 5 is_stmt 1
+  32              		.loc 1 10 38 is_stmt 0
+  33 0018 1375F503 		andi	a0,a0,63
+  34              	.LVL3:
+  35              		.loc 1 10 7
+  36 001c 63040500 		beqz	a0,.L2
+  11:src/syscall_c.c ****         sizeB++;
+  37              		.loc 1 11 9 is_stmt 1
+  38              		.loc 1 11 14 is_stmt 0
+  39 0020 93871700 		addi	a5,a5,1
+  40              	.LVL4:
+  41              	.L2:
+  12:src/syscall_c.c ****     }
+  13:src/syscall_c.c ****     struct args arguments;
+  42              		.loc 1 13 5 is_stmt 1
+  14:src/syscall_c.c ****     arguments.arg1 =(uint64) sizeB;
+  43              		.loc 1 14 5
+  44              		.loc 1 14 20 is_stmt 0
+GAS LISTING /tmp/ccLAsTJa.s 			page 2
+
+
+  45 0024 2338F4FC 		sd	a5,-48(s0)
+  15:src/syscall_c.c ****     struct args* argsP = &arguments;
+  46              		.loc 1 15 5 is_stmt 1
+  47              	.LVL5:
+  16:src/syscall_c.c ****     void* res = (void*)callSys(0x1,(void*) argsP,1);
+  48              		.loc 1 16 5
+  49              		.loc 1 16 24 is_stmt 0
+  50 0028 13061000 		li	a2,1
+  51 002c 930504FD 		addi	a1,s0,-48
+  52              	.LVL6:
+  53 0030 13051000 		li	a0,1
+  54 0034 97000000 		call	callSys
+  54      E7800000 
+  55              	.LVL7:
+  17:src/syscall_c.c ****     return res;
+  56              		.loc 1 17 5 is_stmt 1
+  18:src/syscall_c.c **** }
+  57              		.loc 1 18 1 is_stmt 0
+  58 003c 83308102 		ld	ra,40(sp)
+  59              		.cfi_restore 1
+  60 0040 03340102 		ld	s0,32(sp)
+  61              		.cfi_restore 8
+  62              		.cfi_def_cfa 2, 48
+  63 0044 13010103 		addi	sp,sp,48
+  64              		.cfi_def_cfa_offset 0
+  65              	.LVL8:
+  66 0048 67800000 		jr	ra
+  67              		.cfi_endproc
+  68              	.LFE0:
+  70              		.align	2
+  71              		.globl	mem_free
+  73              	mem_free:
+  74              	.LFB1:
+  19:src/syscall_c.c **** 
+  20:src/syscall_c.c **** int mem_free(void* adr){
+  75              		.loc 1 20 24 is_stmt 1
+  76              		.cfi_startproc
+  77              	.LVL9:
+  78 004c 130101FD 		addi	sp,sp,-48
+  79              		.cfi_def_cfa_offset 48
+  80 0050 23341102 		sd	ra,40(sp)
+  81 0054 23308102 		sd	s0,32(sp)
+  82              		.cfi_offset 1, -8
+  83              		.cfi_offset 8, -16
+  84 0058 13040103 		addi	s0,sp,48
+  85              		.cfi_def_cfa 8, 0
+  21:src/syscall_c.c ****     struct args arguments;
+  86              		.loc 1 21 5
+  22:src/syscall_c.c ****     arguments.arg1 = (uint64) adr;
+  87              		.loc 1 22 5
+  88              		.loc 1 22 20 is_stmt 0
+  89 005c 2338A4FC 		sd	a0,-48(s0)
+  23:src/syscall_c.c ****     struct args* argsP = &arguments;
+  90              		.loc 1 23 5 is_stmt 1
+  91              	.LVL10:
+  24:src/syscall_c.c ****     int res = (int) callSys(0x2,(void*)argsP,1);
+  92              		.loc 1 24 5
+GAS LISTING /tmp/ccLAsTJa.s 			page 3
+
+
+  93              		.loc 1 24 21 is_stmt 0
+  94 0060 13061000 		li	a2,1
+  95 0064 930504FD 		addi	a1,s0,-48
+  96              	.LVL11:
+  97 0068 13052000 		li	a0,2
+  98              	.LVL12:
+  99 006c 97000000 		call	callSys
+  99      E7800000 
+ 100              	.LVL13:
+  25:src/syscall_c.c ****     return res;
+ 101              		.loc 1 25 5 is_stmt 1
+  26:src/syscall_c.c **** }
+ 102              		.loc 1 26 1 is_stmt 0
+ 103 0074 1B050500 		sext.w	a0,a0
+ 104 0078 83308102 		ld	ra,40(sp)
+ 105              		.cfi_restore 1
+ 106 007c 03340102 		ld	s0,32(sp)
+ 107              		.cfi_restore 8
+ 108              		.cfi_def_cfa 2, 48
+ 109 0080 13010103 		addi	sp,sp,48
+ 110              		.cfi_def_cfa_offset 0
+ 111              	.LVL14:
+ 112 0084 67800000 		jr	ra
+ 113              		.cfi_endproc
+ 114              	.LFE1:
+ 116              		.align	2
+ 117              		.globl	thread_create
+ 119              	thread_create:
+ 120              	.LFB2:
+  27:src/syscall_c.c **** 
+  28:src/syscall_c.c **** int thread_create (thread_t* handle, void(*start_routine)(void*), void* arg){
+ 121              		.loc 1 28 77 is_stmt 1
+ 122              		.cfi_startproc
+ 123              	.LVL15:
+ 124 0088 130101FB 		addi	sp,sp,-80
+ 125              		.cfi_def_cfa_offset 80
+ 126 008c 23341104 		sd	ra,72(sp)
+ 127 0090 23308104 		sd	s0,64(sp)
+ 128 0094 233C9102 		sd	s1,56(sp)
+ 129 0098 23382103 		sd	s2,48(sp)
+ 130 009c 23343103 		sd	s3,40(sp)
+ 131              		.cfi_offset 1, -8
+ 132              		.cfi_offset 8, -16
+ 133              		.cfi_offset 9, -24
+ 134              		.cfi_offset 18, -32
+ 135              		.cfi_offset 19, -40
+ 136 00a0 13040105 		addi	s0,sp,80
+ 137              		.cfi_def_cfa 8, 0
+ 138 00a4 93040500 		mv	s1,a0
+ 139 00a8 93890500 		mv	s3,a1
+ 140 00ac 13090600 		mv	s2,a2
+  29:src/syscall_c.c ****     struct args arguments;
+ 141              		.loc 1 29 5
+  30:src/syscall_c.c ****     *handle = (_thread*)mem_alloc(sizeof (_thread));
+ 142              		.loc 1 30 5
+ 143              		.loc 1 30 25 is_stmt 0
+ 144 00b0 13058000 		li	a0,8
+GAS LISTING /tmp/ccLAsTJa.s 			page 4
+
+
+ 145              	.LVL16:
+ 146 00b4 97000000 		call	mem_alloc
+ 146      E7800000 
+ 147              	.LVL17:
+ 148              		.loc 1 30 13
+ 149 00bc 23B0A400 		sd	a0,0(s1)
+  31:src/syscall_c.c ****     arguments.arg1 = (uint64) handle;
+ 150              		.loc 1 31 5 is_stmt 1
+ 151              		.loc 1 31 20 is_stmt 0
+ 152 00c0 233894FA 		sd	s1,-80(s0)
+  32:src/syscall_c.c ****     arguments.arg2 = (uint64) start_routine;
+ 153              		.loc 1 32 5 is_stmt 1
+ 154              		.loc 1 32 20 is_stmt 0
+ 155 00c4 233C34FB 		sd	s3,-72(s0)
+  33:src/syscall_c.c ****     arguments.arg3 = (uint64) arg;
+ 156              		.loc 1 33 5 is_stmt 1
+ 157              		.loc 1 33 20 is_stmt 0
+ 158 00c8 233024FD 		sd	s2,-64(s0)
+  34:src/syscall_c.c ****     void* adr = mem_alloc(DEFAULT_STACK_SIZE * 2);
+ 159              		.loc 1 34 5 is_stmt 1
+ 160              		.loc 1 34 17 is_stmt 0
+ 161 00cc 37250000 		li	a0,8192
+ 162 00d0 97000000 		call	mem_alloc
+ 162      E7800000 
+ 163              	.LVL18:
+  35:src/syscall_c.c ****     arguments.arg4 = (uint64)adr;
+ 164              		.loc 1 35 5 is_stmt 1
+ 165              		.loc 1 35 20 is_stmt 0
+ 166 00d8 2334A4FC 		sd	a0,-56(s0)
+  36:src/syscall_c.c ****     if(arguments.arg4 == 0) return -2;
+ 167              		.loc 1 36 5 is_stmt 1
+ 168              		.loc 1 36 7 is_stmt 0
+ 169 00dc 630C0502 		beqz	a0,.L8
+  37:src/syscall_c.c ****     struct args* argsP = &arguments;
+ 170              		.loc 1 37 5 is_stmt 1
+ 171              	.LVL19:
+  38:src/syscall_c.c ****     int res = (int) callSys(0x11,(void *)argsP,4);
+ 172              		.loc 1 38 5
+ 173              		.loc 1 38 21 is_stmt 0
+ 174 00e0 13064000 		li	a2,4
+ 175 00e4 930504FB 		addi	a1,s0,-80
+ 176              	.LVL20:
+ 177 00e8 13051001 		li	a0,17
+ 178              	.LVL21:
+ 179 00ec 97000000 		call	callSys
+ 179      E7800000 
+ 180              	.LVL22:
+ 181              		.loc 1 38 9
+ 182 00f4 1B050500 		sext.w	a0,a0
+ 183              	.LVL23:
+  39:src/syscall_c.c ****     return res;
+ 184              		.loc 1 39 5 is_stmt 1
+ 185              	.L7:
+  40:src/syscall_c.c **** }
+ 186              		.loc 1 40 1 is_stmt 0
+ 187 00f8 83308104 		ld	ra,72(sp)
+ 188              		.cfi_remember_state
+GAS LISTING /tmp/ccLAsTJa.s 			page 5
+
+
+ 189              		.cfi_restore 1
+ 190 00fc 03340104 		ld	s0,64(sp)
+ 191              		.cfi_restore 8
+ 192              		.cfi_def_cfa 2, 80
+ 193 0100 83348103 		ld	s1,56(sp)
+ 194              		.cfi_restore 9
+ 195              	.LVL24:
+ 196 0104 03390103 		ld	s2,48(sp)
+ 197              		.cfi_restore 18
+ 198              	.LVL25:
+ 199 0108 83398102 		ld	s3,40(sp)
+ 200              		.cfi_restore 19
+ 201              	.LVL26:
+ 202 010c 13010105 		addi	sp,sp,80
+ 203              		.cfi_def_cfa_offset 0
+ 204 0110 67800000 		jr	ra
+ 205              	.LVL27:
+ 206              	.L8:
+ 207              		.cfi_restore_state
+  36:src/syscall_c.c ****     struct args* argsP = &arguments;
+ 208              		.loc 1 36 36
+ 209 0114 1305E0FF 		li	a0,-2
+ 210              	.LVL28:
+ 211 0118 6FF01FFE 		j	.L7
+ 212              		.cfi_endproc
+ 213              	.LFE2:
+ 215              		.align	2
+ 216              		.globl	thread_init
+ 218              	thread_init:
+ 219              	.LFB3:
+  41:src/syscall_c.c **** 
+  42:src/syscall_c.c **** int thread_init (thread_t* handle, void(*start_routine)(void*), void* arg){
+ 220              		.loc 1 42 75 is_stmt 1
+ 221              		.cfi_startproc
+ 222              	.LVL29:
+ 223 011c 130101FB 		addi	sp,sp,-80
+ 224              		.cfi_def_cfa_offset 80
+ 225 0120 23341104 		sd	ra,72(sp)
+ 226 0124 23308104 		sd	s0,64(sp)
+ 227 0128 233C9102 		sd	s1,56(sp)
+ 228 012c 23382103 		sd	s2,48(sp)
+ 229 0130 23343103 		sd	s3,40(sp)
+ 230              		.cfi_offset 1, -8
+ 231              		.cfi_offset 8, -16
+ 232              		.cfi_offset 9, -24
+ 233              		.cfi_offset 18, -32
+ 234              		.cfi_offset 19, -40
+ 235 0134 13040105 		addi	s0,sp,80
+ 236              		.cfi_def_cfa 8, 0
+ 237 0138 93040500 		mv	s1,a0
+ 238 013c 93890500 		mv	s3,a1
+ 239 0140 13090600 		mv	s2,a2
+  43:src/syscall_c.c ****     struct args arguments;
+ 240              		.loc 1 43 5
+  44:src/syscall_c.c ****     *handle = (_thread*)mem_alloc(sizeof (_thread));
+ 241              		.loc 1 44 5
+ 242              		.loc 1 44 25 is_stmt 0
+GAS LISTING /tmp/ccLAsTJa.s 			page 6
+
+
+ 243 0144 13058000 		li	a0,8
+ 244              	.LVL30:
+ 245 0148 97000000 		call	mem_alloc
+ 245      E7800000 
+ 246              	.LVL31:
+ 247              		.loc 1 44 13
+ 248 0150 23B0A400 		sd	a0,0(s1)
+  45:src/syscall_c.c ****     arguments.arg1 = (uint64) handle;
+ 249              		.loc 1 45 5 is_stmt 1
+ 250              		.loc 1 45 20 is_stmt 0
+ 251 0154 233894FA 		sd	s1,-80(s0)
+  46:src/syscall_c.c ****     arguments.arg2 = (uint64) start_routine;
+ 252              		.loc 1 46 5 is_stmt 1
+ 253              		.loc 1 46 20 is_stmt 0
+ 254 0158 233C34FB 		sd	s3,-72(s0)
+  47:src/syscall_c.c ****     arguments.arg3 = (uint64) arg;
+ 255              		.loc 1 47 5 is_stmt 1
+ 256              		.loc 1 47 20 is_stmt 0
+ 257 015c 233024FD 		sd	s2,-64(s0)
+  48:src/syscall_c.c ****     void* adr = mem_alloc(DEFAULT_STACK_SIZE * 2);
+ 258              		.loc 1 48 5 is_stmt 1
+ 259              		.loc 1 48 17 is_stmt 0
+ 260 0160 37250000 		li	a0,8192
+ 261 0164 97000000 		call	mem_alloc
+ 261      E7800000 
+ 262              	.LVL32:
+  49:src/syscall_c.c ****     arguments.arg4 = (uint64)adr;
+ 263              		.loc 1 49 5 is_stmt 1
+ 264              		.loc 1 49 20 is_stmt 0
+ 265 016c 2334A4FC 		sd	a0,-56(s0)
+  50:src/syscall_c.c ****     if(arguments.arg4 == 0) return -2;
+ 266              		.loc 1 50 5 is_stmt 1
+ 267              		.loc 1 50 7 is_stmt 0
+ 268 0170 630C0502 		beqz	a0,.L12
+  51:src/syscall_c.c ****     struct args* argsP = &arguments;
+ 269              		.loc 1 51 5 is_stmt 1
+ 270              	.LVL33:
+  52:src/syscall_c.c ****     int res = (int) callSys(0x10,(void *)argsP,4);
+ 271              		.loc 1 52 5
+ 272              		.loc 1 52 21 is_stmt 0
+ 273 0174 13064000 		li	a2,4
+ 274 0178 930504FB 		addi	a1,s0,-80
+ 275              	.LVL34:
+ 276 017c 13050001 		li	a0,16
+ 277              	.LVL35:
+ 278 0180 97000000 		call	callSys
+ 278      E7800000 
+ 279              	.LVL36:
+ 280              		.loc 1 52 9
+ 281 0188 1B050500 		sext.w	a0,a0
+ 282              	.LVL37:
+  53:src/syscall_c.c ****     return res;
+ 283              		.loc 1 53 5 is_stmt 1
+ 284              	.L11:
+  54:src/syscall_c.c **** }
+ 285              		.loc 1 54 1 is_stmt 0
+ 286 018c 83308104 		ld	ra,72(sp)
+GAS LISTING /tmp/ccLAsTJa.s 			page 7
+
+
+ 287              		.cfi_remember_state
+ 288              		.cfi_restore 1
+ 289 0190 03340104 		ld	s0,64(sp)
+ 290              		.cfi_restore 8
+ 291              		.cfi_def_cfa 2, 80
+ 292 0194 83348103 		ld	s1,56(sp)
+ 293              		.cfi_restore 9
+ 294              	.LVL38:
+ 295 0198 03390103 		ld	s2,48(sp)
+ 296              		.cfi_restore 18
+ 297              	.LVL39:
+ 298 019c 83398102 		ld	s3,40(sp)
+ 299              		.cfi_restore 19
+ 300              	.LVL40:
+ 301 01a0 13010105 		addi	sp,sp,80
+ 302              		.cfi_def_cfa_offset 0
+ 303 01a4 67800000 		jr	ra
+ 304              	.LVL41:
+ 305              	.L12:
+ 306              		.cfi_restore_state
+  50:src/syscall_c.c ****     struct args* argsP = &arguments;
+ 307              		.loc 1 50 36
+ 308 01a8 1305E0FF 		li	a0,-2
+ 309              	.LVL42:
+ 310 01ac 6FF01FFE 		j	.L11
+ 311              		.cfi_endproc
+ 312              	.LFE3:
+ 314              		.align	2
+ 315              		.globl	thread_dispatch
+ 317              	thread_dispatch:
+ 318              	.LFB5:
+  55:src/syscall_c.c **** 
+  56:src/syscall_c.c **** 
+  57:src/syscall_c.c **** 
+  58:src/syscall_c.c **** int thread_exit(){
+  59:src/syscall_c.c ****     int res = (int) callSys(0x12,0,0);
+  60:src/syscall_c.c ****     if(res == 0) thread_dispatch();
+  61:src/syscall_c.c ****     return res;
+  62:src/syscall_c.c **** }
+  63:src/syscall_c.c **** 
+  64:src/syscall_c.c **** void thread_dispatch(){
+ 319              		.loc 1 64 23 is_stmt 1
+ 320              		.cfi_startproc
+ 321 01b0 130101FF 		addi	sp,sp,-16
+ 322              		.cfi_def_cfa_offset 16
+ 323 01b4 23341100 		sd	ra,8(sp)
+ 324 01b8 23308100 		sd	s0,0(sp)
+ 325              		.cfi_offset 1, -8
+ 326              		.cfi_offset 8, -16
+ 327 01bc 13040101 		addi	s0,sp,16
+ 328              		.cfi_def_cfa 8, 0
+  65:src/syscall_c.c ****     callSys(0x13,0,0);
+ 329              		.loc 1 65 5
+ 330 01c0 13060000 		li	a2,0
+ 331 01c4 93050000 		li	a1,0
+ 332 01c8 13053001 		li	a0,19
+ 333 01cc 97000000 		call	callSys
+GAS LISTING /tmp/ccLAsTJa.s 			page 8
+
+
+ 333      E7800000 
+ 334              	.LVL43:
+  66:src/syscall_c.c **** }
+ 335              		.loc 1 66 1 is_stmt 0
+ 336 01d4 83308100 		ld	ra,8(sp)
+ 337              		.cfi_restore 1
+ 338 01d8 03340100 		ld	s0,0(sp)
+ 339              		.cfi_restore 8
+ 340              		.cfi_def_cfa 2, 16
+ 341 01dc 13010101 		addi	sp,sp,16
+ 342              		.cfi_def_cfa_offset 0
+ 343 01e0 67800000 		jr	ra
+ 344              		.cfi_endproc
+ 345              	.LFE5:
+ 347              		.align	2
+ 348              		.globl	thread_exit
+ 350              	thread_exit:
+ 351              	.LFB4:
+  58:src/syscall_c.c ****     int res = (int) callSys(0x12,0,0);
+ 352              		.loc 1 58 18 is_stmt 1
+ 353              		.cfi_startproc
+ 354 01e4 130101FE 		addi	sp,sp,-32
+ 355              		.cfi_def_cfa_offset 32
+ 356 01e8 233C1100 		sd	ra,24(sp)
+ 357 01ec 23388100 		sd	s0,16(sp)
+ 358 01f0 23349100 		sd	s1,8(sp)
+ 359              		.cfi_offset 1, -8
+ 360              		.cfi_offset 8, -16
+ 361              		.cfi_offset 9, -24
+ 362 01f4 13040102 		addi	s0,sp,32
+ 363              		.cfi_def_cfa 8, 0
+  59:src/syscall_c.c ****     if(res == 0) thread_dispatch();
+ 364              		.loc 1 59 5
+  59:src/syscall_c.c ****     if(res == 0) thread_dispatch();
+ 365              		.loc 1 59 21 is_stmt 0
+ 366 01f8 13060000 		li	a2,0
+ 367 01fc 93050000 		li	a1,0
+ 368 0200 13052001 		li	a0,18
+ 369 0204 97000000 		call	callSys
+ 369      E7800000 
+ 370              	.LVL44:
+  59:src/syscall_c.c ****     if(res == 0) thread_dispatch();
+ 371              		.loc 1 59 9
+ 372 020c 9B040500 		sext.w	s1,a0
+ 373              	.LVL45:
+  60:src/syscall_c.c ****     return res;
+ 374              		.loc 1 60 5 is_stmt 1
+  60:src/syscall_c.c ****     return res;
+ 375              		.loc 1 60 7 is_stmt 0
+ 376 0210 638E0400 		beqz	s1,.L19
+ 377              	.L17:
+  61:src/syscall_c.c **** }
+ 378              		.loc 1 61 5 is_stmt 1
+  62:src/syscall_c.c **** 
+ 379              		.loc 1 62 1 is_stmt 0
+ 380 0214 13850400 		mv	a0,s1
+ 381 0218 83308101 		ld	ra,24(sp)
+GAS LISTING /tmp/ccLAsTJa.s 			page 9
+
+
+ 382              		.cfi_remember_state
+ 383              		.cfi_restore 1
+ 384 021c 03340101 		ld	s0,16(sp)
+ 385              		.cfi_restore 8
+ 386              		.cfi_def_cfa 2, 32
+ 387 0220 83348100 		ld	s1,8(sp)
+ 388              		.cfi_restore 9
+ 389              	.LVL46:
+ 390 0224 13010102 		addi	sp,sp,32
+ 391              		.cfi_def_cfa_offset 0
+ 392 0228 67800000 		jr	ra
+ 393              	.LVL47:
+ 394              	.L19:
+ 395              		.cfi_restore_state
+  60:src/syscall_c.c ****     return res;
+ 396              		.loc 1 60 18 is_stmt 1 discriminator 1
+ 397 022c 97000000 		call	thread_dispatch
+ 397      E7800000 
+ 398              	.LVL48:
+ 399 0234 6FF01FFE 		j	.L17
+ 400              		.cfi_endproc
+ 401              	.LFE4:
+ 403              		.align	2
+ 404              		.globl	sem_open
+ 406              	sem_open:
+ 407              	.LFB6:
+  67:src/syscall_c.c **** int sem_open (sem_t* handle,unsigned init){
+ 408              		.loc 1 67 43
+ 409              		.cfi_startproc
+ 410              	.LVL49:
+ 411 0238 130101FC 		addi	sp,sp,-64
+ 412              		.cfi_def_cfa_offset 64
+ 413 023c 233C1102 		sd	ra,56(sp)
+ 414 0240 23388102 		sd	s0,48(sp)
+ 415 0244 23349102 		sd	s1,40(sp)
+ 416 0248 23302103 		sd	s2,32(sp)
+ 417              		.cfi_offset 1, -8
+ 418              		.cfi_offset 8, -16
+ 419              		.cfi_offset 9, -24
+ 420              		.cfi_offset 18, -32
+ 421 024c 13040104 		addi	s0,sp,64
+ 422              		.cfi_def_cfa 8, 0
+ 423 0250 13090500 		mv	s2,a0
+ 424 0254 93840500 		mv	s1,a1
+  68:src/syscall_c.c ****     struct args arguments;
+ 425              		.loc 1 68 5
+  69:src/syscall_c.c ****     *handle = (_sem *)mem_alloc(sizeof (_sem));
+ 426              		.loc 1 69 5
+ 427              		.loc 1 69 23 is_stmt 0
+ 428 0258 13058000 		li	a0,8
+ 429              	.LVL50:
+ 430 025c 97000000 		call	mem_alloc
+ 430      E7800000 
+ 431              	.LVL51:
+ 432              		.loc 1 69 13
+ 433 0264 2330A900 		sd	a0,0(s2)
+  70:src/syscall_c.c ****     arguments.arg1 = (uint64)handle;
+GAS LISTING /tmp/ccLAsTJa.s 			page 10
+
+
+ 434              		.loc 1 70 5 is_stmt 1
+ 435              		.loc 1 70 20 is_stmt 0
+ 436 0268 233024FD 		sd	s2,-64(s0)
+  71:src/syscall_c.c ****     arguments.arg2 = (uint64)init;
+ 437              		.loc 1 71 5 is_stmt 1
+ 438              		.loc 1 71 22 is_stmt 0
+ 439 026c 93940402 		slli	s1,s1,32
+ 440 0270 93D40402 		srli	s1,s1,32
+ 441              		.loc 1 71 20
+ 442 0274 233494FC 		sd	s1,-56(s0)
+  72:src/syscall_c.c ****     struct args* argsP = &arguments;
+ 443              		.loc 1 72 5 is_stmt 1
+ 444              	.LVL52:
+  73:src/syscall_c.c ****     int res = (int) callSys(0x21,(void *)argsP,2);
+ 445              		.loc 1 73 5
+ 446              		.loc 1 73 21 is_stmt 0
+ 447 0278 13062000 		li	a2,2
+ 448 027c 930504FC 		addi	a1,s0,-64
+ 449              	.LVL53:
+ 450 0280 13051002 		li	a0,33
+ 451 0284 97000000 		call	callSys
+ 451      E7800000 
+ 452              	.LVL54:
+  74:src/syscall_c.c ****     return res;
+ 453              		.loc 1 74 5 is_stmt 1
+  75:src/syscall_c.c **** }
+ 454              		.loc 1 75 1 is_stmt 0
+ 455 028c 1B050500 		sext.w	a0,a0
+ 456 0290 83308103 		ld	ra,56(sp)
+ 457              		.cfi_restore 1
+ 458 0294 03340103 		ld	s0,48(sp)
+ 459              		.cfi_restore 8
+ 460              		.cfi_def_cfa 2, 64
+ 461 0298 83348102 		ld	s1,40(sp)
+ 462              		.cfi_restore 9
+ 463 029c 03390102 		ld	s2,32(sp)
+ 464              		.cfi_restore 18
+ 465              	.LVL55:
+ 466 02a0 13010104 		addi	sp,sp,64
+ 467              		.cfi_def_cfa_offset 0
+ 468              	.LVL56:
+ 469 02a4 67800000 		jr	ra
+ 470              		.cfi_endproc
+ 471              	.LFE6:
+ 473              		.align	2
+ 474              		.globl	sem_close
+ 476              	sem_close:
+ 477              	.LFB7:
+  76:src/syscall_c.c **** int sem_close (sem_t handle){
+ 478              		.loc 1 76 29 is_stmt 1
+ 479              		.cfi_startproc
+ 480              	.LVL57:
+ 481 02a8 130101FD 		addi	sp,sp,-48
+ 482              		.cfi_def_cfa_offset 48
+ 483 02ac 23341102 		sd	ra,40(sp)
+ 484 02b0 23308102 		sd	s0,32(sp)
+ 485              		.cfi_offset 1, -8
+GAS LISTING /tmp/ccLAsTJa.s 			page 11
+
+
+ 486              		.cfi_offset 8, -16
+ 487 02b4 13040103 		addi	s0,sp,48
+ 488              		.cfi_def_cfa 8, 0
+  77:src/syscall_c.c ****     struct args arguments;
+ 489              		.loc 1 77 5
+  78:src/syscall_c.c ****     arguments.arg1 = (uint64)handle;
+ 490              		.loc 1 78 5
+ 491              		.loc 1 78 20 is_stmt 0
+ 492 02b8 2338A4FC 		sd	a0,-48(s0)
+  79:src/syscall_c.c ****     struct args* argsP = &arguments;
+ 493              		.loc 1 79 5 is_stmt 1
+ 494              	.LVL58:
+  80:src/syscall_c.c ****     int res = (int) callSys(0x22,(void *)argsP,1);
+ 495              		.loc 1 80 5
+ 496              		.loc 1 80 21 is_stmt 0
+ 497 02bc 13061000 		li	a2,1
+ 498 02c0 930504FD 		addi	a1,s0,-48
+ 499              	.LVL59:
+ 500 02c4 13052002 		li	a0,34
+ 501              	.LVL60:
+ 502 02c8 97000000 		call	callSys
+ 502      E7800000 
+ 503              	.LVL61:
+  81:src/syscall_c.c ****     return res;
+ 504              		.loc 1 81 5 is_stmt 1
+  82:src/syscall_c.c **** }
+ 505              		.loc 1 82 1 is_stmt 0
+ 506 02d0 1B050500 		sext.w	a0,a0
+ 507 02d4 83308102 		ld	ra,40(sp)
+ 508              		.cfi_restore 1
+ 509 02d8 03340102 		ld	s0,32(sp)
+ 510              		.cfi_restore 8
+ 511              		.cfi_def_cfa 2, 48
+ 512 02dc 13010103 		addi	sp,sp,48
+ 513              		.cfi_def_cfa_offset 0
+ 514              	.LVL62:
+ 515 02e0 67800000 		jr	ra
+ 516              		.cfi_endproc
+ 517              	.LFE7:
+ 519              		.align	2
+ 520              		.globl	sem_wait
+ 522              	sem_wait:
+ 523              	.LFB8:
+  83:src/syscall_c.c **** int sem_wait (sem_t id){
+ 524              		.loc 1 83 24 is_stmt 1
+ 525              		.cfi_startproc
+ 526              	.LVL63:
+ 527 02e4 130101FD 		addi	sp,sp,-48
+ 528              		.cfi_def_cfa_offset 48
+ 529 02e8 23341102 		sd	ra,40(sp)
+ 530 02ec 23308102 		sd	s0,32(sp)
+ 531              		.cfi_offset 1, -8
+ 532              		.cfi_offset 8, -16
+ 533 02f0 13040103 		addi	s0,sp,48
+ 534              		.cfi_def_cfa 8, 0
+  84:src/syscall_c.c ****     struct args arguments;
+ 535              		.loc 1 84 5
+GAS LISTING /tmp/ccLAsTJa.s 			page 12
+
+
+  85:src/syscall_c.c ****     arguments.arg1 = (uint64)id;
+ 536              		.loc 1 85 5
+ 537              		.loc 1 85 20 is_stmt 0
+ 538 02f4 2338A4FC 		sd	a0,-48(s0)
+  86:src/syscall_c.c ****     struct args* argsP = &arguments;
+ 539              		.loc 1 86 5 is_stmt 1
+ 540              	.LVL64:
+  87:src/syscall_c.c ****     int res = (int) callSys(0x23,(void *)argsP,1);
+ 541              		.loc 1 87 5
+ 542              		.loc 1 87 21 is_stmt 0
+ 543 02f8 13061000 		li	a2,1
+ 544 02fc 930504FD 		addi	a1,s0,-48
+ 545              	.LVL65:
+ 546 0300 13053002 		li	a0,35
+ 547              	.LVL66:
+ 548 0304 97000000 		call	callSys
+ 548      E7800000 
+ 549              	.LVL67:
+  88:src/syscall_c.c ****     return res;
+ 550              		.loc 1 88 5 is_stmt 1
+  89:src/syscall_c.c **** }
+ 551              		.loc 1 89 1 is_stmt 0
+ 552 030c 1B050500 		sext.w	a0,a0
+ 553 0310 83308102 		ld	ra,40(sp)
+ 554              		.cfi_restore 1
+ 555 0314 03340102 		ld	s0,32(sp)
+ 556              		.cfi_restore 8
+ 557              		.cfi_def_cfa 2, 48
+ 558 0318 13010103 		addi	sp,sp,48
+ 559              		.cfi_def_cfa_offset 0
+ 560              	.LVL68:
+ 561 031c 67800000 		jr	ra
+ 562              		.cfi_endproc
+ 563              	.LFE8:
+ 565              		.align	2
+ 566              		.globl	sem_signal
+ 568              	sem_signal:
+ 569              	.LFB9:
+  90:src/syscall_c.c **** int sem_signal (sem_t id){
+ 570              		.loc 1 90 26 is_stmt 1
+ 571              		.cfi_startproc
+ 572              	.LVL69:
+ 573 0320 130101FD 		addi	sp,sp,-48
+ 574              		.cfi_def_cfa_offset 48
+ 575 0324 23341102 		sd	ra,40(sp)
+ 576 0328 23308102 		sd	s0,32(sp)
+ 577              		.cfi_offset 1, -8
+ 578              		.cfi_offset 8, -16
+ 579 032c 13040103 		addi	s0,sp,48
+ 580              		.cfi_def_cfa 8, 0
+  91:src/syscall_c.c ****     struct args arguments;
+ 581              		.loc 1 91 5
+  92:src/syscall_c.c ****     arguments.arg1 = (uint64)id;
+ 582              		.loc 1 92 5
+ 583              		.loc 1 92 20 is_stmt 0
+ 584 0330 2338A4FC 		sd	a0,-48(s0)
+  93:src/syscall_c.c ****     struct args* argsP = &arguments;
+GAS LISTING /tmp/ccLAsTJa.s 			page 13
+
+
+ 585              		.loc 1 93 5 is_stmt 1
+ 586              	.LVL70:
+  94:src/syscall_c.c ****     int res = (int) callSys(0x24,(void *)argsP,1);
+ 587              		.loc 1 94 5
+ 588              		.loc 1 94 21 is_stmt 0
+ 589 0334 13061000 		li	a2,1
+ 590 0338 930504FD 		addi	a1,s0,-48
+ 591              	.LVL71:
+ 592 033c 13054002 		li	a0,36
+ 593              	.LVL72:
+ 594 0340 97000000 		call	callSys
+ 594      E7800000 
+ 595              	.LVL73:
+  95:src/syscall_c.c ****     return res;
+ 596              		.loc 1 95 5 is_stmt 1
+  96:src/syscall_c.c **** }
+ 597              		.loc 1 96 1 is_stmt 0
+ 598 0348 1B050500 		sext.w	a0,a0
+ 599 034c 83308102 		ld	ra,40(sp)
+ 600              		.cfi_restore 1
+ 601 0350 03340102 		ld	s0,32(sp)
+ 602              		.cfi_restore 8
+ 603              		.cfi_def_cfa 2, 48
+ 604 0354 13010103 		addi	sp,sp,48
+ 605              		.cfi_def_cfa_offset 0
+ 606              	.LVL74:
+ 607 0358 67800000 		jr	ra
+ 608              		.cfi_endproc
+ 609              	.LFE9:
+ 611              		.align	2
+ 612              		.globl	time_sleep
+ 614              	time_sleep:
+ 615              	.LFB10:
+  97:src/syscall_c.c **** 
+  98:src/syscall_c.c **** int time_sleep (time_t time){
+ 616              		.loc 1 98 29 is_stmt 1
+ 617              		.cfi_startproc
+ 618              	.LVL75:
+ 619 035c 130101FD 		addi	sp,sp,-48
+ 620              		.cfi_def_cfa_offset 48
+ 621 0360 23341102 		sd	ra,40(sp)
+ 622 0364 23308102 		sd	s0,32(sp)
+ 623              		.cfi_offset 1, -8
+ 624              		.cfi_offset 8, -16
+ 625 0368 13040103 		addi	s0,sp,48
+ 626              		.cfi_def_cfa 8, 0
+  99:src/syscall_c.c ****     struct args arguments;
+ 627              		.loc 1 99 5
+ 100:src/syscall_c.c ****     arguments.arg1 = (uint64)time;
+ 628              		.loc 1 100 5
+ 629              		.loc 1 100 20 is_stmt 0
+ 630 036c 2338A4FC 		sd	a0,-48(s0)
+ 101:src/syscall_c.c ****     struct args* argsP = &arguments;
+ 631              		.loc 1 101 5 is_stmt 1
+ 632              	.LVL76:
+ 102:src/syscall_c.c ****     int res = (int) callSys(0x31,(void *)argsP,1);
+ 633              		.loc 1 102 5
+GAS LISTING /tmp/ccLAsTJa.s 			page 14
+
+
+ 634              		.loc 1 102 21 is_stmt 0
+ 635 0370 13061000 		li	a2,1
+ 636 0374 930504FD 		addi	a1,s0,-48
+ 637              	.LVL77:
+ 638 0378 13051003 		li	a0,49
+ 639              	.LVL78:
+ 640 037c 97000000 		call	callSys
+ 640      E7800000 
+ 641              	.LVL79:
+ 103:src/syscall_c.c ****     return res;
+ 642              		.loc 1 103 5 is_stmt 1
+ 104:src/syscall_c.c **** }
+ 643              		.loc 1 104 1 is_stmt 0
+ 644 0384 1B050500 		sext.w	a0,a0
+ 645 0388 83308102 		ld	ra,40(sp)
+ 646              		.cfi_restore 1
+ 647 038c 03340102 		ld	s0,32(sp)
+ 648              		.cfi_restore 8
+ 649              		.cfi_def_cfa 2, 48
+ 650 0390 13010103 		addi	sp,sp,48
+ 651              		.cfi_def_cfa_offset 0
+ 652              	.LVL80:
+ 653 0394 67800000 		jr	ra
+ 654              		.cfi_endproc
+ 655              	.LFE10:
+ 657              		.align	2
+ 658              		.globl	set_periodic
+ 660              	set_periodic:
+ 661              	.LFB11:
+ 105:src/syscall_c.c **** void set_periodic(thread_t* handle){
+ 662              		.loc 1 105 36 is_stmt 1
+ 663              		.cfi_startproc
+ 664              	.LVL81:
+ 665 0398 130101FD 		addi	sp,sp,-48
+ 666              		.cfi_def_cfa_offset 48
+ 667 039c 23341102 		sd	ra,40(sp)
+ 668 03a0 23308102 		sd	s0,32(sp)
+ 669              		.cfi_offset 1, -8
+ 670              		.cfi_offset 8, -16
+ 671 03a4 13040103 		addi	s0,sp,48
+ 672              		.cfi_def_cfa 8, 0
+ 106:src/syscall_c.c ****     struct args arguments;
+ 673              		.loc 1 106 5
+ 107:src/syscall_c.c ****     arguments.arg1 = (uint64)handle;
+ 674              		.loc 1 107 5
+ 675              		.loc 1 107 20 is_stmt 0
+ 676 03a8 2338A4FC 		sd	a0,-48(s0)
+ 108:src/syscall_c.c ****     struct args* argsP = &arguments;
+ 677              		.loc 1 108 5 is_stmt 1
+ 678              	.LVL82:
+ 109:src/syscall_c.c ****     callSys(0x55,(void *)argsP,1);
+ 679              		.loc 1 109 5
+ 680 03ac 13061000 		li	a2,1
+ 681 03b0 930504FD 		addi	a1,s0,-48
+ 682              	.LVL83:
+ 683 03b4 13055005 		li	a0,85
+ 684              	.LVL84:
+GAS LISTING /tmp/ccLAsTJa.s 			page 15
+
+
+ 685 03b8 97000000 		call	callSys
+ 685      E7800000 
+ 686              	.LVL85:
+ 110:src/syscall_c.c **** 
+ 111:src/syscall_c.c **** }
+ 687              		.loc 1 111 1 is_stmt 0
+ 688 03c0 83308102 		ld	ra,40(sp)
+ 689              		.cfi_restore 1
+ 690 03c4 03340102 		ld	s0,32(sp)
+ 691              		.cfi_restore 8
+ 692              		.cfi_def_cfa 2, 48
+ 693 03c8 13010103 		addi	sp,sp,48
+ 694              		.cfi_def_cfa_offset 0
+ 695              	.LVL86:
+ 696 03cc 67800000 		jr	ra
+ 697              		.cfi_endproc
+ 698              	.LFE11:
+ 700              		.align	2
+ 701              		.globl	block_All_Periodic
+ 703              	block_All_Periodic:
+ 704              	.LFB12:
+ 112:src/syscall_c.c **** void block_All_Periodic(){
+ 705              		.loc 1 112 26 is_stmt 1
+ 706              		.cfi_startproc
+ 707 03d0 130101FF 		addi	sp,sp,-16
+ 708              		.cfi_def_cfa_offset 16
+ 709 03d4 23341100 		sd	ra,8(sp)
+ 710 03d8 23308100 		sd	s0,0(sp)
+ 711              		.cfi_offset 1, -8
+ 712              		.cfi_offset 8, -16
+ 713 03dc 13040101 		addi	s0,sp,16
+ 714              		.cfi_def_cfa 8, 0
+ 113:src/syscall_c.c ****     callSys(0x56,0,0);
+ 715              		.loc 1 113 5
+ 716 03e0 13060000 		li	a2,0
+ 717 03e4 93050000 		li	a1,0
+ 718 03e8 13056005 		li	a0,86
+ 719 03ec 97000000 		call	callSys
+ 719      E7800000 
+ 720              	.LVL87:
+ 114:src/syscall_c.c **** }
+ 721              		.loc 1 114 1 is_stmt 0
+ 722 03f4 83308100 		ld	ra,8(sp)
+ 723              		.cfi_restore 1
+ 724 03f8 03340100 		ld	s0,0(sp)
+ 725              		.cfi_restore 8
+ 726              		.cfi_def_cfa 2, 16
+ 727 03fc 13010101 		addi	sp,sp,16
+ 728              		.cfi_def_cfa_offset 0
+ 729 0400 67800000 		jr	ra
+ 730              		.cfi_endproc
+ 731              	.LFE12:
+ 733              		.align	2
+ 734              		.globl	getc
+ 736              	getc:
+ 737              	.LFB13:
+ 115:src/syscall_c.c **** char getc (){
+GAS LISTING /tmp/ccLAsTJa.s 			page 16
+
+
+ 738              		.loc 1 115 13 is_stmt 1
+ 739              		.cfi_startproc
+ 740 0404 130101FF 		addi	sp,sp,-16
+ 741              		.cfi_def_cfa_offset 16
+ 742 0408 23341100 		sd	ra,8(sp)
+ 743 040c 23308100 		sd	s0,0(sp)
+ 744              		.cfi_offset 1, -8
+ 745              		.cfi_offset 8, -16
+ 746 0410 13040101 		addi	s0,sp,16
+ 747              		.cfi_def_cfa 8, 0
+ 116:src/syscall_c.c **** 
+ 117:src/syscall_c.c ****     char c =  (char )callSys(0x41,0,0);
+ 748              		.loc 1 117 5
+ 749              		.loc 1 117 22 is_stmt 0
+ 750 0414 13060000 		li	a2,0
+ 751 0418 93050000 		li	a1,0
+ 752 041c 13051004 		li	a0,65
+ 753 0420 97000000 		call	callSys
+ 753      E7800000 
+ 754              	.LVL88:
+ 118:src/syscall_c.c **** 
+ 119:src/syscall_c.c ****     return  c;
+ 755              		.loc 1 119 5 is_stmt 1
+ 120:src/syscall_c.c **** }
+ 756              		.loc 1 120 1 is_stmt 0
+ 757 0428 1375F50F 		andi	a0,a0,0xff
+ 758 042c 83308100 		ld	ra,8(sp)
+ 759              		.cfi_restore 1
+ 760 0430 03340100 		ld	s0,0(sp)
+ 761              		.cfi_restore 8
+ 762              		.cfi_def_cfa 2, 16
+ 763 0434 13010101 		addi	sp,sp,16
+ 764              		.cfi_def_cfa_offset 0
+ 765 0438 67800000 		jr	ra
+ 766              		.cfi_endproc
+ 767              	.LFE13:
+ 769              		.align	2
+ 770              		.globl	putc
+ 772              	putc:
+ 773              	.LFB14:
+ 121:src/syscall_c.c **** void putc (char c){
+ 774              		.loc 1 121 19 is_stmt 1
+ 775              		.cfi_startproc
+ 776              	.LVL89:
+ 777 043c 130101FD 		addi	sp,sp,-48
+ 778              		.cfi_def_cfa_offset 48
+ 779 0440 23341102 		sd	ra,40(sp)
+ 780 0444 23308102 		sd	s0,32(sp)
+ 781              		.cfi_offset 1, -8
+ 782              		.cfi_offset 8, -16
+ 783 0448 13040103 		addi	s0,sp,48
+ 784              		.cfi_def_cfa 8, 0
+ 122:src/syscall_c.c ****     struct args arguments;
+ 785              		.loc 1 122 5
+ 123:src/syscall_c.c ****     arguments.arg1 = (uint64)c;
+ 786              		.loc 1 123 5
+ 787              		.loc 1 123 20 is_stmt 0
+GAS LISTING /tmp/ccLAsTJa.s 			page 17
+
+
+ 788 044c 2338A4FC 		sd	a0,-48(s0)
+ 124:src/syscall_c.c ****     struct args* argsP = &arguments;
+ 789              		.loc 1 124 5 is_stmt 1
+ 790              	.LVL90:
+ 125:src/syscall_c.c ****     callSys(0x42,(void *)argsP,1);
+ 791              		.loc 1 125 5
+ 792 0450 13061000 		li	a2,1
+ 793 0454 930504FD 		addi	a1,s0,-48
+ 794              	.LVL91:
+ 795 0458 13052004 		li	a0,66
+ 796              	.LVL92:
+ 797 045c 97000000 		call	callSys
+ 797      E7800000 
+ 798              	.LVL93:
+ 126:src/syscall_c.c **** 
+ 127:src/syscall_c.c **** 
+ 128:src/syscall_c.c **** }
+ 799              		.loc 1 128 1 is_stmt 0
+ 800 0464 83308102 		ld	ra,40(sp)
+ 801              		.cfi_restore 1
+ 802 0468 03340102 		ld	s0,32(sp)
+ 803              		.cfi_restore 8
+ 804              		.cfi_def_cfa 2, 48
+ 805 046c 13010103 		addi	sp,sp,48
+ 806              		.cfi_def_cfa_offset 0
+ 807              	.LVL94:
+ 808 0470 67800000 		jr	ra
+ 809              		.cfi_endproc
+ 810              	.LFE14:
+ 812              		.align	2
+ 813              		.globl	switchToUserMode
+ 815              	switchToUserMode:
+ 816              	.LFB15:
+ 129:src/syscall_c.c **** 
+ 130:src/syscall_c.c **** void switchToUserMode(){
+ 817              		.loc 1 130 24 is_stmt 1
+ 818              		.cfi_startproc
+ 819 0474 130101FF 		addi	sp,sp,-16
+ 820              		.cfi_def_cfa_offset 16
+ 821 0478 23341100 		sd	ra,8(sp)
+ 822 047c 23308100 		sd	s0,0(sp)
+ 823              		.cfi_offset 1, -8
+ 824              		.cfi_offset 8, -16
+ 825 0480 13040101 		addi	s0,sp,16
+ 826              		.cfi_def_cfa 8, 0
+ 131:src/syscall_c.c ****     callSys(0x50,0,0);
+ 827              		.loc 1 131 5
+ 828 0484 13060000 		li	a2,0
+ 829 0488 93050000 		li	a1,0
+ 830 048c 13050005 		li	a0,80
+ 831 0490 97000000 		call	callSys
+ 831      E7800000 
+ 832              	.LVL95:
+ 132:src/syscall_c.c **** }
+ 833              		.loc 1 132 1 is_stmt 0
+ 834 0498 83308100 		ld	ra,8(sp)
+ 835              		.cfi_restore 1
+GAS LISTING /tmp/ccLAsTJa.s 			page 18
+
+
+ 836 049c 03340100 		ld	s0,0(sp)
+ 837              		.cfi_restore 8
+ 838              		.cfi_def_cfa 2, 16
+ 839 04a0 13010101 		addi	sp,sp,16
+ 840              		.cfi_def_cfa_offset 0
+ 841 04a4 67800000 		jr	ra
+ 842              		.cfi_endproc
+ 843              	.LFE15:
+ 845              		.globl	EOF
+ 846              		.section	.srodata,"a"
+ 847              		.align	2
+ 850              	EOF:
+ 851 0000 FFFFFFFF 		.word	-1
+ 852              		.text
+ 853              	.Letext0:
+ 854              		.file 2 "src/../h/../lib/hw.h"
+ 855              		.file 3 "src/../h/syscall_c.h"
+ 856              		.file 4 "src/../h/../h/abi.h"
+GAS LISTING /tmp/ccLAsTJa.s 			page 19
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 syscall_c.c
+     /tmp/ccLAsTJa.s:10     .text:0000000000000000 mem_alloc
+     /tmp/ccLAsTJa.s:14     .text:0000000000000000 .L0 
+     /tmp/ccLAsTJa.s:16     .text:0000000000000000 .L0 
+     /tmp/ccLAsTJa.s:17     .text:0000000000000004 .L0 
+     /tmp/ccLAsTJa.s:20     .text:000000000000000c .L0 
+     /tmp/ccLAsTJa.s:21     .text:000000000000000c .L0 
+     /tmp/ccLAsTJa.s:23     .text:0000000000000010 .L0 
+     /tmp/ccLAsTJa.s:25     .text:0000000000000010 .L0 
+     /tmp/ccLAsTJa.s:26     .text:0000000000000010 .L0 
+     /tmp/ccLAsTJa.s:29     .text:0000000000000014 .L0 
+     /tmp/ccLAsTJa.s:32     .text:0000000000000018 .L0 
+     /tmp/ccLAsTJa.s:33     .text:0000000000000018 .L0 
+     /tmp/ccLAsTJa.s:36     .text:000000000000001c .L0 
+     /tmp/ccLAsTJa.s:38     .text:0000000000000020 .L0 
+     /tmp/ccLAsTJa.s:39     .text:0000000000000020 .L0 
+     /tmp/ccLAsTJa.s:43     .text:0000000000000024 .L0 
+     /tmp/ccLAsTJa.s:44     .text:0000000000000024 .L0 
+     /tmp/ccLAsTJa.s:45     .text:0000000000000024 .L0 
+     /tmp/ccLAsTJa.s:48     .text:0000000000000028 .L0 
+     /tmp/ccLAsTJa.s:49     .text:0000000000000028 .L0 
+     /tmp/ccLAsTJa.s:50     .text:0000000000000028 .L0 
+     /tmp/ccLAsTJa.s:57     .text:000000000000003c .L0 
+     /tmp/ccLAsTJa.s:58     .text:000000000000003c .L0 
+     /tmp/ccLAsTJa.s:59     .text:0000000000000040 .L0 
+     /tmp/ccLAsTJa.s:61     .text:0000000000000044 .L0 
+     /tmp/ccLAsTJa.s:62     .text:0000000000000044 .L0 
+     /tmp/ccLAsTJa.s:64     .text:0000000000000048 .L0 
+     /tmp/ccLAsTJa.s:67     .text:000000000000004c .L0 
+     /tmp/ccLAsTJa.s:73     .text:000000000000004c mem_free
+     /tmp/ccLAsTJa.s:76     .text:000000000000004c .L0 
+     /tmp/ccLAsTJa.s:78     .text:000000000000004c .L0 
+     /tmp/ccLAsTJa.s:79     .text:0000000000000050 .L0 
+     /tmp/ccLAsTJa.s:82     .text:0000000000000058 .L0 
+     /tmp/ccLAsTJa.s:83     .text:0000000000000058 .L0 
+     /tmp/ccLAsTJa.s:85     .text:000000000000005c .L0 
+     /tmp/ccLAsTJa.s:87     .text:000000000000005c .L0 
+     /tmp/ccLAsTJa.s:88     .text:000000000000005c .L0 
+     /tmp/ccLAsTJa.s:89     .text:000000000000005c .L0 
+     /tmp/ccLAsTJa.s:92     .text:0000000000000060 .L0 
+     /tmp/ccLAsTJa.s:93     .text:0000000000000060 .L0 
+     /tmp/ccLAsTJa.s:94     .text:0000000000000060 .L0 
+     /tmp/ccLAsTJa.s:102    .text:0000000000000074 .L0 
+     /tmp/ccLAsTJa.s:103    .text:0000000000000074 .L0 
+     /tmp/ccLAsTJa.s:105    .text:000000000000007c .L0 
+     /tmp/ccLAsTJa.s:107    .text:0000000000000080 .L0 
+     /tmp/ccLAsTJa.s:108    .text:0000000000000080 .L0 
+     /tmp/ccLAsTJa.s:110    .text:0000000000000084 .L0 
+     /tmp/ccLAsTJa.s:113    .text:0000000000000088 .L0 
+     /tmp/ccLAsTJa.s:119    .text:0000000000000088 thread_create
+     /tmp/ccLAsTJa.s:122    .text:0000000000000088 .L0 
+     /tmp/ccLAsTJa.s:124    .text:0000000000000088 .L0 
+     /tmp/ccLAsTJa.s:125    .text:000000000000008c .L0 
+     /tmp/ccLAsTJa.s:131    .text:00000000000000a0 .L0 
+     /tmp/ccLAsTJa.s:132    .text:00000000000000a0 .L0 
+     /tmp/ccLAsTJa.s:133    .text:00000000000000a0 .L0 
+GAS LISTING /tmp/ccLAsTJa.s 			page 20
+
+
+     /tmp/ccLAsTJa.s:134    .text:00000000000000a0 .L0 
+     /tmp/ccLAsTJa.s:135    .text:00000000000000a0 .L0 
+     /tmp/ccLAsTJa.s:137    .text:00000000000000a4 .L0 
+     /tmp/ccLAsTJa.s:142    .text:00000000000000b0 .L0 
+     /tmp/ccLAsTJa.s:143    .text:00000000000000b0 .L0 
+     /tmp/ccLAsTJa.s:144    .text:00000000000000b0 .L0 
+     /tmp/ccLAsTJa.s:149    .text:00000000000000bc .L0 
+     /tmp/ccLAsTJa.s:151    .text:00000000000000c0 .L0 
+     /tmp/ccLAsTJa.s:152    .text:00000000000000c0 .L0 
+     /tmp/ccLAsTJa.s:154    .text:00000000000000c4 .L0 
+     /tmp/ccLAsTJa.s:155    .text:00000000000000c4 .L0 
+     /tmp/ccLAsTJa.s:157    .text:00000000000000c8 .L0 
+     /tmp/ccLAsTJa.s:158    .text:00000000000000c8 .L0 
+     /tmp/ccLAsTJa.s:160    .text:00000000000000cc .L0 
+     /tmp/ccLAsTJa.s:161    .text:00000000000000cc .L0 
+     /tmp/ccLAsTJa.s:165    .text:00000000000000d8 .L0 
+     /tmp/ccLAsTJa.s:166    .text:00000000000000d8 .L0 
+     /tmp/ccLAsTJa.s:168    .text:00000000000000dc .L0 
+     /tmp/ccLAsTJa.s:169    .text:00000000000000dc .L0 
+     /tmp/ccLAsTJa.s:172    .text:00000000000000e0 .L0 
+     /tmp/ccLAsTJa.s:173    .text:00000000000000e0 .L0 
+     /tmp/ccLAsTJa.s:174    .text:00000000000000e0 .L0 
+     /tmp/ccLAsTJa.s:182    .text:00000000000000f4 .L0 
+     /tmp/ccLAsTJa.s:186    .text:00000000000000f8 .L0 
+     /tmp/ccLAsTJa.s:187    .text:00000000000000f8 .L0 
+     /tmp/ccLAsTJa.s:188    .text:00000000000000fc .L0 
+     /tmp/ccLAsTJa.s:189    .text:00000000000000fc .L0 
+     /tmp/ccLAsTJa.s:191    .text:0000000000000100 .L0 
+     /tmp/ccLAsTJa.s:192    .text:0000000000000100 .L0 
+     /tmp/ccLAsTJa.s:194    .text:0000000000000104 .L0 
+     /tmp/ccLAsTJa.s:197    .text:0000000000000108 .L0 
+     /tmp/ccLAsTJa.s:200    .text:000000000000010c .L0 
+     /tmp/ccLAsTJa.s:203    .text:0000000000000110 .L0 
+     /tmp/ccLAsTJa.s:207    .text:0000000000000114 .L0 
+     /tmp/ccLAsTJa.s:209    .text:0000000000000114 .L0 
+     /tmp/ccLAsTJa.s:212    .text:000000000000011c .L0 
+     /tmp/ccLAsTJa.s:218    .text:000000000000011c thread_init
+     /tmp/ccLAsTJa.s:221    .text:000000000000011c .L0 
+     /tmp/ccLAsTJa.s:223    .text:000000000000011c .L0 
+     /tmp/ccLAsTJa.s:224    .text:0000000000000120 .L0 
+     /tmp/ccLAsTJa.s:230    .text:0000000000000134 .L0 
+     /tmp/ccLAsTJa.s:231    .text:0000000000000134 .L0 
+     /tmp/ccLAsTJa.s:232    .text:0000000000000134 .L0 
+     /tmp/ccLAsTJa.s:233    .text:0000000000000134 .L0 
+     /tmp/ccLAsTJa.s:234    .text:0000000000000134 .L0 
+     /tmp/ccLAsTJa.s:236    .text:0000000000000138 .L0 
+     /tmp/ccLAsTJa.s:241    .text:0000000000000144 .L0 
+     /tmp/ccLAsTJa.s:242    .text:0000000000000144 .L0 
+     /tmp/ccLAsTJa.s:243    .text:0000000000000144 .L0 
+     /tmp/ccLAsTJa.s:248    .text:0000000000000150 .L0 
+     /tmp/ccLAsTJa.s:250    .text:0000000000000154 .L0 
+     /tmp/ccLAsTJa.s:251    .text:0000000000000154 .L0 
+     /tmp/ccLAsTJa.s:253    .text:0000000000000158 .L0 
+     /tmp/ccLAsTJa.s:254    .text:0000000000000158 .L0 
+     /tmp/ccLAsTJa.s:256    .text:000000000000015c .L0 
+     /tmp/ccLAsTJa.s:257    .text:000000000000015c .L0 
+     /tmp/ccLAsTJa.s:259    .text:0000000000000160 .L0 
+GAS LISTING /tmp/ccLAsTJa.s 			page 21
+
+
+     /tmp/ccLAsTJa.s:260    .text:0000000000000160 .L0 
+     /tmp/ccLAsTJa.s:264    .text:000000000000016c .L0 
+     /tmp/ccLAsTJa.s:265    .text:000000000000016c .L0 
+     /tmp/ccLAsTJa.s:267    .text:0000000000000170 .L0 
+     /tmp/ccLAsTJa.s:268    .text:0000000000000170 .L0 
+     /tmp/ccLAsTJa.s:271    .text:0000000000000174 .L0 
+     /tmp/ccLAsTJa.s:272    .text:0000000000000174 .L0 
+     /tmp/ccLAsTJa.s:273    .text:0000000000000174 .L0 
+     /tmp/ccLAsTJa.s:281    .text:0000000000000188 .L0 
+     /tmp/ccLAsTJa.s:285    .text:000000000000018c .L0 
+     /tmp/ccLAsTJa.s:286    .text:000000000000018c .L0 
+     /tmp/ccLAsTJa.s:287    .text:0000000000000190 .L0 
+     /tmp/ccLAsTJa.s:288    .text:0000000000000190 .L0 
+     /tmp/ccLAsTJa.s:290    .text:0000000000000194 .L0 
+     /tmp/ccLAsTJa.s:291    .text:0000000000000194 .L0 
+     /tmp/ccLAsTJa.s:293    .text:0000000000000198 .L0 
+     /tmp/ccLAsTJa.s:296    .text:000000000000019c .L0 
+     /tmp/ccLAsTJa.s:299    .text:00000000000001a0 .L0 
+     /tmp/ccLAsTJa.s:302    .text:00000000000001a4 .L0 
+     /tmp/ccLAsTJa.s:306    .text:00000000000001a8 .L0 
+     /tmp/ccLAsTJa.s:308    .text:00000000000001a8 .L0 
+     /tmp/ccLAsTJa.s:311    .text:00000000000001b0 .L0 
+     /tmp/ccLAsTJa.s:317    .text:00000000000001b0 thread_dispatch
+     /tmp/ccLAsTJa.s:320    .text:00000000000001b0 .L0 
+     /tmp/ccLAsTJa.s:321    .text:00000000000001b0 .L0 
+     /tmp/ccLAsTJa.s:322    .text:00000000000001b4 .L0 
+     /tmp/ccLAsTJa.s:325    .text:00000000000001bc .L0 
+     /tmp/ccLAsTJa.s:326    .text:00000000000001bc .L0 
+     /tmp/ccLAsTJa.s:328    .text:00000000000001c0 .L0 
+     /tmp/ccLAsTJa.s:330    .text:00000000000001c0 .L0 
+     /tmp/ccLAsTJa.s:336    .text:00000000000001d4 .L0 
+     /tmp/ccLAsTJa.s:337    .text:00000000000001d8 .L0 
+     /tmp/ccLAsTJa.s:339    .text:00000000000001dc .L0 
+     /tmp/ccLAsTJa.s:340    .text:00000000000001dc .L0 
+     /tmp/ccLAsTJa.s:342    .text:00000000000001e0 .L0 
+     /tmp/ccLAsTJa.s:344    .text:00000000000001e4 .L0 
+     /tmp/ccLAsTJa.s:350    .text:00000000000001e4 thread_exit
+     /tmp/ccLAsTJa.s:353    .text:00000000000001e4 .L0 
+     /tmp/ccLAsTJa.s:354    .text:00000000000001e4 .L0 
+     /tmp/ccLAsTJa.s:355    .text:00000000000001e8 .L0 
+     /tmp/ccLAsTJa.s:359    .text:00000000000001f4 .L0 
+     /tmp/ccLAsTJa.s:360    .text:00000000000001f4 .L0 
+     /tmp/ccLAsTJa.s:361    .text:00000000000001f4 .L0 
+     /tmp/ccLAsTJa.s:363    .text:00000000000001f8 .L0 
+     /tmp/ccLAsTJa.s:365    .text:00000000000001f8 .L0 
+     /tmp/ccLAsTJa.s:366    .text:00000000000001f8 .L0 
+     /tmp/ccLAsTJa.s:372    .text:000000000000020c .L0 
+     /tmp/ccLAsTJa.s:375    .text:0000000000000210 .L0 
+     /tmp/ccLAsTJa.s:376    .text:0000000000000210 .L0 
+     /tmp/ccLAsTJa.s:379    .text:0000000000000214 .L0 
+     /tmp/ccLAsTJa.s:380    .text:0000000000000214 .L0 
+     /tmp/ccLAsTJa.s:382    .text:000000000000021c .L0 
+     /tmp/ccLAsTJa.s:383    .text:000000000000021c .L0 
+     /tmp/ccLAsTJa.s:385    .text:0000000000000220 .L0 
+     /tmp/ccLAsTJa.s:386    .text:0000000000000220 .L0 
+     /tmp/ccLAsTJa.s:388    .text:0000000000000224 .L0 
+     /tmp/ccLAsTJa.s:391    .text:0000000000000228 .L0 
+GAS LISTING /tmp/ccLAsTJa.s 			page 22
+
+
+     /tmp/ccLAsTJa.s:395    .text:000000000000022c .L0 
+     /tmp/ccLAsTJa.s:397    .text:000000000000022c .L0 
+     /tmp/ccLAsTJa.s:400    .text:0000000000000238 .L0 
+     /tmp/ccLAsTJa.s:406    .text:0000000000000238 sem_open
+     /tmp/ccLAsTJa.s:409    .text:0000000000000238 .L0 
+     /tmp/ccLAsTJa.s:411    .text:0000000000000238 .L0 
+     /tmp/ccLAsTJa.s:412    .text:000000000000023c .L0 
+     /tmp/ccLAsTJa.s:417    .text:000000000000024c .L0 
+     /tmp/ccLAsTJa.s:418    .text:000000000000024c .L0 
+     /tmp/ccLAsTJa.s:419    .text:000000000000024c .L0 
+     /tmp/ccLAsTJa.s:420    .text:000000000000024c .L0 
+     /tmp/ccLAsTJa.s:422    .text:0000000000000250 .L0 
+     /tmp/ccLAsTJa.s:426    .text:0000000000000258 .L0 
+     /tmp/ccLAsTJa.s:427    .text:0000000000000258 .L0 
+     /tmp/ccLAsTJa.s:428    .text:0000000000000258 .L0 
+     /tmp/ccLAsTJa.s:433    .text:0000000000000264 .L0 
+     /tmp/ccLAsTJa.s:435    .text:0000000000000268 .L0 
+     /tmp/ccLAsTJa.s:436    .text:0000000000000268 .L0 
+     /tmp/ccLAsTJa.s:438    .text:000000000000026c .L0 
+     /tmp/ccLAsTJa.s:439    .text:000000000000026c .L0 
+     /tmp/ccLAsTJa.s:442    .text:0000000000000274 .L0 
+     /tmp/ccLAsTJa.s:445    .text:0000000000000278 .L0 
+     /tmp/ccLAsTJa.s:446    .text:0000000000000278 .L0 
+     /tmp/ccLAsTJa.s:447    .text:0000000000000278 .L0 
+     /tmp/ccLAsTJa.s:454    .text:000000000000028c .L0 
+     /tmp/ccLAsTJa.s:455    .text:000000000000028c .L0 
+     /tmp/ccLAsTJa.s:457    .text:0000000000000294 .L0 
+     /tmp/ccLAsTJa.s:459    .text:0000000000000298 .L0 
+     /tmp/ccLAsTJa.s:460    .text:0000000000000298 .L0 
+     /tmp/ccLAsTJa.s:462    .text:000000000000029c .L0 
+     /tmp/ccLAsTJa.s:464    .text:00000000000002a0 .L0 
+     /tmp/ccLAsTJa.s:467    .text:00000000000002a4 .L0 
+     /tmp/ccLAsTJa.s:470    .text:00000000000002a8 .L0 
+     /tmp/ccLAsTJa.s:476    .text:00000000000002a8 sem_close
+     /tmp/ccLAsTJa.s:479    .text:00000000000002a8 .L0 
+     /tmp/ccLAsTJa.s:481    .text:00000000000002a8 .L0 
+     /tmp/ccLAsTJa.s:482    .text:00000000000002ac .L0 
+     /tmp/ccLAsTJa.s:485    .text:00000000000002b4 .L0 
+     /tmp/ccLAsTJa.s:486    .text:00000000000002b4 .L0 
+     /tmp/ccLAsTJa.s:488    .text:00000000000002b8 .L0 
+     /tmp/ccLAsTJa.s:490    .text:00000000000002b8 .L0 
+     /tmp/ccLAsTJa.s:491    .text:00000000000002b8 .L0 
+     /tmp/ccLAsTJa.s:492    .text:00000000000002b8 .L0 
+     /tmp/ccLAsTJa.s:495    .text:00000000000002bc .L0 
+     /tmp/ccLAsTJa.s:496    .text:00000000000002bc .L0 
+     /tmp/ccLAsTJa.s:497    .text:00000000000002bc .L0 
+     /tmp/ccLAsTJa.s:505    .text:00000000000002d0 .L0 
+     /tmp/ccLAsTJa.s:506    .text:00000000000002d0 .L0 
+     /tmp/ccLAsTJa.s:508    .text:00000000000002d8 .L0 
+     /tmp/ccLAsTJa.s:510    .text:00000000000002dc .L0 
+     /tmp/ccLAsTJa.s:511    .text:00000000000002dc .L0 
+     /tmp/ccLAsTJa.s:513    .text:00000000000002e0 .L0 
+     /tmp/ccLAsTJa.s:516    .text:00000000000002e4 .L0 
+     /tmp/ccLAsTJa.s:522    .text:00000000000002e4 sem_wait
+     /tmp/ccLAsTJa.s:525    .text:00000000000002e4 .L0 
+     /tmp/ccLAsTJa.s:527    .text:00000000000002e4 .L0 
+     /tmp/ccLAsTJa.s:528    .text:00000000000002e8 .L0 
+GAS LISTING /tmp/ccLAsTJa.s 			page 23
+
+
+     /tmp/ccLAsTJa.s:531    .text:00000000000002f0 .L0 
+     /tmp/ccLAsTJa.s:532    .text:00000000000002f0 .L0 
+     /tmp/ccLAsTJa.s:534    .text:00000000000002f4 .L0 
+     /tmp/ccLAsTJa.s:536    .text:00000000000002f4 .L0 
+     /tmp/ccLAsTJa.s:537    .text:00000000000002f4 .L0 
+     /tmp/ccLAsTJa.s:538    .text:00000000000002f4 .L0 
+     /tmp/ccLAsTJa.s:541    .text:00000000000002f8 .L0 
+     /tmp/ccLAsTJa.s:542    .text:00000000000002f8 .L0 
+     /tmp/ccLAsTJa.s:543    .text:00000000000002f8 .L0 
+     /tmp/ccLAsTJa.s:551    .text:000000000000030c .L0 
+     /tmp/ccLAsTJa.s:552    .text:000000000000030c .L0 
+     /tmp/ccLAsTJa.s:554    .text:0000000000000314 .L0 
+     /tmp/ccLAsTJa.s:556    .text:0000000000000318 .L0 
+     /tmp/ccLAsTJa.s:557    .text:0000000000000318 .L0 
+     /tmp/ccLAsTJa.s:559    .text:000000000000031c .L0 
+     /tmp/ccLAsTJa.s:562    .text:0000000000000320 .L0 
+     /tmp/ccLAsTJa.s:568    .text:0000000000000320 sem_signal
+     /tmp/ccLAsTJa.s:571    .text:0000000000000320 .L0 
+     /tmp/ccLAsTJa.s:573    .text:0000000000000320 .L0 
+     /tmp/ccLAsTJa.s:574    .text:0000000000000324 .L0 
+     /tmp/ccLAsTJa.s:577    .text:000000000000032c .L0 
+     /tmp/ccLAsTJa.s:578    .text:000000000000032c .L0 
+     /tmp/ccLAsTJa.s:580    .text:0000000000000330 .L0 
+     /tmp/ccLAsTJa.s:582    .text:0000000000000330 .L0 
+     /tmp/ccLAsTJa.s:583    .text:0000000000000330 .L0 
+     /tmp/ccLAsTJa.s:584    .text:0000000000000330 .L0 
+     /tmp/ccLAsTJa.s:587    .text:0000000000000334 .L0 
+     /tmp/ccLAsTJa.s:588    .text:0000000000000334 .L0 
+     /tmp/ccLAsTJa.s:589    .text:0000000000000334 .L0 
+     /tmp/ccLAsTJa.s:597    .text:0000000000000348 .L0 
+     /tmp/ccLAsTJa.s:598    .text:0000000000000348 .L0 
+     /tmp/ccLAsTJa.s:600    .text:0000000000000350 .L0 
+     /tmp/ccLAsTJa.s:602    .text:0000000000000354 .L0 
+     /tmp/ccLAsTJa.s:603    .text:0000000000000354 .L0 
+     /tmp/ccLAsTJa.s:605    .text:0000000000000358 .L0 
+     /tmp/ccLAsTJa.s:608    .text:000000000000035c .L0 
+     /tmp/ccLAsTJa.s:614    .text:000000000000035c time_sleep
+     /tmp/ccLAsTJa.s:617    .text:000000000000035c .L0 
+     /tmp/ccLAsTJa.s:619    .text:000000000000035c .L0 
+     /tmp/ccLAsTJa.s:620    .text:0000000000000360 .L0 
+     /tmp/ccLAsTJa.s:623    .text:0000000000000368 .L0 
+     /tmp/ccLAsTJa.s:624    .text:0000000000000368 .L0 
+     /tmp/ccLAsTJa.s:626    .text:000000000000036c .L0 
+     /tmp/ccLAsTJa.s:628    .text:000000000000036c .L0 
+     /tmp/ccLAsTJa.s:629    .text:000000000000036c .L0 
+     /tmp/ccLAsTJa.s:630    .text:000000000000036c .L0 
+     /tmp/ccLAsTJa.s:633    .text:0000000000000370 .L0 
+     /tmp/ccLAsTJa.s:634    .text:0000000000000370 .L0 
+     /tmp/ccLAsTJa.s:635    .text:0000000000000370 .L0 
+     /tmp/ccLAsTJa.s:643    .text:0000000000000384 .L0 
+     /tmp/ccLAsTJa.s:644    .text:0000000000000384 .L0 
+     /tmp/ccLAsTJa.s:646    .text:000000000000038c .L0 
+     /tmp/ccLAsTJa.s:648    .text:0000000000000390 .L0 
+     /tmp/ccLAsTJa.s:649    .text:0000000000000390 .L0 
+     /tmp/ccLAsTJa.s:651    .text:0000000000000394 .L0 
+     /tmp/ccLAsTJa.s:654    .text:0000000000000398 .L0 
+     /tmp/ccLAsTJa.s:660    .text:0000000000000398 set_periodic
+GAS LISTING /tmp/ccLAsTJa.s 			page 24
+
+
+     /tmp/ccLAsTJa.s:663    .text:0000000000000398 .L0 
+     /tmp/ccLAsTJa.s:665    .text:0000000000000398 .L0 
+     /tmp/ccLAsTJa.s:666    .text:000000000000039c .L0 
+     /tmp/ccLAsTJa.s:669    .text:00000000000003a4 .L0 
+     /tmp/ccLAsTJa.s:670    .text:00000000000003a4 .L0 
+     /tmp/ccLAsTJa.s:672    .text:00000000000003a8 .L0 
+     /tmp/ccLAsTJa.s:674    .text:00000000000003a8 .L0 
+     /tmp/ccLAsTJa.s:675    .text:00000000000003a8 .L0 
+     /tmp/ccLAsTJa.s:676    .text:00000000000003a8 .L0 
+     /tmp/ccLAsTJa.s:679    .text:00000000000003ac .L0 
+     /tmp/ccLAsTJa.s:680    .text:00000000000003ac .L0 
+     /tmp/ccLAsTJa.s:688    .text:00000000000003c0 .L0 
+     /tmp/ccLAsTJa.s:689    .text:00000000000003c4 .L0 
+     /tmp/ccLAsTJa.s:691    .text:00000000000003c8 .L0 
+     /tmp/ccLAsTJa.s:692    .text:00000000000003c8 .L0 
+     /tmp/ccLAsTJa.s:694    .text:00000000000003cc .L0 
+     /tmp/ccLAsTJa.s:697    .text:00000000000003d0 .L0 
+     /tmp/ccLAsTJa.s:703    .text:00000000000003d0 block_All_Periodic
+     /tmp/ccLAsTJa.s:706    .text:00000000000003d0 .L0 
+     /tmp/ccLAsTJa.s:707    .text:00000000000003d0 .L0 
+     /tmp/ccLAsTJa.s:708    .text:00000000000003d4 .L0 
+     /tmp/ccLAsTJa.s:711    .text:00000000000003dc .L0 
+     /tmp/ccLAsTJa.s:712    .text:00000000000003dc .L0 
+     /tmp/ccLAsTJa.s:714    .text:00000000000003e0 .L0 
+     /tmp/ccLAsTJa.s:716    .text:00000000000003e0 .L0 
+     /tmp/ccLAsTJa.s:722    .text:00000000000003f4 .L0 
+     /tmp/ccLAsTJa.s:723    .text:00000000000003f8 .L0 
+     /tmp/ccLAsTJa.s:725    .text:00000000000003fc .L0 
+     /tmp/ccLAsTJa.s:726    .text:00000000000003fc .L0 
+     /tmp/ccLAsTJa.s:728    .text:0000000000000400 .L0 
+     /tmp/ccLAsTJa.s:730    .text:0000000000000404 .L0 
+     /tmp/ccLAsTJa.s:736    .text:0000000000000404 getc
+     /tmp/ccLAsTJa.s:739    .text:0000000000000404 .L0 
+     /tmp/ccLAsTJa.s:740    .text:0000000000000404 .L0 
+     /tmp/ccLAsTJa.s:741    .text:0000000000000408 .L0 
+     /tmp/ccLAsTJa.s:744    .text:0000000000000410 .L0 
+     /tmp/ccLAsTJa.s:745    .text:0000000000000410 .L0 
+     /tmp/ccLAsTJa.s:747    .text:0000000000000414 .L0 
+     /tmp/ccLAsTJa.s:749    .text:0000000000000414 .L0 
+     /tmp/ccLAsTJa.s:750    .text:0000000000000414 .L0 
+     /tmp/ccLAsTJa.s:756    .text:0000000000000428 .L0 
+     /tmp/ccLAsTJa.s:757    .text:0000000000000428 .L0 
+     /tmp/ccLAsTJa.s:759    .text:0000000000000430 .L0 
+     /tmp/ccLAsTJa.s:761    .text:0000000000000434 .L0 
+     /tmp/ccLAsTJa.s:762    .text:0000000000000434 .L0 
+     /tmp/ccLAsTJa.s:764    .text:0000000000000438 .L0 
+     /tmp/ccLAsTJa.s:766    .text:000000000000043c .L0 
+     /tmp/ccLAsTJa.s:772    .text:000000000000043c putc
+     /tmp/ccLAsTJa.s:775    .text:000000000000043c .L0 
+     /tmp/ccLAsTJa.s:777    .text:000000000000043c .L0 
+     /tmp/ccLAsTJa.s:778    .text:0000000000000440 .L0 
+     /tmp/ccLAsTJa.s:781    .text:0000000000000448 .L0 
+     /tmp/ccLAsTJa.s:782    .text:0000000000000448 .L0 
+     /tmp/ccLAsTJa.s:784    .text:000000000000044c .L0 
+     /tmp/ccLAsTJa.s:786    .text:000000000000044c .L0 
+     /tmp/ccLAsTJa.s:787    .text:000000000000044c .L0 
+     /tmp/ccLAsTJa.s:788    .text:000000000000044c .L0 
+GAS LISTING /tmp/ccLAsTJa.s 			page 25
+
+
+     /tmp/ccLAsTJa.s:791    .text:0000000000000450 .L0 
+     /tmp/ccLAsTJa.s:792    .text:0000000000000450 .L0 
+     /tmp/ccLAsTJa.s:800    .text:0000000000000464 .L0 
+     /tmp/ccLAsTJa.s:801    .text:0000000000000468 .L0 
+     /tmp/ccLAsTJa.s:803    .text:000000000000046c .L0 
+     /tmp/ccLAsTJa.s:804    .text:000000000000046c .L0 
+     /tmp/ccLAsTJa.s:806    .text:0000000000000470 .L0 
+     /tmp/ccLAsTJa.s:809    .text:0000000000000474 .L0 
+     /tmp/ccLAsTJa.s:815    .text:0000000000000474 switchToUserMode
+     /tmp/ccLAsTJa.s:818    .text:0000000000000474 .L0 
+     /tmp/ccLAsTJa.s:819    .text:0000000000000474 .L0 
+     /tmp/ccLAsTJa.s:820    .text:0000000000000478 .L0 
+     /tmp/ccLAsTJa.s:823    .text:0000000000000480 .L0 
+     /tmp/ccLAsTJa.s:824    .text:0000000000000480 .L0 
+     /tmp/ccLAsTJa.s:826    .text:0000000000000484 .L0 
+     /tmp/ccLAsTJa.s:828    .text:0000000000000484 .L0 
+     /tmp/ccLAsTJa.s:834    .text:0000000000000498 .L0 
+     /tmp/ccLAsTJa.s:835    .text:000000000000049c .L0 
+     /tmp/ccLAsTJa.s:837    .text:00000000000004a0 .L0 
+     /tmp/ccLAsTJa.s:838    .text:00000000000004a0 .L0 
+     /tmp/ccLAsTJa.s:840    .text:00000000000004a4 .L0 
+     /tmp/ccLAsTJa.s:842    .text:00000000000004a8 .L0 
+     /tmp/ccLAsTJa.s:850    .srodata:0000000000000000 EOF
+     /tmp/ccLAsTJa.s:857    .text:00000000000004a8 .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/ccLAsTJa.s:41     .text:0000000000000024 .L2
+     /tmp/ccLAsTJa.s:206    .text:0000000000000114 .L8
+     /tmp/ccLAsTJa.s:185    .text:00000000000000f8 .L7
+     /tmp/ccLAsTJa.s:305    .text:00000000000001a8 .L12
+     /tmp/ccLAsTJa.s:284    .text:000000000000018c .L11
+     /tmp/ccLAsTJa.s:394    .text:000000000000022c .L19
+     /tmp/ccLAsTJa.s:377    .text:0000000000000214 .L17
+     /tmp/ccLAsTJa.s:2092   .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccLAsTJa.s:3284   .debug_str:000000000000013a .LASF52
+     /tmp/ccLAsTJa.s:3246   .debug_str:0000000000000065 .LASF53
+     /tmp/ccLAsTJa.s:3310   .debug_str:0000000000000268 .LASF54
+     /tmp/ccLAsTJa.s:5      .text:0000000000000000 .Ltext0
+     /tmp/ccLAsTJa.s:853    .text:00000000000004a8 .Letext0
+     /tmp/ccLAsTJa.s:3224   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccLAsTJa.s:3286   .debug_str:00000000000001d8 .LASF0
+     /tmp/ccLAsTJa.s:3266   .debug_str:00000000000000ca .LASF1
+     /tmp/ccLAsTJa.s:3254   .debug_str:000000000000008e .LASF2
+     /tmp/ccLAsTJa.s:3236   .debug_str:0000000000000033 .LASF4
+     /tmp/ccLAsTJa.s:3264   .debug_str:00000000000000b8 .LASF3
+     /tmp/ccLAsTJa.s:3228   .debug_str:0000000000000013 .LASF5
+     /tmp/ccLAsTJa.s:3294   .debug_str:0000000000000201 .LASF6
+     /tmp/ccLAsTJa.s:3226   .debug_str:0000000000000000 .LASF7
+     /tmp/ccLAsTJa.s:3320   .debug_str:00000000000002b7 .LASF8
+     /tmp/ccLAsTJa.s:3296   .debug_str:0000000000000208 .LASF9
+     /tmp/ccLAsTJa.s:3234   .debug_str:0000000000000025 .LASF10
+     /tmp/ccLAsTJa.s:3338   .debug_str:0000000000000319 .LASF11
+     /tmp/ccLAsTJa.s:3248   .debug_str:0000000000000075 .LASF12
+     /tmp/ccLAsTJa.s:3330   .debug_str:00000000000002ee .LASF13
+     /tmp/ccLAsTJa.s:3306   .debug_str:000000000000024f .LASF14
+     /tmp/ccLAsTJa.s:3270   .debug_str:00000000000000eb .LASF15
+     /tmp/ccLAsTJa.s:3242   .debug_str:0000000000000049 .LASF16
+     /tmp/ccLAsTJa.s:3300   .debug_str:000000000000021d .LASF17
+GAS LISTING /tmp/ccLAsTJa.s 			page 26
+
+
+     /tmp/ccLAsTJa.s:3276   .debug_str:0000000000000109 .LASF18
+     /tmp/ccLAsTJa.s:3324   .debug_str:00000000000002d2 .LASF55
+     /tmp/ccLAsTJa.s:3250   .debug_str:0000000000000084 .LASF19
+     /tmp/ccLAsTJa.s:3252   .debug_str:0000000000000089 .LASF20
+     /tmp/ccLAsTJa.s:3230   .debug_str:000000000000001a .LASF21
+     /tmp/ccLAsTJa.s:3256   .debug_str:000000000000009c .LASF22
+     /tmp/ccLAsTJa.s:3322   .debug_str:00000000000002ca .LASF23
+     /tmp/ccLAsTJa.s:3302   .debug_str:0000000000000233 .LASF24
+     /tmp/ccLAsTJa.s:3280   .debug_str:000000000000012c .LASF25
+     /tmp/ccLAsTJa.s:3232   .debug_str:000000000000001f .LASF26
+     /tmp/ccLAsTJa.s:3312   .debug_str:000000000000028b .LASF32
+     /tmp/ccLAsTJa.s:816    .text:0000000000000474 .LFB15
+     /tmp/ccLAsTJa.s:843    .text:00000000000004a8 .LFE15
+     /tmp/ccLAsTJa.s:832    .text:0000000000000498 .LVL95
+     /tmp/ccLAsTJa.s:3318   .debug_str:00000000000002b2 .LASF30
+     /tmp/ccLAsTJa.s:773    .text:000000000000043c .LFB14
+     /tmp/ccLAsTJa.s:810    .text:0000000000000474 .LFE14
+     /tmp/ccLAsTJa.s:2616   .debug_loc:0000000000000000 .LLST29
+     /tmp/ccLAsTJa.s:3238   .debug_str:000000000000003a .LASF27
+     /tmp/ccLAsTJa.s:3316   .debug_str:00000000000002ac .LASF28
+     /tmp/ccLAsTJa.s:2630   .debug_loc:0000000000000039 .LLST30
+     /tmp/ccLAsTJa.s:798    .text:0000000000000464 .LVL93
+     /tmp/ccLAsTJa.s:3292   .debug_str:00000000000001fc .LASF29
+     /tmp/ccLAsTJa.s:3240   .debug_str:0000000000000044 .LASF31
+     /tmp/ccLAsTJa.s:737    .text:0000000000000404 .LFB13
+     /tmp/ccLAsTJa.s:767    .text:000000000000043c .LFE13
+     /tmp/ccLAsTJa.s:754    .text:0000000000000428 .LVL88
+     /tmp/ccLAsTJa.s:3304   .debug_str:000000000000023c .LASF33
+     /tmp/ccLAsTJa.s:704    .text:00000000000003d0 .LFB12
+     /tmp/ccLAsTJa.s:731    .text:0000000000000404 .LFE12
+     /tmp/ccLAsTJa.s:720    .text:00000000000003f4 .LVL87
+     /tmp/ccLAsTJa.s:3278   .debug_str:000000000000011f .LASF34
+     /tmp/ccLAsTJa.s:661    .text:0000000000000398 .LFB11
+     /tmp/ccLAsTJa.s:698    .text:00000000000003d0 .LFE11
+     /tmp/ccLAsTJa.s:3272   .debug_str:00000000000000f7 .LASF35
+     /tmp/ccLAsTJa.s:2651   .debug_loc:0000000000000097 .LLST27
+     /tmp/ccLAsTJa.s:2670   .debug_loc:00000000000000e4 .LLST28
+     /tmp/ccLAsTJa.s:686    .text:00000000000003c0 .LVL85
+     /tmp/ccLAsTJa.s:3290   .debug_str:00000000000001f1 .LASF37
+     /tmp/ccLAsTJa.s:615    .text:000000000000035c .LFB10
+     /tmp/ccLAsTJa.s:655    .text:0000000000000398 .LFE10
+     /tmp/ccLAsTJa.s:3298   .debug_str:0000000000000218 .LASF36
+     /tmp/ccLAsTJa.s:2691   .debug_loc:0000000000000142 .LLST25
+     /tmp/ccLAsTJa.s:2710   .debug_loc:000000000000018f .LLST26
+     /tmp/ccLAsTJa.s:641    .text:0000000000000384 .LVL79
+     /tmp/ccLAsTJa.s:3274   .debug_str:00000000000000fe .LASF38
+     /tmp/ccLAsTJa.s:569    .text:0000000000000320 .LFB9
+     /tmp/ccLAsTJa.s:609    .text:000000000000035c .LFE9
+     /tmp/ccLAsTJa.s:2731   .debug_loc:00000000000001ed .LLST23
+     /tmp/ccLAsTJa.s:2750   .debug_loc:000000000000023a .LLST24
+     /tmp/ccLAsTJa.s:595    .text:0000000000000348 .LVL73
+     /tmp/ccLAsTJa.s:3282   .debug_str:0000000000000131 .LASF39
+     /tmp/ccLAsTJa.s:523    .text:00000000000002e4 .LFB8
+     /tmp/ccLAsTJa.s:563    .text:0000000000000320 .LFE8
+     /tmp/ccLAsTJa.s:2771   .debug_loc:0000000000000298 .LLST21
+     /tmp/ccLAsTJa.s:2790   .debug_loc:00000000000002e5 .LLST22
+     /tmp/ccLAsTJa.s:549    .text:000000000000030c .LVL67
+GAS LISTING /tmp/ccLAsTJa.s 			page 27
+
+
+     /tmp/ccLAsTJa.s:3262   .debug_str:00000000000000ae .LASF40
+     /tmp/ccLAsTJa.s:477    .text:00000000000002a8 .LFB7
+     /tmp/ccLAsTJa.s:517    .text:00000000000002e4 .LFE7
+     /tmp/ccLAsTJa.s:2811   .debug_loc:0000000000000343 .LLST19
+     /tmp/ccLAsTJa.s:2830   .debug_loc:0000000000000390 .LLST20
+     /tmp/ccLAsTJa.s:503    .text:00000000000002d0 .LVL61
+     /tmp/ccLAsTJa.s:3326   .debug_str:00000000000002d7 .LASF41
+     /tmp/ccLAsTJa.s:407    .text:0000000000000238 .LFB6
+     /tmp/ccLAsTJa.s:471    .text:00000000000002a8 .LFE6
+     /tmp/ccLAsTJa.s:2851   .debug_loc:00000000000003ee .LLST16
+     /tmp/ccLAsTJa.s:3260   .debug_str:00000000000000a9 .LASF42
+     /tmp/ccLAsTJa.s:2869   .debug_loc:000000000000043a .LLST17
+     /tmp/ccLAsTJa.s:2883   .debug_loc:0000000000000473 .LLST18
+     /tmp/ccLAsTJa.s:431    .text:0000000000000264 .LVL51
+     /tmp/ccLAsTJa.s:452    .text:000000000000028c .LVL54
+     /tmp/ccLAsTJa.s:3314   .debug_str:000000000000029c .LASF43
+     /tmp/ccLAsTJa.s:318    .text:00000000000001b0 .LFB5
+     /tmp/ccLAsTJa.s:345    .text:00000000000001e4 .LFE5
+     /tmp/ccLAsTJa.s:334    .text:00000000000001d4 .LVL43
+     /tmp/ccLAsTJa.s:3332   .debug_str:00000000000002fe .LASF44
+     /tmp/ccLAsTJa.s:351    .text:00000000000001e4 .LFB4
+     /tmp/ccLAsTJa.s:401    .text:0000000000000238 .LFE4
+     /tmp/ccLAsTJa.s:2904   .debug_loc:00000000000004d1 .LLST15
+     /tmp/ccLAsTJa.s:370    .text:000000000000020c .LVL44
+     /tmp/ccLAsTJa.s:398    .text:0000000000000234 .LVL48
+     /tmp/ccLAsTJa.s:3288   .debug_str:00000000000001e5 .LASF45
+     /tmp/ccLAsTJa.s:219    .text:000000000000011c .LFB3
+     /tmp/ccLAsTJa.s:312    .text:00000000000001b0 .LFE3
+     /tmp/ccLAsTJa.s:2919   .debug_loc:000000000000051a .LLST10
+     /tmp/ccLAsTJa.s:3328   .debug_str:00000000000002e0 .LASF46
+     /tmp/ccLAsTJa.s:2941   .debug_loc:0000000000000579 .LLST11
+     /tmp/ccLAsTJa.s:2963   .debug_loc:00000000000005d8 .LLST12
+     /tmp/ccLAsTJa.s:2985   .debug_loc:0000000000000637 .LLST13
+     /tmp/ccLAsTJa.s:3006   .debug_loc:0000000000000695 .LLST14
+     /tmp/ccLAsTJa.s:246    .text:0000000000000150 .LVL31
+     /tmp/ccLAsTJa.s:262    .text:000000000000016c .LVL32
+     /tmp/ccLAsTJa.s:279    .text:0000000000000188 .LVL36
+     /tmp/ccLAsTJa.s:3268   .debug_str:00000000000000dd .LASF47
+     /tmp/ccLAsTJa.s:120    .text:0000000000000088 .LFB2
+     /tmp/ccLAsTJa.s:213    .text:000000000000011c .LFE2
+     /tmp/ccLAsTJa.s:3021   .debug_loc:00000000000006de .LLST5
+     /tmp/ccLAsTJa.s:3043   .debug_loc:000000000000073d .LLST6
+     /tmp/ccLAsTJa.s:3065   .debug_loc:000000000000079c .LLST7
+     /tmp/ccLAsTJa.s:3087   .debug_loc:00000000000007fb .LLST8
+     /tmp/ccLAsTJa.s:3108   .debug_loc:0000000000000859 .LLST9
+     /tmp/ccLAsTJa.s:147    .text:00000000000000bc .LVL17
+     /tmp/ccLAsTJa.s:163    .text:00000000000000d8 .LVL18
+     /tmp/ccLAsTJa.s:180    .text:00000000000000f4 .LVL22
+     /tmp/ccLAsTJa.s:3308   .debug_str:000000000000025f .LASF48
+     /tmp/ccLAsTJa.s:74     .text:000000000000004c .LFB1
+     /tmp/ccLAsTJa.s:114    .text:0000000000000088 .LFE1
+     /tmp/ccLAsTJa.s:3123   .debug_loc:00000000000008a2 .LLST3
+     /tmp/ccLAsTJa.s:3142   .debug_loc:00000000000008ef .LLST4
+     /tmp/ccLAsTJa.s:100    .text:0000000000000074 .LVL13
+     /tmp/ccLAsTJa.s:3334   .debug_str:000000000000030a .LASF49
+     /tmp/ccLAsTJa.s:11     .text:0000000000000000 .LFB0
+     /tmp/ccLAsTJa.s:68     .text:000000000000004c .LFE0
+GAS LISTING /tmp/ccLAsTJa.s 			page 28
+
+
+     /tmp/ccLAsTJa.s:3336   .debug_str:0000000000000314 .LASF50
+     /tmp/ccLAsTJa.s:3163   .debug_loc:000000000000094d .LLST0
+     /tmp/ccLAsTJa.s:3244   .debug_str:000000000000005f .LASF51
+     /tmp/ccLAsTJa.s:3183   .debug_loc:000000000000099b .LLST1
+     /tmp/ccLAsTJa.s:3190   .debug_loc:00000000000009be .LLST2
+     /tmp/ccLAsTJa.s:55     .text:000000000000003c .LVL7
+     /tmp/ccLAsTJa.s:3258   .debug_str:00000000000000a1 .LASF56
+     /tmp/ccLAsTJa.s:776    .text:000000000000043c .LVL89
+     /tmp/ccLAsTJa.s:796    .text:000000000000045c .LVL92
+     /tmp/ccLAsTJa.s:790    .text:0000000000000450 .LVL90
+     /tmp/ccLAsTJa.s:794    .text:0000000000000458 .LVL91
+     /tmp/ccLAsTJa.s:807    .text:0000000000000470 .LVL94
+     /tmp/ccLAsTJa.s:664    .text:0000000000000398 .LVL81
+     /tmp/ccLAsTJa.s:684    .text:00000000000003b8 .LVL84
+     /tmp/ccLAsTJa.s:678    .text:00000000000003ac .LVL82
+     /tmp/ccLAsTJa.s:682    .text:00000000000003b4 .LVL83
+     /tmp/ccLAsTJa.s:695    .text:00000000000003cc .LVL86
+     /tmp/ccLAsTJa.s:618    .text:000000000000035c .LVL75
+     /tmp/ccLAsTJa.s:639    .text:000000000000037c .LVL78
+     /tmp/ccLAsTJa.s:632    .text:0000000000000370 .LVL76
+     /tmp/ccLAsTJa.s:637    .text:0000000000000378 .LVL77
+     /tmp/ccLAsTJa.s:652    .text:0000000000000394 .LVL80
+     /tmp/ccLAsTJa.s:572    .text:0000000000000320 .LVL69
+     /tmp/ccLAsTJa.s:593    .text:0000000000000340 .LVL72
+     /tmp/ccLAsTJa.s:586    .text:0000000000000334 .LVL70
+     /tmp/ccLAsTJa.s:591    .text:000000000000033c .LVL71
+     /tmp/ccLAsTJa.s:606    .text:0000000000000358 .LVL74
+     /tmp/ccLAsTJa.s:526    .text:00000000000002e4 .LVL63
+     /tmp/ccLAsTJa.s:547    .text:0000000000000304 .LVL66
+     /tmp/ccLAsTJa.s:540    .text:00000000000002f8 .LVL64
+     /tmp/ccLAsTJa.s:545    .text:0000000000000300 .LVL65
+     /tmp/ccLAsTJa.s:560    .text:000000000000031c .LVL68
+     /tmp/ccLAsTJa.s:480    .text:00000000000002a8 .LVL57
+     /tmp/ccLAsTJa.s:501    .text:00000000000002c8 .LVL60
+     /tmp/ccLAsTJa.s:494    .text:00000000000002bc .LVL58
+     /tmp/ccLAsTJa.s:499    .text:00000000000002c4 .LVL59
+     /tmp/ccLAsTJa.s:514    .text:00000000000002e0 .LVL62
+     /tmp/ccLAsTJa.s:410    .text:0000000000000238 .LVL49
+     /tmp/ccLAsTJa.s:429    .text:000000000000025c .LVL50
+     /tmp/ccLAsTJa.s:465    .text:00000000000002a0 .LVL55
+     /tmp/ccLAsTJa.s:444    .text:0000000000000278 .LVL52
+     /tmp/ccLAsTJa.s:449    .text:0000000000000280 .LVL53
+     /tmp/ccLAsTJa.s:468    .text:00000000000002a4 .LVL56
+     /tmp/ccLAsTJa.s:373    .text:0000000000000210 .LVL45
+     /tmp/ccLAsTJa.s:389    .text:0000000000000224 .LVL46
+     /tmp/ccLAsTJa.s:393    .text:000000000000022c .LVL47
+     /tmp/ccLAsTJa.s:222    .text:000000000000011c .LVL29
+     /tmp/ccLAsTJa.s:244    .text:0000000000000148 .LVL30
+     /tmp/ccLAsTJa.s:294    .text:0000000000000198 .LVL38
+     /tmp/ccLAsTJa.s:304    .text:00000000000001a8 .LVL41
+     /tmp/ccLAsTJa.s:300    .text:00000000000001a0 .LVL40
+     /tmp/ccLAsTJa.s:297    .text:000000000000019c .LVL39
+     /tmp/ccLAsTJa.s:277    .text:0000000000000180 .LVL35
+     /tmp/ccLAsTJa.s:309    .text:00000000000001ac .LVL42
+     /tmp/ccLAsTJa.s:270    .text:0000000000000174 .LVL33
+     /tmp/ccLAsTJa.s:275    .text:000000000000017c .LVL34
+     /tmp/ccLAsTJa.s:282    .text:000000000000018c .LVL37
+GAS LISTING /tmp/ccLAsTJa.s 			page 29
+
+
+     /tmp/ccLAsTJa.s:123    .text:0000000000000088 .LVL15
+     /tmp/ccLAsTJa.s:145    .text:00000000000000b4 .LVL16
+     /tmp/ccLAsTJa.s:195    .text:0000000000000104 .LVL24
+     /tmp/ccLAsTJa.s:205    .text:0000000000000114 .LVL27
+     /tmp/ccLAsTJa.s:201    .text:000000000000010c .LVL26
+     /tmp/ccLAsTJa.s:198    .text:0000000000000108 .LVL25
+     /tmp/ccLAsTJa.s:178    .text:00000000000000ec .LVL21
+     /tmp/ccLAsTJa.s:210    .text:0000000000000118 .LVL28
+     /tmp/ccLAsTJa.s:171    .text:00000000000000e0 .LVL19
+     /tmp/ccLAsTJa.s:176    .text:00000000000000e8 .LVL20
+     /tmp/ccLAsTJa.s:183    .text:00000000000000f8 .LVL23
+     /tmp/ccLAsTJa.s:77     .text:000000000000004c .LVL9
+     /tmp/ccLAsTJa.s:98     .text:000000000000006c .LVL12
+     /tmp/ccLAsTJa.s:91     .text:0000000000000060 .LVL10
+     /tmp/ccLAsTJa.s:96     .text:0000000000000068 .LVL11
+     /tmp/ccLAsTJa.s:111    .text:0000000000000084 .LVL14
+     /tmp/ccLAsTJa.s:15     .text:0000000000000000 .LVL0
+     /tmp/ccLAsTJa.s:27     .text:0000000000000014 .LVL1
+     /tmp/ccLAsTJa.s:34     .text:000000000000001c .LVL3
+     /tmp/ccLAsTJa.s:30     .text:0000000000000018 .LVL2
+     /tmp/ccLAsTJa.s:47     .text:0000000000000028 .LVL5
+     /tmp/ccLAsTJa.s:52     .text:0000000000000030 .LVL6
+     /tmp/ccLAsTJa.s:65     .text:0000000000000048 .LVL8
+     /tmp/ccLAsTJa.s:858    .debug_info:0000000000000000 .Ldebug_info0
+
+UNDEFINED SYMBOLS
+callSys

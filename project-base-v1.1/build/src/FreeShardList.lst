@@ -1,0 +1,1717 @@
+GAS LISTING /tmp/cc2wneLk.s 			page 1
+
+
+   1              		.file	"FreeShardList.cpp"
+   2              		.option pic
+   3              		.option norelax
+   4              		.text
+   5              	.Ltext0:
+   6              		.align	2
+   7              		.globl	_ZN13FreeShardList12allocate_memEP4nodeS1_m
+   9              	_ZN13FreeShardList12allocate_memEP4nodeS1_m:
+  10              	.LFB1:
+  11              		.file 1 "src/FreeShardList.cpp"
+   1:src/FreeShardList.cpp **** #include "../h/FreeShardList.h"
+   2:src/FreeShardList.cpp **** 
+   3:src/FreeShardList.cpp **** node* FreeShardList::head = nullptr;
+   4:src/FreeShardList.cpp **** node* FreeShardList::tail = nullptr;
+   5:src/FreeShardList.cpp **** 
+   6:src/FreeShardList.cpp **** void *FreeShardList::find_best(size_t size) {
+   7:src/FreeShardList.cpp ****     if(tail == nullptr){
+   8:src/FreeShardList.cpp ****         head = (node*)HEAP_START_ADDR;
+   9:src/FreeShardList.cpp ****         head->next = nullptr;
+  10:src/FreeShardList.cpp ****         head->mem_free_block = head;
+  11:src/FreeShardList.cpp ****         head->size = (size_t)HEAP_END_ADDR-(size_t)HEAP_START_ADDR;
+  12:src/FreeShardList.cpp ****         tail= head;
+  13:src/FreeShardList.cpp ****     }
+  14:src/FreeShardList.cpp ****     if((long)size < 0) return nullptr;
+  15:src/FreeShardList.cpp **** 
+  16:src/FreeShardList.cpp ****     long min_shard_dif = head->size  - size;
+  17:src/FreeShardList.cpp ****     void* start_adr = head->mem_free_block;
+  18:src/FreeShardList.cpp ****     node* toReplace = head;
+  19:src/FreeShardList.cpp ****     node* pom = head;
+  20:src/FreeShardList.cpp ****     node* prev = nullptr;
+  21:src/FreeShardList.cpp ****     node* prevReplace = nullptr;
+  22:src/FreeShardList.cpp ****     while(pom->next!= nullptr){
+  23:src/FreeShardList.cpp ****         prev = pom;
+  24:src/FreeShardList.cpp ****         pom = pom->next;
+  25:src/FreeShardList.cpp ****         long shard_diff = pom->size - size;
+  26:src/FreeShardList.cpp ****         if((shard_diff < min_shard_dif && shard_diff >= 0)|| min_shard_dif < 0){
+  27:src/FreeShardList.cpp ****             min_shard_dif = shard_diff;
+  28:src/FreeShardList.cpp ****             start_adr = pom->mem_free_block;
+  29:src/FreeShardList.cpp ****             toReplace = pom;
+  30:src/FreeShardList.cpp ****             prevReplace = prev;
+  31:src/FreeShardList.cpp ****         }
+  32:src/FreeShardList.cpp ****     }
+  33:src/FreeShardList.cpp ****     if(min_shard_dif >= 0) {
+  34:src/FreeShardList.cpp **** 
+  35:src/FreeShardList.cpp ****         allocate_mem(prevReplace,toReplace,size);
+  36:src/FreeShardList.cpp **** 
+  37:src/FreeShardList.cpp ****         return start_adr;
+  38:src/FreeShardList.cpp ****     }
+  39:src/FreeShardList.cpp ****     return nullptr;
+  40:src/FreeShardList.cpp **** 
+  41:src/FreeShardList.cpp **** }
+  42:src/FreeShardList.cpp **** 
+  43:src/FreeShardList.cpp **** 
+  44:src/FreeShardList.cpp **** void FreeShardList::allocate_mem(struct node* prev, struct node *here, size_t size) {
+  12              		.loc 1 44 85
+  13              		.cfi_startproc
+  14              	.LVL0:
+GAS LISTING /tmp/cc2wneLk.s 			page 2
+
+
+  15 0000 130101FF 		addi	sp,sp,-16
+  16              		.cfi_def_cfa_offset 16
+  17 0004 23348100 		sd	s0,8(sp)
+  18              		.cfi_offset 8, -8
+  19 0008 13040101 		addi	s0,sp,16
+  20              		.cfi_def_cfa 8, 0
+  45:src/FreeShardList.cpp ****     if(here->size == size){
+  21              		.loc 1 45 5
+  22              	.LBB2:
+  23              		.loc 1 45 14 is_stmt 0
+  24 000c 03B78500 		ld	a4,8(a1)
+  25              		.loc 1 45 5
+  26 0010 630EC702 		beq	a4,a2,.L9
+  27              	.LBB3:
+  46:src/FreeShardList.cpp ****         if(prev == nullptr){
+  47:src/FreeShardList.cpp **** 
+  48:src/FreeShardList.cpp ****             head = head->next;
+  49:src/FreeShardList.cpp **** 
+  50:src/FreeShardList.cpp ****         }
+  51:src/FreeShardList.cpp ****         else if(here->next == nullptr){
+  52:src/FreeShardList.cpp ****             tail = prev;
+  53:src/FreeShardList.cpp **** 
+  54:src/FreeShardList.cpp **** 
+  55:src/FreeShardList.cpp ****             tail->next = nullptr;
+  56:src/FreeShardList.cpp ****         }
+  57:src/FreeShardList.cpp ****         else{
+  58:src/FreeShardList.cpp **** 
+  59:src/FreeShardList.cpp ****             prev->next = here->next;
+  60:src/FreeShardList.cpp ****             //here->next = nullptr;
+  61:src/FreeShardList.cpp **** 
+  62:src/FreeShardList.cpp ****         }
+  63:src/FreeShardList.cpp ****     }
+  64:src/FreeShardList.cpp ****     else{
+  65:src/FreeShardList.cpp ****         size_t prevSize = here->size;
+  28              		.loc 1 65 9 is_stmt 1
+  29              	.LVL1:
+  66:src/FreeShardList.cpp ****         void* prevMemBlock = here->mem_free_block;
+  30              		.loc 1 66 9
+  31              		.loc 1 66 15 is_stmt 0
+  32 0014 83B70500 		ld	a5,0(a1)
+  33              	.LVL2:
+  67:src/FreeShardList.cpp ****         struct node* prevNext = here->next;
+  34              		.loc 1 67 9 is_stmt 1
+  35              		.loc 1 67 22 is_stmt 0
+  36 0018 83B60501 		ld	a3,16(a1)
+  37              	.LVL3:
+  68:src/FreeShardList.cpp ****         here = (node*)((size_t )here->mem_free_block + size);
+  38              		.loc 1 68 9 is_stmt 1
+  39              		.loc 1 68 54 is_stmt 0
+  40 001c B387C700 		add	a5,a5,a2
+  41              	.LVL4:
+  69:src/FreeShardList.cpp ****         here->size = prevSize-size;
+  42              		.loc 1 69 9 is_stmt 1
+  43              		.loc 1 69 30 is_stmt 0
+  44 0020 3306C740 		sub	a2,a4,a2
+  45              	.LVL5:
+  46              		.loc 1 69 20
+GAS LISTING /tmp/cc2wneLk.s 			page 3
+
+
+  47 0024 23B4C700 		sd	a2,8(a5)
+  48              	.LVL6:
+  70:src/FreeShardList.cpp ****         here->mem_free_block = (void*)((size_t)prevMemBlock+size);
+  49              		.loc 1 70 9 is_stmt 1
+  50              		.loc 1 70 30 is_stmt 0
+  51 0028 23B0F700 		sd	a5,0(a5)
+  71:src/FreeShardList.cpp ****         here->next = prevNext;
+  52              		.loc 1 71 9 is_stmt 1
+  53              		.loc 1 71 20 is_stmt 0
+  54 002c 23B8D700 		sd	a3,16(a5)
+  72:src/FreeShardList.cpp ****         if(prev == nullptr) head = here;
+  55              		.loc 1 72 9 is_stmt 1
+  56 0030 630C0504 		beqz	a0,.L10
+  73:src/FreeShardList.cpp ****         else{
+  74:src/FreeShardList.cpp ****             prev->next = here;
+  57              		.loc 1 74 13
+  58              		.loc 1 74 24 is_stmt 0
+  59 0034 2338F500 		sd	a5,16(a0)
+  60              	.LVL7:
+  61              	.L7:
+  75:src/FreeShardList.cpp ****         }
+  76:src/FreeShardList.cpp ****         if(here->next == nullptr) tail = here;
+  62              		.loc 1 76 9 is_stmt 1
+  63              		.loc 1 76 18 is_stmt 0
+  64 0038 03B70701 		ld	a4,16(a5)
+  65              		.loc 1 76 9
+  66 003c 630C0704 		beqz	a4,.L11
+  67              	.LVL8:
+  68              	.L1:
+  69              	.LBE3:
+  70              	.LBE2:
+  77:src/FreeShardList.cpp ****     }
+  78:src/FreeShardList.cpp **** }
+  71              		.loc 1 78 1
+  72 0040 03348100 		ld	s0,8(sp)
+  73              		.cfi_remember_state
+  74              		.cfi_restore 8
+  75              		.cfi_def_cfa 2, 16
+  76 0044 13010101 		addi	sp,sp,16
+  77              		.cfi_def_cfa_offset 0
+  78 0048 67800000 		jr	ra
+  79              	.LVL9:
+  80              	.L9:
+  81              		.cfi_restore_state
+  82              	.LBB5:
+  46:src/FreeShardList.cpp **** 
+  83              		.loc 1 46 9 is_stmt 1
+  84 004c 630A0500 		beqz	a0,.L12
+  51:src/FreeShardList.cpp ****             tail = prev;
+  85              		.loc 1 51 14
+  51:src/FreeShardList.cpp ****             tail = prev;
+  86              		.loc 1 51 23 is_stmt 0
+  87 0050 83B70501 		ld	a5,16(a1)
+  51:src/FreeShardList.cpp ****             tail = prev;
+  88              		.loc 1 51 14
+  89 0054 63820702 		beqz	a5,.L13
+  59:src/FreeShardList.cpp ****             //here->next = nullptr;
+GAS LISTING /tmp/cc2wneLk.s 			page 4
+
+
+  90              		.loc 1 59 13 is_stmt 1
+  59:src/FreeShardList.cpp ****             //here->next = nullptr;
+  91              		.loc 1 59 24 is_stmt 0
+  92 0058 2338F500 		sd	a5,16(a0)
+  93 005c 6FF05FFE 		j	.L1
+  94              	.L12:
+  48:src/FreeShardList.cpp **** 
+  95              		.loc 1 48 13 is_stmt 1
+  48:src/FreeShardList.cpp **** 
+  96              		.loc 1 48 26 is_stmt 0
+  97 0060 97070000 		lla	a5,.LANCHOR0
+  97      93870700 
+  98 0068 03B70700 		ld	a4,0(a5)
+  99 006c 03370701 		ld	a4,16(a4)
+  48:src/FreeShardList.cpp **** 
+ 100              		.loc 1 48 18
+ 101 0070 23B0E700 		sd	a4,0(a5)
+ 102 0074 6FF0DFFC 		j	.L1
+ 103              	.L13:
+  52:src/FreeShardList.cpp **** 
+ 104              		.loc 1 52 13 is_stmt 1
+  52:src/FreeShardList.cpp **** 
+ 105              		.loc 1 52 18 is_stmt 0
+ 106 0078 97070000 		sd	a0,.LANCHOR0+8,a5
+ 106      23B0A700 
+  55:src/FreeShardList.cpp ****         }
+ 107              		.loc 1 55 13 is_stmt 1
+  55:src/FreeShardList.cpp ****         }
+ 108              		.loc 1 55 24 is_stmt 0
+ 109 0080 23380500 		sd	zero,16(a0)
+ 110 0084 6FF0DFFB 		j	.L1
+ 111              	.LVL10:
+ 112              	.L10:
+ 113              	.LBB4:
+  72:src/FreeShardList.cpp ****         else{
+ 114              		.loc 1 72 29 is_stmt 1 discriminator 1
+  72:src/FreeShardList.cpp ****         else{
+ 115              		.loc 1 72 34 is_stmt 0 discriminator 1
+ 116 0088 17070000 		sd	a5,.LANCHOR0,a4
+ 116      2330F700 
+ 117              	.LVL11:
+ 118 0090 6FF09FFA 		j	.L7
+ 119              	.L11:
+  76:src/FreeShardList.cpp ****     }
+ 120              		.loc 1 76 35 is_stmt 1 discriminator 1
+  76:src/FreeShardList.cpp ****     }
+ 121              		.loc 1 76 40 is_stmt 0 discriminator 1
+ 122 0094 17070000 		sd	a5,.LANCHOR0+8,a4
+ 122      2330F700 
+ 123              	.LBE4:
+ 124              	.LBE5:
+ 125              		.loc 1 78 1 discriminator 1
+ 126 009c 6FF05FFA 		j	.L1
+ 127              		.cfi_endproc
+ 128              	.LFE1:
+ 130              		.align	2
+ 131              		.globl	_ZN13FreeShardList9find_bestEm
+GAS LISTING /tmp/cc2wneLk.s 			page 5
+
+
+ 133              	_ZN13FreeShardList9find_bestEm:
+ 134              	.LFB0:
+   6:src/FreeShardList.cpp ****     if(tail == nullptr){
+ 135              		.loc 1 6 45 is_stmt 1
+ 136              		.cfi_startproc
+ 137              	.LVL12:
+ 138 00a0 13060500 		mv	a2,a0
+   7:src/FreeShardList.cpp ****         head = (node*)HEAP_START_ADDR;
+ 139              		.loc 1 7 5
+   7:src/FreeShardList.cpp ****         head = (node*)HEAP_START_ADDR;
+ 140              		.loc 1 7 13 is_stmt 0
+ 141 00a4 97070000 		ld	a5,.LANCHOR0+8
+ 141      83B70700 
+   7:src/FreeShardList.cpp ****         head = (node*)HEAP_START_ADDR;
+ 142              		.loc 1 7 5
+ 143 00ac 638E0702 		beqz	a5,.L27
+ 144              	.L15:
+  14:src/FreeShardList.cpp **** 
+ 145              		.loc 1 14 5 is_stmt 1
+ 146 00b0 634E060C 		bltz	a2,.L22
+   6:src/FreeShardList.cpp ****     if(tail == nullptr){
+ 147              		.loc 1 6 45 is_stmt 0
+ 148 00b4 130101FE 		addi	sp,sp,-32
+ 149              		.cfi_def_cfa_offset 32
+ 150 00b8 233C1100 		sd	ra,24(sp)
+ 151 00bc 23388100 		sd	s0,16(sp)
+ 152 00c0 23349100 		sd	s1,8(sp)
+ 153              		.cfi_offset 1, -8
+ 154              		.cfi_offset 8, -16
+ 155              		.cfi_offset 9, -24
+ 156 00c4 13040102 		addi	s0,sp,32
+ 157              		.cfi_def_cfa 8, 0
+  16:src/FreeShardList.cpp ****     void* start_adr = head->mem_free_block;
+ 158              		.loc 1 16 5 is_stmt 1
+  16:src/FreeShardList.cpp ****     void* start_adr = head->mem_free_block;
+ 159              		.loc 1 16 32 is_stmt 0
+ 160 00c8 97050000 		ld	a1,.LANCHOR0
+ 160      83B50500 
+ 161 00d0 83B68500 		ld	a3,8(a1)
+  16:src/FreeShardList.cpp ****     void* start_adr = head->mem_free_block;
+ 162              		.loc 1 16 38
+ 163 00d4 B386C640 		sub	a3,a3,a2
+ 164              	.LVL13:
+  17:src/FreeShardList.cpp ****     node* toReplace = head;
+ 165              		.loc 1 17 5 is_stmt 1
+  17:src/FreeShardList.cpp ****     node* toReplace = head;
+ 166              		.loc 1 17 11 is_stmt 0
+ 167 00d8 83B40500 		ld	s1,0(a1)
+ 168              	.LVL14:
+  18:src/FreeShardList.cpp ****     node* pom = head;
+ 169              		.loc 1 18 5 is_stmt 1
+  19:src/FreeShardList.cpp ****     node* prev = nullptr;
+ 170              		.loc 1 19 5
+  20:src/FreeShardList.cpp ****     node* prevReplace = nullptr;
+ 171              		.loc 1 20 5
+  21:src/FreeShardList.cpp ****     while(pom->next!= nullptr){
+ 172              		.loc 1 21 5
+GAS LISTING /tmp/cc2wneLk.s 			page 6
+
+
+  19:src/FreeShardList.cpp ****     node* prev = nullptr;
+ 173              		.loc 1 19 11 is_stmt 0
+ 174 00dc 13870500 		mv	a4,a1
+  21:src/FreeShardList.cpp ****     while(pom->next!= nullptr){
+ 175              		.loc 1 21 11
+ 176 00e0 13080000 		li	a6,0
+ 177 00e4 6F000006 		j	.L17
+ 178              	.LVL15:
+ 179              	.L27:
+ 180              		.cfi_def_cfa_register 2
+ 181              		.cfi_restore 1
+ 182              		.cfi_restore 8
+ 183              		.cfi_restore 9
+   8:src/FreeShardList.cpp ****         head->next = nullptr;
+ 184              		.loc 1 8 9 is_stmt 1
+   8:src/FreeShardList.cpp ****         head->next = nullptr;
+ 185              		.loc 1 8 14 is_stmt 0
+ 186 00e8 97050000 		la	a1,HEAP_START_ADDR
+ 186      83B50500 
+ 187 00f0 83B70500 		ld	a5,0(a1)
+ 188 00f4 17070000 		lla	a4,.LANCHOR0
+ 188      13070700 
+ 189 00fc 2330F700 		sd	a5,0(a4)
+   9:src/FreeShardList.cpp ****         head->mem_free_block = head;
+ 190              		.loc 1 9 9 is_stmt 1
+   9:src/FreeShardList.cpp ****         head->mem_free_block = head;
+ 191              		.loc 1 9 20 is_stmt 0
+ 192 0100 23B80700 		sd	zero,16(a5)
+  10:src/FreeShardList.cpp ****         head->size = (size_t)HEAP_END_ADDR-(size_t)HEAP_START_ADDR;
+ 193              		.loc 1 10 9 is_stmt 1
+  10:src/FreeShardList.cpp ****         head->size = (size_t)HEAP_END_ADDR-(size_t)HEAP_START_ADDR;
+ 194              		.loc 1 10 30 is_stmt 0
+ 195 0104 23B0F700 		sd	a5,0(a5)
+  11:src/FreeShardList.cpp ****         tail= head;
+ 196              		.loc 1 11 9 is_stmt 1
+  11:src/FreeShardList.cpp ****         tail= head;
+ 197              		.loc 1 11 15 is_stmt 0
+ 198 0108 83360700 		ld	a3,0(a4)
+  11:src/FreeShardList.cpp ****         tail= head;
+ 199              		.loc 1 11 43
+ 200 010c 97070000 		la	a5,HEAP_END_ADDR
+ 200      83B70700 
+ 201 0114 83B70700 		ld	a5,0(a5)
+ 202 0118 83B50500 		ld	a1,0(a1)
+ 203 011c B387B740 		sub	a5,a5,a1
+  11:src/FreeShardList.cpp ****         tail= head;
+ 204              		.loc 1 11 20
+ 205 0120 23B4F600 		sd	a5,8(a3)
+  12:src/FreeShardList.cpp ****     }
+ 206              		.loc 1 12 9 is_stmt 1
+  12:src/FreeShardList.cpp ****     }
+ 207              		.loc 1 12 13 is_stmt 0
+ 208 0124 2334D700 		sd	a3,8(a4)
+ 209 0128 6FF09FF8 		j	.L15
+ 210              	.LVL16:
+ 211              	.L19:
+ 212              		.cfi_def_cfa_register 8
+GAS LISTING /tmp/cc2wneLk.s 			page 7
+
+
+ 213              		.cfi_offset 1, -8
+ 214              		.cfi_offset 8, -16
+ 215              		.cfi_offset 9, -24
+ 216              	.LBB6:
+  26:src/FreeShardList.cpp ****             min_shard_dif = shard_diff;
+ 217              		.loc 1 26 59 discriminator 3
+ 218 012c 63DA0600 		bgez	a3,.L21
+ 219              	.L20:
+  27:src/FreeShardList.cpp ****             start_adr = pom->mem_free_block;
+ 220              		.loc 1 27 13 is_stmt 1
+ 221              	.LVL17:
+  28:src/FreeShardList.cpp ****             toReplace = pom;
+ 222              		.loc 1 28 13
+  28:src/FreeShardList.cpp ****             toReplace = pom;
+ 223              		.loc 1 28 23 is_stmt 0
+ 224 0130 83340500 		ld	s1,0(a0)
+ 225              	.LVL18:
+  29:src/FreeShardList.cpp ****             prevReplace = prev;
+ 226              		.loc 1 29 13 is_stmt 1
+  30:src/FreeShardList.cpp ****         }
+ 227              		.loc 1 30 13
+  30:src/FreeShardList.cpp ****         }
+ 228              		.loc 1 30 25 is_stmt 0
+ 229 0134 13080700 		mv	a6,a4
+  29:src/FreeShardList.cpp ****             prevReplace = prev;
+ 230              		.loc 1 29 23
+ 231 0138 93050500 		mv	a1,a0
+  27:src/FreeShardList.cpp ****             start_adr = pom->mem_free_block;
+ 232              		.loc 1 27 27
+ 233 013c 93860700 		mv	a3,a5
+ 234              	.LVL19:
+ 235              	.L21:
+ 236 0140 13070500 		mv	a4,a0
+ 237              	.LVL20:
+ 238              	.L17:
+ 239              	.LBE6:
+  22:src/FreeShardList.cpp ****         prev = pom;
+ 240              		.loc 1 22 5 is_stmt 1
+  22:src/FreeShardList.cpp ****         prev = pom;
+ 241              		.loc 1 22 20
+  22:src/FreeShardList.cpp ****         prev = pom;
+ 242              		.loc 1 22 16 is_stmt 0
+ 243 0144 03350701 		ld	a0,16(a4)
+  22:src/FreeShardList.cpp ****         prev = pom;
+ 244              		.loc 1 22 20
+ 245 0148 630C0500 		beqz	a0,.L18
+ 246              	.LBB7:
+  23:src/FreeShardList.cpp ****         pom = pom->next;
+ 247              		.loc 1 23 9 is_stmt 1
+ 248              	.LVL21:
+  24:src/FreeShardList.cpp ****         long shard_diff = pom->size - size;
+ 249              		.loc 1 24 9
+  25:src/FreeShardList.cpp ****         if((shard_diff < min_shard_dif && shard_diff >= 0)|| min_shard_dif < 0){
+ 250              		.loc 1 25 9
+  25:src/FreeShardList.cpp ****         if((shard_diff < min_shard_dif && shard_diff >= 0)|| min_shard_dif < 0){
+ 251              		.loc 1 25 32 is_stmt 0
+ 252 014c 83378500 		ld	a5,8(a0)
+GAS LISTING /tmp/cc2wneLk.s 			page 8
+
+
+  25:src/FreeShardList.cpp ****         if((shard_diff < min_shard_dif && shard_diff >= 0)|| min_shard_dif < 0){
+ 253              		.loc 1 25 37
+ 254 0150 B387C740 		sub	a5,a5,a2
+ 255              	.LVL22:
+  26:src/FreeShardList.cpp ****             min_shard_dif = shard_diff;
+ 256              		.loc 1 26 9 is_stmt 1
+ 257 0154 E3DCD7FC 		ble	a3,a5,.L19
+  26:src/FreeShardList.cpp ****             min_shard_dif = shard_diff;
+ 258              		.loc 1 26 40 is_stmt 0 discriminator 1
+ 259 0158 E3DC07FC 		bgez	a5,.L20
+ 260 015c 6FF01FFD 		j	.L19
+ 261              	.LVL23:
+ 262              	.L18:
+ 263              	.LBE7:
+  33:src/FreeShardList.cpp **** 
+ 264              		.loc 1 33 5 is_stmt 1
+ 265 0160 63DC0600 		bgez	a3,.L28
+ 266              	.LVL24:
+ 267              	.L14:
+  41:src/FreeShardList.cpp **** 
+ 268              		.loc 1 41 1 is_stmt 0
+ 269 0164 83308101 		ld	ra,24(sp)
+ 270              		.cfi_remember_state
+ 271              		.cfi_restore 1
+ 272 0168 03340101 		ld	s0,16(sp)
+ 273              		.cfi_restore 8
+ 274              		.cfi_def_cfa 2, 32
+ 275 016c 83348100 		ld	s1,8(sp)
+ 276              		.cfi_restore 9
+ 277              	.LVL25:
+ 278 0170 13010102 		addi	sp,sp,32
+ 279              		.cfi_def_cfa_offset 0
+ 280 0174 67800000 		jr	ra
+ 281              	.LVL26:
+ 282              	.L28:
+ 283              		.cfi_restore_state
+  35:src/FreeShardList.cpp **** 
+ 284              		.loc 1 35 9 is_stmt 1
+  35:src/FreeShardList.cpp **** 
+ 285              		.loc 1 35 21 is_stmt 0
+ 286 0178 13050800 		mv	a0,a6
+ 287 017c 97000000 		call	_ZN13FreeShardList12allocate_memEP4nodeS1_m
+ 287      E7800000 
+ 288              	.LVL27:
+  37:src/FreeShardList.cpp ****     }
+ 289              		.loc 1 37 9 is_stmt 1
+  37:src/FreeShardList.cpp ****     }
+ 290              		.loc 1 37 16 is_stmt 0
+ 291 0184 13850400 		mv	a0,s1
+ 292 0188 6FF0DFFD 		j	.L14
+ 293              	.LVL28:
+ 294              	.L22:
+ 295              		.cfi_def_cfa_register 2
+ 296              		.cfi_restore 1
+ 297              		.cfi_restore 8
+ 298              		.cfi_restore 9
+  14:src/FreeShardList.cpp **** 
+GAS LISTING /tmp/cc2wneLk.s 			page 9
+
+
+ 299              		.loc 1 14 31
+ 300 018c 13050000 		li	a0,0
+ 301              	.LVL29:
+  41:src/FreeShardList.cpp **** 
+ 302              		.loc 1 41 1
+ 303 0190 67800000 		ret
+ 304              		.cfi_endproc
+ 305              	.LFE0:
+ 307              		.align	2
+ 308              		.globl	_ZN13FreeShardList11free_memoryEPv
+ 310              	_ZN13FreeShardList11free_memoryEPv:
+ 311              	.LFB2:
+  79:src/FreeShardList.cpp **** 
+  80:src/FreeShardList.cpp **** 
+  81:src/FreeShardList.cpp **** 
+  82:src/FreeShardList.cpp **** 
+  83:src/FreeShardList.cpp **** 
+  84:src/FreeShardList.cpp **** int FreeShardList::free_memory(void *address) {
+ 312              		.loc 1 84 47 is_stmt 1
+ 313              		.cfi_startproc
+ 314              	.LVL30:
+ 315 0194 130101FF 		addi	sp,sp,-16
+ 316              		.cfi_def_cfa_offset 16
+ 317 0198 23348100 		sd	s0,8(sp)
+ 318              		.cfi_offset 8, -8
+ 319 019c 13040101 		addi	s0,sp,16
+ 320              		.cfi_def_cfa 8, 0
+  85:src/FreeShardList.cpp **** 
+  86:src/FreeShardList.cpp ****     int result = 0;
+ 321              		.loc 1 86 5
+ 322              	.LVL31:
+  87:src/FreeShardList.cpp ****     void* adrStart = (void*)((long*)address - 1);
+ 323              		.loc 1 87 5
+ 324              		.loc 1 87 11 is_stmt 0
+ 325 01a0 930685FF 		addi	a3,a0,-8
+ 326              	.LVL32:
+  88:src/FreeShardList.cpp ****     if(adrStart < HEAP_START_ADDR || adrStart> HEAP_END_ADDR) return -1;
+ 327              		.loc 1 88 5 is_stmt 1
+ 328              		.loc 1 88 17 is_stmt 0
+ 329 01a4 97070000 		la	a5,HEAP_START_ADDR
+ 329      83B70700 
+ 330 01ac 83B70700 		ld	a5,0(a5)
+ 331              		.loc 1 88 5
+ 332 01b0 63E0F618 		bgtu	a5,a3,.L40
+ 333              		.loc 1 88 46 discriminator 2
+ 334 01b4 97070000 		la	a5,HEAP_END_ADDR
+ 334      83B70700 
+ 335 01bc 83B70700 		ld	a5,0(a5)
+ 336              		.loc 1 88 35 discriminator 2
+ 337 01c0 63ECD716 		bltu	a5,a3,.L41
+  89:src/FreeShardList.cpp ****     size_t size = MEM_BLOCK_SIZE* (*(long*)adrStart);
+ 338              		.loc 1 89 5 is_stmt 1
+ 339              		.loc 1 89 36 is_stmt 0
+ 340 01c4 033885FF 		ld	a6,-8(a0)
+ 341              		.loc 1 89 12
+ 342 01c8 13186800 		slli	a6,a6,6
+ 343              	.LVL33:
+GAS LISTING /tmp/cc2wneLk.s 			page 10
+
+
+  90:src/FreeShardList.cpp ****     node* prev = nullptr;
+ 344              		.loc 1 90 5 is_stmt 1
+  91:src/FreeShardList.cpp ****     node* curr = head;
+ 345              		.loc 1 91 5
+ 346              		.loc 1 91 11 is_stmt 0
+ 347 01cc 97070000 		ld	a5,.LANCHOR0
+ 347      83B70700 
+ 348              	.LVL34:
+  92:src/FreeShardList.cpp ****     if((void*)curr == adrStart) return -3;
+ 349              		.loc 1 92 5 is_stmt 1
+ 350 01d4 6386F616 		beq	a3,a5,.L42
+  90:src/FreeShardList.cpp ****     node* prev = nullptr;
+ 351              		.loc 1 90 11 is_stmt 0
+ 352 01d8 93050000 		li	a1,0
+ 353              	.LVL35:
+ 354              	.L32:
+  93:src/FreeShardList.cpp ****     while(adrStart > curr->mem_free_block && curr->next != nullptr) {
+ 355              		.loc 1 93 5 is_stmt 1
+ 356              		.loc 1 93 43
+ 357              		.loc 1 93 28 is_stmt 0
+ 358 01dc 03B60700 		ld	a2,0(a5)
+ 359              		.loc 1 93 43
+ 360 01e0 637ED600 		bgeu	a2,a3,.L31
+ 361              		.loc 1 93 52 discriminator 1
+ 362 01e4 03B70701 		ld	a4,16(a5)
+ 363              		.loc 1 93 43 discriminator 1
+ 364 01e8 630A0700 		beqz	a4,.L31
+  94:src/FreeShardList.cpp ****         if((void*)curr == adrStart) return -3;
+ 365              		.loc 1 94 9 is_stmt 1
+  95:src/FreeShardList.cpp ****         prev = curr;
+ 366              		.loc 1 95 14 is_stmt 0
+ 367 01ec 93850700 		mv	a1,a5
+ 368              	.LVL36:
+  94:src/FreeShardList.cpp ****         if((void*)curr == adrStart) return -3;
+ 369              		.loc 1 94 9
+ 370 01f0 638CD714 		beq	a5,a3,.L43
+  96:src/FreeShardList.cpp ****         curr = curr->next;
+ 371              		.loc 1 96 14
+ 372 01f4 93070700 		mv	a5,a4
+ 373              	.LVL37:
+ 374 01f8 6FF05FFE 		j	.L32
+ 375              	.LVL38:
+ 376              	.L31:
+  97:src/FreeShardList.cpp ****     }
+  98:src/FreeShardList.cpp ****     if(adrStart < curr->mem_free_block) {
+ 377              		.loc 1 98 5 is_stmt 1
+ 378              	.LBB8:
+ 379 01fc 63FAC60E 		bleu	a2,a3,.L33
+ 380              	.LBE8:
+  99:src/FreeShardList.cpp ****         if (prev == nullptr) {
+ 381              		.loc 1 99 9
+ 382              	.LBB60:
+ 383              	.LBB9:
+ 384 0200 63800504 		beqz	a1,.L47
+ 385              	.LBE9:
+ 386              	.LBE60:
+ 100:src/FreeShardList.cpp ****             if ( (uint64)adrStart + (uint64)size ==  (uint64)curr->mem_free_block) {
+GAS LISTING /tmp/cc2wneLk.s 			page 11
+
+
+ 101:src/FreeShardList.cpp ****                 node *newHead = (node *) adrStart;
+ 102:src/FreeShardList.cpp ****                 newHead->size = curr->size + size;
+ 103:src/FreeShardList.cpp ****                 newHead->next = curr->next;
+ 104:src/FreeShardList.cpp ****                 newHead->mem_free_block = (void *) newHead;
+ 105:src/FreeShardList.cpp ****                 head = newHead;
+ 106:src/FreeShardList.cpp ****             } else {
+ 107:src/FreeShardList.cpp ****                 node *newHead = (node *) adrStart;
+ 108:src/FreeShardList.cpp ****                 newHead->size = size;
+ 109:src/FreeShardList.cpp ****                 newHead->next = curr;
+ 110:src/FreeShardList.cpp ****                 newHead->mem_free_block = (void *) newHead;
+ 111:src/FreeShardList.cpp ****                 head = newHead;
+ 112:src/FreeShardList.cpp ****             }
+ 113:src/FreeShardList.cpp ****         } else {
+ 114:src/FreeShardList.cpp ****             if ((uint64)adrStart < (uint64)prev->mem_free_block + (uint64)prev->size) result = -2;
+ 387              		.loc 1 114 13
+ 388              	.LBB61:
+ 389              	.LBB41:
+ 390              	.LBB10:
+ 391              		.loc 1 114 50 is_stmt 0
+ 392 0204 03B70500 		ld	a4,0(a1)
+ 393              		.loc 1 114 81
+ 394 0208 83B88500 		ld	a7,8(a1)
+ 395              		.loc 1 114 65
+ 396 020c 33071701 		add	a4,a4,a7
+ 397              		.loc 1 114 34
+ 398 0210 13830600 		mv	t1,a3
+ 399              		.loc 1 114 13
+ 400 0214 63E2E614 		bgtu	a4,a3,.L44
+ 401              	.LVL39:
+ 402              	.LBE10:
+ 403              	.LBE41:
+ 404              	.LBE61:
+ 115:src/FreeShardList.cpp ****             else if ((uint64)adrStart == (uint64)prev->mem_free_block + (uint64)prev->size &&
+ 405              		.loc 1 115 18 is_stmt 1
+ 406              	.LBB62:
+ 407              	.LBB42:
+ 408              	.LBB28:
+ 409              	.LBB11:
+ 410 0218 630AD706 		beq	a4,a3,.L48
+ 411              	.L36:
+ 412              	.LBE11:
+ 413              	.LBE28:
+ 414              	.LBE42:
+ 415              	.LBE62:
+ 116:src/FreeShardList.cpp ****                     (uint64)curr->mem_free_block > (uint64)adrStart + (uint64)size) {
+ 117:src/FreeShardList.cpp ****                 prev->size += size;
+ 118:src/FreeShardList.cpp ****             } else if ((uint64)adrStart == (uint64)prev->mem_free_block + (uint64)prev->size &&
+ 416              		.loc 1 118 20
+ 417              	.LBB63:
+ 418              	.LBB43:
+ 419              	.LBB29:
+ 420              	.LBB22:
+ 421              	.LBB12:
+ 422 021c 63046708 		beq	a4,t1,.L49
+ 423              	.L37:
+ 424              	.LBE12:
+ 425              	.LBE22:
+GAS LISTING /tmp/cc2wneLk.s 			page 12
+
+
+ 426              	.LBE29:
+ 427              	.LBE43:
+ 428              	.LBE63:
+ 119:src/FreeShardList.cpp ****                     (uint64)curr->mem_free_block == (uint64)adrStart + (uint64)size) {
+ 120:src/FreeShardList.cpp ****                 prev->next = curr->next;
+ 121:src/FreeShardList.cpp ****                 prev->size = prev->size + curr->size + size;
+ 122:src/FreeShardList.cpp ****             } else if ((uint64)adrStart + (uint64)size == (uint64)curr->mem_free_block) {
+ 429              		.loc 1 122 20
+ 430              	.LBB64:
+ 431              	.LBB44:
+ 432              	.LBB30:
+ 433              	.LBB23:
+ 434              	.LBB18:
+ 435              	.LBB13:
+ 436              		.loc 1 122 41 is_stmt 0
+ 437 0220 33870601 		add	a4,a3,a6
+ 438              		.loc 1 122 20
+ 439 0224 6304C70A 		beq	a4,a2,.L50
+ 440              	.LBB14:
+ 123:src/FreeShardList.cpp ****                 node *newNode = (node *) adrStart;
+ 124:src/FreeShardList.cpp ****                 newNode->next = curr->next;
+ 125:src/FreeShardList.cpp ****                 newNode->size = size + curr->size;
+ 126:src/FreeShardList.cpp ****                 newNode->mem_free_block = (void *) newNode;
+ 127:src/FreeShardList.cpp ****                 prev->next = newNode;
+ 128:src/FreeShardList.cpp ****             } else {
+ 129:src/FreeShardList.cpp ****                 node *newNode = (node *) adrStart;
+ 441              		.loc 1 129 17 is_stmt 1
+ 442              	.LVL40:
+ 130:src/FreeShardList.cpp ****                 newNode->size = size;
+ 443              		.loc 1 130 17
+ 444              		.loc 1 130 31 is_stmt 0
+ 445 0228 23300501 		sd	a6,0(a0)
+ 131:src/FreeShardList.cpp ****                 newNode->mem_free_block = (void *) newNode;
+ 446              		.loc 1 131 17 is_stmt 1
+ 447              		.loc 1 131 41 is_stmt 0
+ 448 022c 233CD5FE 		sd	a3,-8(a0)
+ 132:src/FreeShardList.cpp ****                 newNode->next = curr;
+ 449              		.loc 1 132 17 is_stmt 1
+ 450              		.loc 1 132 31 is_stmt 0
+ 451 0230 2334F500 		sd	a5,8(a0)
+ 133:src/FreeShardList.cpp ****                 prev->next = newNode;
+ 452              		.loc 1 133 17 is_stmt 1
+ 453              		.loc 1 133 28 is_stmt 0
+ 454 0234 23B8D500 		sd	a3,16(a1)
+ 455              	.LBE14:
+ 456              	.LBE13:
+ 457              	.LBE18:
+ 458              	.LBE23:
+ 459              	.LBE30:
+ 460              	.LBE44:
+ 461              	.LBE64:
+  86:src/FreeShardList.cpp ****     void* adrStart = (void*)((long*)address - 1);
+ 462              		.loc 1 86 9
+ 463 0238 13050000 		li	a0,0
+ 464              	.LVL41:
+ 465 023c 6F000011 		j	.L30
+ 466              	.LVL42:
+GAS LISTING /tmp/cc2wneLk.s 			page 13
+
+
+ 467              	.L47:
+ 100:src/FreeShardList.cpp ****                 node *newHead = (node *) adrStart;
+ 468              		.loc 1 100 13 is_stmt 1
+ 469              	.LBB65:
+ 470              	.LBB45:
+ 471              	.LBB31:
+ 100:src/FreeShardList.cpp ****                 node *newHead = (node *) adrStart;
+ 472              		.loc 1 100 35 is_stmt 0
+ 473 0240 33870601 		add	a4,a3,a6
+ 100:src/FreeShardList.cpp ****                 node *newHead = (node *) adrStart;
+ 474              		.loc 1 100 13
+ 475 0244 6300C702 		beq	a4,a2,.L51
+ 476              	.LBB32:
+ 107:src/FreeShardList.cpp ****                 newHead->size = size;
+ 477              		.loc 1 107 17 is_stmt 1
+ 478              	.LVL43:
+ 108:src/FreeShardList.cpp ****                 newHead->next = curr;
+ 479              		.loc 1 108 17
+ 108:src/FreeShardList.cpp ****                 newHead->next = curr;
+ 480              		.loc 1 108 31 is_stmt 0
+ 481 0248 23300501 		sd	a6,0(a0)
+ 109:src/FreeShardList.cpp ****                 newHead->mem_free_block = (void *) newHead;
+ 482              		.loc 1 109 17 is_stmt 1
+ 109:src/FreeShardList.cpp ****                 newHead->mem_free_block = (void *) newHead;
+ 483              		.loc 1 109 31 is_stmt 0
+ 484 024c 2334F500 		sd	a5,8(a0)
+ 110:src/FreeShardList.cpp ****                 head = newHead;
+ 485              		.loc 1 110 17 is_stmt 1
+ 110:src/FreeShardList.cpp ****                 head = newHead;
+ 486              		.loc 1 110 41 is_stmt 0
+ 487 0250 233CD5FE 		sd	a3,-8(a0)
+ 111:src/FreeShardList.cpp ****             }
+ 488              		.loc 1 111 17 is_stmt 1
+ 111:src/FreeShardList.cpp ****             }
+ 489              		.loc 1 111 22 is_stmt 0
+ 490 0254 97070000 		sd	a3,.LANCHOR0,a5
+ 490      23B0D700 
+ 491              	.LVL44:
+ 492              	.LBE32:
+ 493              	.LBE31:
+ 494              	.LBE45:
+ 495              	.LBE65:
+  86:src/FreeShardList.cpp ****     void* adrStart = (void*)((long*)address - 1);
+ 496              		.loc 1 86 9
+ 497 025c 13050000 		li	a0,0
+ 498              	.LVL45:
+ 499 0260 6F00C00E 		j	.L30
+ 500              	.LVL46:
+ 501              	.L51:
+ 502              	.LBB66:
+ 503              	.LBB46:
+ 504              	.LBB34:
+ 505              	.LBB33:
+ 101:src/FreeShardList.cpp ****                 newHead->size = curr->size + size;
+ 506              		.loc 1 101 17 is_stmt 1
+ 102:src/FreeShardList.cpp ****                 newHead->next = curr->next;
+ 507              		.loc 1 102 17
+GAS LISTING /tmp/cc2wneLk.s 			page 14
+
+
+ 102:src/FreeShardList.cpp ****                 newHead->next = curr->next;
+ 508              		.loc 1 102 39 is_stmt 0
+ 509 0264 03B78700 		ld	a4,8(a5)
+ 102:src/FreeShardList.cpp ****                 newHead->next = curr->next;
+ 510              		.loc 1 102 44
+ 511 0268 33080701 		add	a6,a4,a6
+ 512              	.LVL47:
+ 102:src/FreeShardList.cpp ****                 newHead->next = curr->next;
+ 513              		.loc 1 102 31
+ 514 026c 23300501 		sd	a6,0(a0)
+ 103:src/FreeShardList.cpp ****                 newHead->mem_free_block = (void *) newHead;
+ 515              		.loc 1 103 17 is_stmt 1
+ 103:src/FreeShardList.cpp ****                 newHead->mem_free_block = (void *) newHead;
+ 516              		.loc 1 103 39 is_stmt 0
+ 517 0270 83B70701 		ld	a5,16(a5)
+ 518              	.LVL48:
+ 103:src/FreeShardList.cpp ****                 newHead->mem_free_block = (void *) newHead;
+ 519              		.loc 1 103 31
+ 520 0274 2334F500 		sd	a5,8(a0)
+ 104:src/FreeShardList.cpp ****                 head = newHead;
+ 521              		.loc 1 104 17 is_stmt 1
+ 104:src/FreeShardList.cpp ****                 head = newHead;
+ 522              		.loc 1 104 41 is_stmt 0
+ 523 0278 233CD5FE 		sd	a3,-8(a0)
+ 524              	.LVL49:
+ 105:src/FreeShardList.cpp ****             } else {
+ 525              		.loc 1 105 17 is_stmt 1
+ 105:src/FreeShardList.cpp ****             } else {
+ 526              		.loc 1 105 22 is_stmt 0
+ 527 027c 97070000 		sd	a3,.LANCHOR0,a5
+ 527      23B0D700 
+ 528              	.LBE33:
+ 529              	.LBE34:
+ 530              	.LBE46:
+ 531              	.LBE66:
+  86:src/FreeShardList.cpp ****     void* adrStart = (void*)((long*)address - 1);
+ 532              		.loc 1 86 9
+ 533 0284 13050000 		li	a0,0
+ 534              	.LVL50:
+ 535              	.LBB67:
+ 536              	.LBB47:
+ 537              	.LBB35:
+ 538 0288 6F00400C 		j	.L30
+ 539              	.LVL51:
+ 540              	.L48:
+ 541              	.LBE35:
+ 542              	.LBB36:
+ 543              	.LBB24:
+ 116:src/FreeShardList.cpp ****                 prev->size += size;
+ 544              		.loc 1 116 69 discriminator 1
+ 545 028c 338E0601 		add	t3,a3,a6
+ 115:src/FreeShardList.cpp ****                     (uint64)curr->mem_free_block > (uint64)adrStart + (uint64)size) {
+ 546              		.loc 1 115 92 discriminator 1
+ 547 0290 E376CEF8 		bleu	a2,t3,.L36
+ 117:src/FreeShardList.cpp ****             } else if ((uint64)adrStart == (uint64)prev->mem_free_block + (uint64)prev->size &&
+ 548              		.loc 1 117 17 is_stmt 1
+ 117:src/FreeShardList.cpp ****             } else if ((uint64)adrStart == (uint64)prev->mem_free_block + (uint64)prev->size &&
+GAS LISTING /tmp/cc2wneLk.s 			page 15
+
+
+ 549              		.loc 1 117 28 is_stmt 0
+ 550 0294 33880801 		add	a6,a7,a6
+ 551              	.LVL52:
+ 552 0298 23B40501 		sd	a6,8(a1)
+ 553              	.LVL53:
+ 554              	.LBE24:
+ 555              	.LBE36:
+ 556              	.LBE47:
+ 557              	.LBE67:
+  86:src/FreeShardList.cpp ****     void* adrStart = (void*)((long*)address - 1);
+ 558              		.loc 1 86 9
+ 559 029c 13050000 		li	a0,0
+ 560              	.LVL54:
+ 561              	.LBB68:
+ 562              	.LBB48:
+ 563              	.LBB37:
+ 564              	.LBB25:
+ 117:src/FreeShardList.cpp ****             } else if ((uint64)adrStart == (uint64)prev->mem_free_block + (uint64)prev->size &&
+ 565              		.loc 1 117 28
+ 566 02a0 6F00C00A 		j	.L30
+ 567              	.LVL55:
+ 568              	.L49:
+ 569              	.LBB19:
+ 119:src/FreeShardList.cpp ****                 prev->next = curr->next;
+ 570              		.loc 1 119 70 discriminator 1
+ 571 02a4 33870601 		add	a4,a3,a6
+ 118:src/FreeShardList.cpp ****                     (uint64)curr->mem_free_block == (uint64)adrStart + (uint64)size) {
+ 572              		.loc 1 118 94 discriminator 1
+ 573 02a8 E31CE6F6 		bne	a2,a4,.L37
+ 120:src/FreeShardList.cpp ****                 prev->size = prev->size + curr->size + size;
+ 574              		.loc 1 120 17 is_stmt 1
+ 120:src/FreeShardList.cpp ****                 prev->size = prev->size + curr->size + size;
+ 575              		.loc 1 120 36 is_stmt 0
+ 576 02ac 03B70701 		ld	a4,16(a5)
+ 120:src/FreeShardList.cpp ****                 prev->size = prev->size + curr->size + size;
+ 577              		.loc 1 120 28
+ 578 02b0 23B8E500 		sd	a4,16(a1)
+ 121:src/FreeShardList.cpp ****             } else if ((uint64)adrStart + (uint64)size == (uint64)curr->mem_free_block) {
+ 579              		.loc 1 121 17 is_stmt 1
+ 121:src/FreeShardList.cpp ****             } else if ((uint64)adrStart + (uint64)size == (uint64)curr->mem_free_block) {
+ 580              		.loc 1 121 49 is_stmt 0
+ 581 02b4 83B78700 		ld	a5,8(a5)
+ 582              	.LVL56:
+ 121:src/FreeShardList.cpp ****             } else if ((uint64)adrStart + (uint64)size == (uint64)curr->mem_free_block) {
+ 583              		.loc 1 121 41
+ 584 02b8 B388F800 		add	a7,a7,a5
+ 121:src/FreeShardList.cpp ****             } else if ((uint64)adrStart + (uint64)size == (uint64)curr->mem_free_block) {
+ 585              		.loc 1 121 54
+ 586 02bc 33880801 		add	a6,a7,a6
+ 587              	.LVL57:
+ 121:src/FreeShardList.cpp ****             } else if ((uint64)adrStart + (uint64)size == (uint64)curr->mem_free_block) {
+ 588              		.loc 1 121 28
+ 589 02c0 23B40501 		sd	a6,8(a1)
+ 590              	.LBE19:
+ 591              	.LBE25:
+ 592              	.LBE37:
+ 593              	.LBE48:
+GAS LISTING /tmp/cc2wneLk.s 			page 16
+
+
+ 594              	.LBE68:
+  86:src/FreeShardList.cpp ****     void* adrStart = (void*)((long*)address - 1);
+ 595              		.loc 1 86 9
+ 596 02c4 13050000 		li	a0,0
+ 597              	.LVL58:
+ 598              	.LBB69:
+ 599              	.LBB49:
+ 600              	.LBB38:
+ 601              	.LBB26:
+ 602              	.LBB20:
+ 121:src/FreeShardList.cpp ****             } else if ((uint64)adrStart + (uint64)size == (uint64)curr->mem_free_block) {
+ 603              		.loc 1 121 28
+ 604 02c8 6F004008 		j	.L30
+ 605              	.LVL59:
+ 606              	.L50:
+ 607              	.LBB16:
+ 608              	.LBB15:
+ 123:src/FreeShardList.cpp ****                 newNode->next = curr->next;
+ 609              		.loc 1 123 17 is_stmt 1
+ 124:src/FreeShardList.cpp ****                 newNode->size = size + curr->size;
+ 610              		.loc 1 124 17
+ 124:src/FreeShardList.cpp ****                 newNode->size = size + curr->size;
+ 611              		.loc 1 124 39 is_stmt 0
+ 612 02cc 03B70701 		ld	a4,16(a5)
+ 124:src/FreeShardList.cpp ****                 newNode->size = size + curr->size;
+ 613              		.loc 1 124 31
+ 614 02d0 2334E500 		sd	a4,8(a0)
+ 125:src/FreeShardList.cpp ****                 newNode->mem_free_block = (void *) newNode;
+ 615              		.loc 1 125 17 is_stmt 1
+ 125:src/FreeShardList.cpp ****                 newNode->mem_free_block = (void *) newNode;
+ 616              		.loc 1 125 46 is_stmt 0
+ 617 02d4 83B78700 		ld	a5,8(a5)
+ 618              	.LVL60:
+ 125:src/FreeShardList.cpp ****                 newNode->mem_free_block = (void *) newNode;
+ 619              		.loc 1 125 38
+ 620 02d8 33880701 		add	a6,a5,a6
+ 621              	.LVL61:
+ 125:src/FreeShardList.cpp ****                 newNode->mem_free_block = (void *) newNode;
+ 622              		.loc 1 125 31
+ 623 02dc 23300501 		sd	a6,0(a0)
+ 126:src/FreeShardList.cpp ****                 prev->next = newNode;
+ 624              		.loc 1 126 17 is_stmt 1
+ 126:src/FreeShardList.cpp ****                 prev->next = newNode;
+ 625              		.loc 1 126 41 is_stmt 0
+ 626 02e0 233CD5FE 		sd	a3,-8(a0)
+ 627              	.LVL62:
+ 127:src/FreeShardList.cpp ****             } else {
+ 628              		.loc 1 127 17 is_stmt 1
+ 127:src/FreeShardList.cpp ****             } else {
+ 629              		.loc 1 127 28 is_stmt 0
+ 630 02e4 23B8D500 		sd	a3,16(a1)
+ 631              	.LBE15:
+ 632              	.LBE16:
+ 633              	.LBE20:
+ 634              	.LBE26:
+ 635              	.LBE38:
+ 636              	.LBE49:
+GAS LISTING /tmp/cc2wneLk.s 			page 17
+
+
+ 637              	.LBE69:
+  86:src/FreeShardList.cpp ****     void* adrStart = (void*)((long*)address - 1);
+ 638              		.loc 1 86 9
+ 639 02e8 13050000 		li	a0,0
+ 640              	.LVL63:
+ 641              	.LBB70:
+ 642              	.LBB50:
+ 643              	.LBB39:
+ 644              	.LBB27:
+ 645              	.LBB21:
+ 646              	.LBB17:
+ 647 02ec 6F000006 		j	.L30
+ 648              	.LVL64:
+ 649              	.L33:
+ 650              	.LBE17:
+ 651              	.LBE21:
+ 652              	.LBE27:
+ 653              	.LBE39:
+ 654              	.LBE50:
+ 655              	.LBE70:
+ 134:src/FreeShardList.cpp ****             }
+ 135:src/FreeShardList.cpp ****         }
+ 136:src/FreeShardList.cpp ****     }
+ 137:src/FreeShardList.cpp ****     else{
+ 138:src/FreeShardList.cpp ****         if((uint64)curr->mem_free_block + (uint64)curr->size == (uint64)adrStart){
+ 656              		.loc 1 138 9 is_stmt 1
+ 657              	.LBB71:
+ 658              	.LBB51:
+ 659              		.loc 1 138 57 is_stmt 0
+ 660 02f0 03B78700 		ld	a4,8(a5)
+ 661              		.loc 1 138 41
+ 662 02f4 3306E600 		add	a2,a2,a4
+ 663              		.loc 1 138 9
+ 664 02f8 6304D602 		beq	a2,a3,.L52
+ 665              	.LBE51:
+ 666              	.LBE71:
+ 139:src/FreeShardList.cpp ****             curr->size+=size;
+ 140:src/FreeShardList.cpp **** 
+ 141:src/FreeShardList.cpp ****         }
+ 142:src/FreeShardList.cpp ****         else if((uint64)curr->mem_free_block + curr->size > (uint64)adrStart) return -4;
+ 667              		.loc 1 142 14 is_stmt 1
+ 668              	.LBB72:
+ 669              	.LBB55:
+ 670              	.LBB52:
+ 671 02fc 63E2C606 		bgtu	a2,a3,.L45
+ 672              	.LBB53:
+ 143:src/FreeShardList.cpp ****         else{
+ 144:src/FreeShardList.cpp ****             node* newTail = (node*)adrStart;
+ 673              		.loc 1 144 13
+ 674              	.LVL65:
+ 145:src/FreeShardList.cpp ****             newTail->next = nullptr;
+ 675              		.loc 1 145 13
+ 676              		.loc 1 145 27 is_stmt 0
+ 677 0300 23340500 		sd	zero,8(a0)
+ 146:src/FreeShardList.cpp ****             newTail->size = size;
+ 678              		.loc 1 146 13 is_stmt 1
+ 679              		.loc 1 146 27 is_stmt 0
+GAS LISTING /tmp/cc2wneLk.s 			page 18
+
+
+ 680 0304 23300501 		sd	a6,0(a0)
+ 147:src/FreeShardList.cpp ****             newTail->mem_free_block =(void*)newTail;
+ 681              		.loc 1 147 13 is_stmt 1
+ 682              		.loc 1 147 37 is_stmt 0
+ 683 0308 233CD5FE 		sd	a3,-8(a0)
+ 148:src/FreeShardList.cpp ****             curr->next = newTail;
+ 684              		.loc 1 148 13 is_stmt 1
+ 685              		.loc 1 148 24 is_stmt 0
+ 686 030c 23B8D700 		sd	a3,16(a5)
+ 149:src/FreeShardList.cpp ****             tail = newTail;
+ 687              		.loc 1 149 13 is_stmt 1
+ 688              		.loc 1 149 18 is_stmt 0
+ 689 0310 97070000 		sd	a3,.LANCHOR0+8,a5
+ 689      23B0D700 
+ 690              	.LVL66:
+ 691              	.LBE53:
+ 692              	.LBE52:
+ 693              	.LBE55:
+ 694              	.LBE72:
+  86:src/FreeShardList.cpp ****     void* adrStart = (void*)((long*)address - 1);
+ 695              		.loc 1 86 9
+ 696 0318 13050000 		li	a0,0
+ 697              	.LVL67:
+ 698 031c 6F000003 		j	.L30
+ 699              	.LVL68:
+ 700              	.L52:
+ 701              	.LBB73:
+ 702              	.LBB56:
+ 139:src/FreeShardList.cpp **** 
+ 703              		.loc 1 139 13 is_stmt 1
+ 139:src/FreeShardList.cpp **** 
+ 704              		.loc 1 139 23 is_stmt 0
+ 705 0320 33070701 		add	a4,a4,a6
+ 706 0324 23B4E700 		sd	a4,8(a5)
+ 707              	.LBE56:
+ 708              	.LBE73:
+  86:src/FreeShardList.cpp ****     void* adrStart = (void*)((long*)address - 1);
+ 709              		.loc 1 86 9
+ 710 0328 13050000 		li	a0,0
+ 711              	.LVL69:
+ 712              	.LBB74:
+ 713              	.LBB57:
+ 714 032c 6F000002 		j	.L30
+ 715              	.LVL70:
+ 716              	.L40:
+ 717              	.LBE57:
+ 718              	.LBE74:
+  88:src/FreeShardList.cpp ****     size_t size = MEM_BLOCK_SIZE* (*(long*)adrStart);
+ 719              		.loc 1 88 71
+ 720 0330 1305F0FF 		li	a0,-1
+ 721              	.LVL71:
+ 722 0334 6F008001 		j	.L30
+ 723              	.LVL72:
+ 724              	.L41:
+ 725 0338 1305F0FF 		li	a0,-1
+ 726              	.LVL73:
+ 727 033c 6F000001 		j	.L30
+GAS LISTING /tmp/cc2wneLk.s 			page 19
+
+
+ 728              	.LVL74:
+ 729              	.L42:
+  92:src/FreeShardList.cpp ****     while(adrStart > curr->mem_free_block && curr->next != nullptr) {
+ 730              		.loc 1 92 41
+ 731 0340 1305D0FF 		li	a0,-3
+ 732              	.LVL75:
+ 733 0344 6F008000 		j	.L30
+ 734              	.LVL76:
+ 735              	.L43:
+  94:src/FreeShardList.cpp ****         prev = curr;
+ 736              		.loc 1 94 45
+ 737 0348 1305D0FF 		li	a0,-3
+ 738              	.LVL77:
+ 739              	.L30:
+ 150:src/FreeShardList.cpp ****         }
+ 151:src/FreeShardList.cpp ****     }
+ 152:src/FreeShardList.cpp ****     return result;
+ 153:src/FreeShardList.cpp **** }
+ 740              		.loc 1 153 1
+ 741 034c 03348100 		ld	s0,8(sp)
+ 742              		.cfi_remember_state
+ 743              		.cfi_restore 8
+ 744              		.cfi_def_cfa 2, 16
+ 745 0350 13010101 		addi	sp,sp,16
+ 746              		.cfi_def_cfa_offset 0
+ 747 0354 67800000 		jr	ra
+ 748              	.LVL78:
+ 749              	.L44:
+ 750              		.cfi_restore_state
+ 751              	.LBB75:
+ 752              	.LBB58:
+ 753              	.LBB40:
+ 114:src/FreeShardList.cpp ****             else if ((uint64)adrStart == (uint64)prev->mem_free_block + (uint64)prev->size &&
+ 754              		.loc 1 114 94
+ 755 0358 1305E0FF 		li	a0,-2
+ 756              	.LVL79:
+ 757 035c 6FF01FFF 		j	.L30
+ 758              	.LVL80:
+ 759              	.L45:
+ 760              	.LBE40:
+ 761              	.LBE58:
+ 762              	.LBB59:
+ 763              	.LBB54:
+ 142:src/FreeShardList.cpp ****         else{
+ 764              		.loc 1 142 87
+ 765 0360 1305C0FF 		li	a0,-4
+ 766              	.LVL81:
+ 767 0364 6FF09FFE 		j	.L30
+ 768              	.LBE54:
+ 769              	.LBE59:
+ 770              	.LBE75:
+ 771              		.cfi_endproc
+ 772              	.LFE2:
+ 774              		.globl	_ZN13FreeShardList4tailE
+ 775              		.globl	_ZN13FreeShardList4headE
+ 776              		.bss
+ 777              		.align	3
+GAS LISTING /tmp/cc2wneLk.s 			page 20
+
+
+ 778              		.set	.LANCHOR0,. + 0
+ 781              	_ZN13FreeShardList4headE:
+ 782 0000 00000000 		.zero	8
+ 782      00000000 
+ 785              	_ZN13FreeShardList4tailE:
+ 786 0008 00000000 		.zero	8
+ 786      00000000 
+ 787              		.text
+ 788              	.Letext0:
+ 789              		.file 2 "src/../h/../lib/hw.h"
+ 790              		.file 3 "src/../h/../h/syscall_c.h"
+ 791              		.file 4 "src/../h/FreeShardList.h"
+GAS LISTING /tmp/cc2wneLk.s 			page 21
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 FreeShardList.cpp
+     /tmp/cc2wneLk.s:9      .text:0000000000000000 _ZN13FreeShardList12allocate_memEP4nodeS1_m
+     /tmp/cc2wneLk.s:13     .text:0000000000000000 .L0 
+     /tmp/cc2wneLk.s:15     .text:0000000000000000 .L0 
+     /tmp/cc2wneLk.s:16     .text:0000000000000004 .L0 
+     /tmp/cc2wneLk.s:18     .text:0000000000000008 .L0 
+     /tmp/cc2wneLk.s:20     .text:000000000000000c .L0 
+     /tmp/cc2wneLk.s:23     .text:000000000000000c .L0 
+     /tmp/cc2wneLk.s:24     .text:000000000000000c .L0 
+     /tmp/cc2wneLk.s:26     .text:0000000000000010 .L0 
+     /tmp/cc2wneLk.s:30     .text:0000000000000014 .L0 
+     /tmp/cc2wneLk.s:31     .text:0000000000000014 .L0 
+     /tmp/cc2wneLk.s:32     .text:0000000000000014 .L0 
+     /tmp/cc2wneLk.s:35     .text:0000000000000018 .L0 
+     /tmp/cc2wneLk.s:36     .text:0000000000000018 .L0 
+     /tmp/cc2wneLk.s:39     .text:000000000000001c .L0 
+     /tmp/cc2wneLk.s:40     .text:000000000000001c .L0 
+     /tmp/cc2wneLk.s:43     .text:0000000000000020 .L0 
+     /tmp/cc2wneLk.s:44     .text:0000000000000020 .L0 
+     /tmp/cc2wneLk.s:47     .text:0000000000000024 .L0 
+     /tmp/cc2wneLk.s:50     .text:0000000000000028 .L0 
+     /tmp/cc2wneLk.s:51     .text:0000000000000028 .L0 
+     /tmp/cc2wneLk.s:53     .text:000000000000002c .L0 
+     /tmp/cc2wneLk.s:54     .text:000000000000002c .L0 
+     /tmp/cc2wneLk.s:56     .text:0000000000000030 .L0 
+     /tmp/cc2wneLk.s:58     .text:0000000000000034 .L0 
+     /tmp/cc2wneLk.s:59     .text:0000000000000034 .L0 
+     /tmp/cc2wneLk.s:63     .text:0000000000000038 .L0 
+     /tmp/cc2wneLk.s:64     .text:0000000000000038 .L0 
+     /tmp/cc2wneLk.s:66     .text:000000000000003c .L0 
+     /tmp/cc2wneLk.s:72     .text:0000000000000040 .L0 
+     /tmp/cc2wneLk.s:73     .text:0000000000000044 .L0 
+     /tmp/cc2wneLk.s:74     .text:0000000000000044 .L0 
+     /tmp/cc2wneLk.s:75     .text:0000000000000044 .L0 
+     /tmp/cc2wneLk.s:77     .text:0000000000000048 .L0 
+     /tmp/cc2wneLk.s:81     .text:000000000000004c .L0 
+     /tmp/cc2wneLk.s:84     .text:000000000000004c .L0 
+     /tmp/cc2wneLk.s:86     .text:0000000000000050 .L0 
+     /tmp/cc2wneLk.s:87     .text:0000000000000050 .L0 
+     /tmp/cc2wneLk.s:89     .text:0000000000000054 .L0 
+     /tmp/cc2wneLk.s:91     .text:0000000000000058 .L0 
+     /tmp/cc2wneLk.s:92     .text:0000000000000058 .L0 
+     /tmp/cc2wneLk.s:96     .text:0000000000000060 .L0 
+     /tmp/cc2wneLk.s:97     .text:0000000000000060 .L0 
+     /tmp/cc2wneLk.s:101    .text:0000000000000070 .L0 
+     /tmp/cc2wneLk.s:105    .text:0000000000000078 .L0 
+     /tmp/cc2wneLk.s:106    .text:0000000000000078 .L0 
+     /tmp/cc2wneLk.s:108    .text:0000000000000080 .L0 
+     /tmp/cc2wneLk.s:109    .text:0000000000000080 .L0 
+     /tmp/cc2wneLk.s:115    .text:0000000000000088 .L0 
+     /tmp/cc2wneLk.s:116    .text:0000000000000088 .L0 
+     /tmp/cc2wneLk.s:121    .text:0000000000000094 .L0 
+     /tmp/cc2wneLk.s:122    .text:0000000000000094 .L0 
+     /tmp/cc2wneLk.s:126    .text:000000000000009c .L0 
+     /tmp/cc2wneLk.s:127    .text:00000000000000a0 .L0 
+     /tmp/cc2wneLk.s:133    .text:00000000000000a0 _ZN13FreeShardList9find_bestEm
+GAS LISTING /tmp/cc2wneLk.s 			page 22
+
+
+     /tmp/cc2wneLk.s:136    .text:00000000000000a0 .L0 
+     /tmp/cc2wneLk.s:138    .text:00000000000000a0 .L0 
+     /tmp/cc2wneLk.s:140    .text:00000000000000a4 .L0 
+     /tmp/cc2wneLk.s:141    .text:00000000000000a4 .L0 
+     /tmp/cc2wneLk.s:143    .text:00000000000000ac .L0 
+     /tmp/cc2wneLk.s:146    .text:00000000000000b0 .L0 
+     /tmp/cc2wneLk.s:148    .text:00000000000000b4 .L0 
+     /tmp/cc2wneLk.s:149    .text:00000000000000b8 .L0 
+     /tmp/cc2wneLk.s:153    .text:00000000000000c4 .L0 
+     /tmp/cc2wneLk.s:154    .text:00000000000000c4 .L0 
+     /tmp/cc2wneLk.s:155    .text:00000000000000c4 .L0 
+     /tmp/cc2wneLk.s:157    .text:00000000000000c8 .L0 
+     /tmp/cc2wneLk.s:159    .text:00000000000000c8 .L0 
+     /tmp/cc2wneLk.s:160    .text:00000000000000c8 .L0 
+     /tmp/cc2wneLk.s:163    .text:00000000000000d4 .L0 
+     /tmp/cc2wneLk.s:166    .text:00000000000000d8 .L0 
+     /tmp/cc2wneLk.s:167    .text:00000000000000d8 .L0 
+     /tmp/cc2wneLk.s:170    .text:00000000000000dc .L0 
+     /tmp/cc2wneLk.s:171    .text:00000000000000dc .L0 
+     /tmp/cc2wneLk.s:172    .text:00000000000000dc .L0 
+     /tmp/cc2wneLk.s:173    .text:00000000000000dc .L0 
+     /tmp/cc2wneLk.s:174    .text:00000000000000dc .L0 
+     /tmp/cc2wneLk.s:176    .text:00000000000000e0 .L0 
+     /tmp/cc2wneLk.s:180    .text:00000000000000e8 .L0 
+     /tmp/cc2wneLk.s:181    .text:00000000000000e8 .L0 
+     /tmp/cc2wneLk.s:182    .text:00000000000000e8 .L0 
+     /tmp/cc2wneLk.s:183    .text:00000000000000e8 .L0 
+     /tmp/cc2wneLk.s:185    .text:00000000000000e8 .L0 
+     /tmp/cc2wneLk.s:186    .text:00000000000000e8 .L0 
+     /tmp/cc2wneLk.s:191    .text:0000000000000100 .L0 
+     /tmp/cc2wneLk.s:192    .text:0000000000000100 .L0 
+     /tmp/cc2wneLk.s:194    .text:0000000000000104 .L0 
+     /tmp/cc2wneLk.s:195    .text:0000000000000104 .L0 
+     /tmp/cc2wneLk.s:197    .text:0000000000000108 .L0 
+     /tmp/cc2wneLk.s:198    .text:0000000000000108 .L0 
+     /tmp/cc2wneLk.s:200    .text:000000000000010c .L0 
+     /tmp/cc2wneLk.s:205    .text:0000000000000120 .L0 
+     /tmp/cc2wneLk.s:207    .text:0000000000000124 .L0 
+     /tmp/cc2wneLk.s:208    .text:0000000000000124 .L0 
+     /tmp/cc2wneLk.s:212    .text:000000000000012c .L0 
+     /tmp/cc2wneLk.s:213    .text:000000000000012c .L0 
+     /tmp/cc2wneLk.s:214    .text:000000000000012c .L0 
+     /tmp/cc2wneLk.s:215    .text:000000000000012c .L0 
+     /tmp/cc2wneLk.s:218    .text:000000000000012c .L0 
+     /tmp/cc2wneLk.s:222    .text:0000000000000130 .L0 
+     /tmp/cc2wneLk.s:223    .text:0000000000000130 .L0 
+     /tmp/cc2wneLk.s:224    .text:0000000000000130 .L0 
+     /tmp/cc2wneLk.s:227    .text:0000000000000134 .L0 
+     /tmp/cc2wneLk.s:228    .text:0000000000000134 .L0 
+     /tmp/cc2wneLk.s:229    .text:0000000000000134 .L0 
+     /tmp/cc2wneLk.s:231    .text:0000000000000138 .L0 
+     /tmp/cc2wneLk.s:233    .text:000000000000013c .L0 
+     /tmp/cc2wneLk.s:241    .text:0000000000000144 .L0 
+     /tmp/cc2wneLk.s:242    .text:0000000000000144 .L0 
+     /tmp/cc2wneLk.s:243    .text:0000000000000144 .L0 
+     /tmp/cc2wneLk.s:245    .text:0000000000000148 .L0 
+     /tmp/cc2wneLk.s:249    .text:000000000000014c .L0 
+GAS LISTING /tmp/cc2wneLk.s 			page 23
+
+
+     /tmp/cc2wneLk.s:250    .text:000000000000014c .L0 
+     /tmp/cc2wneLk.s:251    .text:000000000000014c .L0 
+     /tmp/cc2wneLk.s:252    .text:000000000000014c .L0 
+     /tmp/cc2wneLk.s:254    .text:0000000000000150 .L0 
+     /tmp/cc2wneLk.s:257    .text:0000000000000154 .L0 
+     /tmp/cc2wneLk.s:259    .text:0000000000000158 .L0 
+     /tmp/cc2wneLk.s:265    .text:0000000000000160 .L0 
+     /tmp/cc2wneLk.s:269    .text:0000000000000164 .L0 
+     /tmp/cc2wneLk.s:270    .text:0000000000000168 .L0 
+     /tmp/cc2wneLk.s:271    .text:0000000000000168 .L0 
+     /tmp/cc2wneLk.s:273    .text:000000000000016c .L0 
+     /tmp/cc2wneLk.s:274    .text:000000000000016c .L0 
+     /tmp/cc2wneLk.s:276    .text:0000000000000170 .L0 
+     /tmp/cc2wneLk.s:279    .text:0000000000000174 .L0 
+     /tmp/cc2wneLk.s:283    .text:0000000000000178 .L0 
+     /tmp/cc2wneLk.s:285    .text:0000000000000178 .L0 
+     /tmp/cc2wneLk.s:286    .text:0000000000000178 .L0 
+     /tmp/cc2wneLk.s:290    .text:0000000000000184 .L0 
+     /tmp/cc2wneLk.s:291    .text:0000000000000184 .L0 
+     /tmp/cc2wneLk.s:295    .text:000000000000018c .L0 
+     /tmp/cc2wneLk.s:296    .text:000000000000018c .L0 
+     /tmp/cc2wneLk.s:297    .text:000000000000018c .L0 
+     /tmp/cc2wneLk.s:298    .text:000000000000018c .L0 
+     /tmp/cc2wneLk.s:300    .text:000000000000018c .L0 
+     /tmp/cc2wneLk.s:303    .text:0000000000000190 .L0 
+     /tmp/cc2wneLk.s:304    .text:0000000000000194 .L0 
+     /tmp/cc2wneLk.s:310    .text:0000000000000194 _ZN13FreeShardList11free_memoryEPv
+     /tmp/cc2wneLk.s:313    .text:0000000000000194 .L0 
+     /tmp/cc2wneLk.s:315    .text:0000000000000194 .L0 
+     /tmp/cc2wneLk.s:316    .text:0000000000000198 .L0 
+     /tmp/cc2wneLk.s:318    .text:000000000000019c .L0 
+     /tmp/cc2wneLk.s:320    .text:00000000000001a0 .L0 
+     /tmp/cc2wneLk.s:323    .text:00000000000001a0 .L0 
+     /tmp/cc2wneLk.s:324    .text:00000000000001a0 .L0 
+     /tmp/cc2wneLk.s:325    .text:00000000000001a0 .L0 
+     /tmp/cc2wneLk.s:328    .text:00000000000001a4 .L0 
+     /tmp/cc2wneLk.s:329    .text:00000000000001a4 .L0 
+     /tmp/cc2wneLk.s:332    .text:00000000000001b0 .L0 
+     /tmp/cc2wneLk.s:334    .text:00000000000001b4 .L0 
+     /tmp/cc2wneLk.s:337    .text:00000000000001c0 .L0 
+     /tmp/cc2wneLk.s:339    .text:00000000000001c4 .L0 
+     /tmp/cc2wneLk.s:340    .text:00000000000001c4 .L0 
+     /tmp/cc2wneLk.s:342    .text:00000000000001c8 .L0 
+     /tmp/cc2wneLk.s:345    .text:00000000000001cc .L0 
+     /tmp/cc2wneLk.s:346    .text:00000000000001cc .L0 
+     /tmp/cc2wneLk.s:347    .text:00000000000001cc .L0 
+     /tmp/cc2wneLk.s:350    .text:00000000000001d4 .L0 
+     /tmp/cc2wneLk.s:352    .text:00000000000001d8 .L0 
+     /tmp/cc2wneLk.s:356    .text:00000000000001dc .L0 
+     /tmp/cc2wneLk.s:357    .text:00000000000001dc .L0 
+     /tmp/cc2wneLk.s:358    .text:00000000000001dc .L0 
+     /tmp/cc2wneLk.s:360    .text:00000000000001e0 .L0 
+     /tmp/cc2wneLk.s:362    .text:00000000000001e4 .L0 
+     /tmp/cc2wneLk.s:364    .text:00000000000001e8 .L0 
+     /tmp/cc2wneLk.s:366    .text:00000000000001ec .L0 
+     /tmp/cc2wneLk.s:367    .text:00000000000001ec .L0 
+     /tmp/cc2wneLk.s:370    .text:00000000000001f0 .L0 
+GAS LISTING /tmp/cc2wneLk.s 			page 24
+
+
+     /tmp/cc2wneLk.s:372    .text:00000000000001f4 .L0 
+     /tmp/cc2wneLk.s:379    .text:00000000000001fc .L0 
+     /tmp/cc2wneLk.s:384    .text:0000000000000200 .L0 
+     /tmp/cc2wneLk.s:391    .text:0000000000000204 .L0 
+     /tmp/cc2wneLk.s:392    .text:0000000000000204 .L0 
+     /tmp/cc2wneLk.s:394    .text:0000000000000208 .L0 
+     /tmp/cc2wneLk.s:396    .text:000000000000020c .L0 
+     /tmp/cc2wneLk.s:398    .text:0000000000000210 .L0 
+     /tmp/cc2wneLk.s:400    .text:0000000000000214 .L0 
+     /tmp/cc2wneLk.s:410    .text:0000000000000218 .L0 
+     /tmp/cc2wneLk.s:422    .text:000000000000021c .L0 
+     /tmp/cc2wneLk.s:436    .text:0000000000000220 .L0 
+     /tmp/cc2wneLk.s:437    .text:0000000000000220 .L0 
+     /tmp/cc2wneLk.s:439    .text:0000000000000224 .L0 
+     /tmp/cc2wneLk.s:443    .text:0000000000000228 .L0 
+     /tmp/cc2wneLk.s:444    .text:0000000000000228 .L0 
+     /tmp/cc2wneLk.s:445    .text:0000000000000228 .L0 
+     /tmp/cc2wneLk.s:447    .text:000000000000022c .L0 
+     /tmp/cc2wneLk.s:448    .text:000000000000022c .L0 
+     /tmp/cc2wneLk.s:450    .text:0000000000000230 .L0 
+     /tmp/cc2wneLk.s:451    .text:0000000000000230 .L0 
+     /tmp/cc2wneLk.s:453    .text:0000000000000234 .L0 
+     /tmp/cc2wneLk.s:454    .text:0000000000000234 .L0 
+     /tmp/cc2wneLk.s:463    .text:0000000000000238 .L0 
+     /tmp/cc2wneLk.s:472    .text:0000000000000240 .L0 
+     /tmp/cc2wneLk.s:473    .text:0000000000000240 .L0 
+     /tmp/cc2wneLk.s:475    .text:0000000000000244 .L0 
+     /tmp/cc2wneLk.s:479    .text:0000000000000248 .L0 
+     /tmp/cc2wneLk.s:480    .text:0000000000000248 .L0 
+     /tmp/cc2wneLk.s:481    .text:0000000000000248 .L0 
+     /tmp/cc2wneLk.s:483    .text:000000000000024c .L0 
+     /tmp/cc2wneLk.s:484    .text:000000000000024c .L0 
+     /tmp/cc2wneLk.s:486    .text:0000000000000250 .L0 
+     /tmp/cc2wneLk.s:487    .text:0000000000000250 .L0 
+     /tmp/cc2wneLk.s:489    .text:0000000000000254 .L0 
+     /tmp/cc2wneLk.s:490    .text:0000000000000254 .L0 
+     /tmp/cc2wneLk.s:497    .text:000000000000025c .L0 
+     /tmp/cc2wneLk.s:507    .text:0000000000000264 .L0 
+     /tmp/cc2wneLk.s:508    .text:0000000000000264 .L0 
+     /tmp/cc2wneLk.s:509    .text:0000000000000264 .L0 
+     /tmp/cc2wneLk.s:511    .text:0000000000000268 .L0 
+     /tmp/cc2wneLk.s:514    .text:000000000000026c .L0 
+     /tmp/cc2wneLk.s:516    .text:0000000000000270 .L0 
+     /tmp/cc2wneLk.s:517    .text:0000000000000270 .L0 
+     /tmp/cc2wneLk.s:520    .text:0000000000000274 .L0 
+     /tmp/cc2wneLk.s:522    .text:0000000000000278 .L0 
+     /tmp/cc2wneLk.s:523    .text:0000000000000278 .L0 
+     /tmp/cc2wneLk.s:526    .text:000000000000027c .L0 
+     /tmp/cc2wneLk.s:527    .text:000000000000027c .L0 
+     /tmp/cc2wneLk.s:533    .text:0000000000000284 .L0 
+     /tmp/cc2wneLk.s:545    .text:000000000000028c .L0 
+     /tmp/cc2wneLk.s:547    .text:0000000000000290 .L0 
+     /tmp/cc2wneLk.s:549    .text:0000000000000294 .L0 
+     /tmp/cc2wneLk.s:550    .text:0000000000000294 .L0 
+     /tmp/cc2wneLk.s:559    .text:000000000000029c .L0 
+     /tmp/cc2wneLk.s:566    .text:00000000000002a0 .L0 
+     /tmp/cc2wneLk.s:571    .text:00000000000002a4 .L0 
+GAS LISTING /tmp/cc2wneLk.s 			page 25
+
+
+     /tmp/cc2wneLk.s:573    .text:00000000000002a8 .L0 
+     /tmp/cc2wneLk.s:575    .text:00000000000002ac .L0 
+     /tmp/cc2wneLk.s:576    .text:00000000000002ac .L0 
+     /tmp/cc2wneLk.s:578    .text:00000000000002b0 .L0 
+     /tmp/cc2wneLk.s:580    .text:00000000000002b4 .L0 
+     /tmp/cc2wneLk.s:581    .text:00000000000002b4 .L0 
+     /tmp/cc2wneLk.s:584    .text:00000000000002b8 .L0 
+     /tmp/cc2wneLk.s:586    .text:00000000000002bc .L0 
+     /tmp/cc2wneLk.s:589    .text:00000000000002c0 .L0 
+     /tmp/cc2wneLk.s:596    .text:00000000000002c4 .L0 
+     /tmp/cc2wneLk.s:604    .text:00000000000002c8 .L0 
+     /tmp/cc2wneLk.s:610    .text:00000000000002cc .L0 
+     /tmp/cc2wneLk.s:611    .text:00000000000002cc .L0 
+     /tmp/cc2wneLk.s:612    .text:00000000000002cc .L0 
+     /tmp/cc2wneLk.s:614    .text:00000000000002d0 .L0 
+     /tmp/cc2wneLk.s:616    .text:00000000000002d4 .L0 
+     /tmp/cc2wneLk.s:617    .text:00000000000002d4 .L0 
+     /tmp/cc2wneLk.s:620    .text:00000000000002d8 .L0 
+     /tmp/cc2wneLk.s:623    .text:00000000000002dc .L0 
+     /tmp/cc2wneLk.s:625    .text:00000000000002e0 .L0 
+     /tmp/cc2wneLk.s:626    .text:00000000000002e0 .L0 
+     /tmp/cc2wneLk.s:629    .text:00000000000002e4 .L0 
+     /tmp/cc2wneLk.s:630    .text:00000000000002e4 .L0 
+     /tmp/cc2wneLk.s:639    .text:00000000000002e8 .L0 
+     /tmp/cc2wneLk.s:659    .text:00000000000002f0 .L0 
+     /tmp/cc2wneLk.s:660    .text:00000000000002f0 .L0 
+     /tmp/cc2wneLk.s:662    .text:00000000000002f4 .L0 
+     /tmp/cc2wneLk.s:664    .text:00000000000002f8 .L0 
+     /tmp/cc2wneLk.s:671    .text:00000000000002fc .L0 
+     /tmp/cc2wneLk.s:675    .text:0000000000000300 .L0 
+     /tmp/cc2wneLk.s:676    .text:0000000000000300 .L0 
+     /tmp/cc2wneLk.s:677    .text:0000000000000300 .L0 
+     /tmp/cc2wneLk.s:679    .text:0000000000000304 .L0 
+     /tmp/cc2wneLk.s:680    .text:0000000000000304 .L0 
+     /tmp/cc2wneLk.s:682    .text:0000000000000308 .L0 
+     /tmp/cc2wneLk.s:683    .text:0000000000000308 .L0 
+     /tmp/cc2wneLk.s:685    .text:000000000000030c .L0 
+     /tmp/cc2wneLk.s:686    .text:000000000000030c .L0 
+     /tmp/cc2wneLk.s:688    .text:0000000000000310 .L0 
+     /tmp/cc2wneLk.s:689    .text:0000000000000310 .L0 
+     /tmp/cc2wneLk.s:696    .text:0000000000000318 .L0 
+     /tmp/cc2wneLk.s:704    .text:0000000000000320 .L0 
+     /tmp/cc2wneLk.s:705    .text:0000000000000320 .L0 
+     /tmp/cc2wneLk.s:710    .text:0000000000000328 .L0 
+     /tmp/cc2wneLk.s:720    .text:0000000000000330 .L0 
+     /tmp/cc2wneLk.s:731    .text:0000000000000340 .L0 
+     /tmp/cc2wneLk.s:737    .text:0000000000000348 .L0 
+     /tmp/cc2wneLk.s:741    .text:000000000000034c .L0 
+     /tmp/cc2wneLk.s:742    .text:0000000000000350 .L0 
+     /tmp/cc2wneLk.s:743    .text:0000000000000350 .L0 
+     /tmp/cc2wneLk.s:744    .text:0000000000000350 .L0 
+     /tmp/cc2wneLk.s:746    .text:0000000000000354 .L0 
+     /tmp/cc2wneLk.s:750    .text:0000000000000358 .L0 
+     /tmp/cc2wneLk.s:755    .text:0000000000000358 .L0 
+     /tmp/cc2wneLk.s:765    .text:0000000000000360 .L0 
+     /tmp/cc2wneLk.s:771    .text:0000000000000368 .L0 
+     /tmp/cc2wneLk.s:785    .bss:0000000000000008 _ZN13FreeShardList4tailE
+GAS LISTING /tmp/cc2wneLk.s 			page 26
+
+
+     /tmp/cc2wneLk.s:781    .bss:0000000000000000 _ZN13FreeShardList4headE
+     /tmp/cc2wneLk.s:778    .bss:0000000000000000 .LANCHOR0
+     /tmp/cc2wneLk.s:792    .text:0000000000000368 .L0 
+     /tmp/cc2wneLk.s:97     .text:0000000000000060 .L0 
+     /tmp/cc2wneLk.s:106    .text:0000000000000078 .L0 
+     /tmp/cc2wneLk.s:116    .text:0000000000000088 .L0 
+     /tmp/cc2wneLk.s:122    .text:0000000000000094 .L0 
+     /tmp/cc2wneLk.s:141    .text:00000000000000a4 .L0 
+     /tmp/cc2wneLk.s:160    .text:00000000000000c8 .L0 
+     /tmp/cc2wneLk.s:186    .text:00000000000000e8 .L0 
+     /tmp/cc2wneLk.s:188    .text:00000000000000f4 .L0 
+     /tmp/cc2wneLk.s:200    .text:000000000000010c .L0 
+     /tmp/cc2wneLk.s:329    .text:00000000000001a4 .L0 
+     /tmp/cc2wneLk.s:334    .text:00000000000001b4 .L0 
+     /tmp/cc2wneLk.s:347    .text:00000000000001cc .L0 
+     /tmp/cc2wneLk.s:490    .text:0000000000000254 .L0 
+     /tmp/cc2wneLk.s:527    .text:000000000000027c .L0 
+     /tmp/cc2wneLk.s:689    .text:0000000000000310 .L0 
+     /tmp/cc2wneLk.s:80     .text:000000000000004c .L9
+     /tmp/cc2wneLk.s:112    .text:0000000000000088 .L10
+     /tmp/cc2wneLk.s:119    .text:0000000000000094 .L11
+     /tmp/cc2wneLk.s:94     .text:0000000000000060 .L12
+     /tmp/cc2wneLk.s:103    .text:0000000000000078 .L13
+     /tmp/cc2wneLk.s:68     .text:0000000000000040 .L1
+     /tmp/cc2wneLk.s:61     .text:0000000000000038 .L7
+     /tmp/cc2wneLk.s:179    .text:00000000000000e8 .L27
+     /tmp/cc2wneLk.s:294    .text:000000000000018c .L22
+     /tmp/cc2wneLk.s:238    .text:0000000000000144 .L17
+     /tmp/cc2wneLk.s:144    .text:00000000000000b0 .L15
+     /tmp/cc2wneLk.s:235    .text:0000000000000140 .L21
+     /tmp/cc2wneLk.s:262    .text:0000000000000160 .L18
+     /tmp/cc2wneLk.s:211    .text:000000000000012c .L19
+     /tmp/cc2wneLk.s:219    .text:0000000000000130 .L20
+     /tmp/cc2wneLk.s:282    .text:0000000000000178 .L28
+     /tmp/cc2wneLk.s:267    .text:0000000000000164 .L14
+     /tmp/cc2wneLk.s:716    .text:0000000000000330 .L40
+     /tmp/cc2wneLk.s:724    .text:0000000000000338 .L41
+     /tmp/cc2wneLk.s:729    .text:0000000000000340 .L42
+     /tmp/cc2wneLk.s:376    .text:00000000000001fc .L31
+     /tmp/cc2wneLk.s:735    .text:0000000000000348 .L43
+     /tmp/cc2wneLk.s:354    .text:00000000000001dc .L32
+     /tmp/cc2wneLk.s:649    .text:00000000000002f0 .L33
+     /tmp/cc2wneLk.s:467    .text:0000000000000240 .L47
+     /tmp/cc2wneLk.s:749    .text:0000000000000358 .L44
+     /tmp/cc2wneLk.s:540    .text:000000000000028c .L48
+     /tmp/cc2wneLk.s:568    .text:00000000000002a4 .L49
+     /tmp/cc2wneLk.s:606    .text:00000000000002cc .L50
+     /tmp/cc2wneLk.s:739    .text:000000000000034c .L30
+     /tmp/cc2wneLk.s:501    .text:0000000000000264 .L51
+     /tmp/cc2wneLk.s:411    .text:000000000000021c .L36
+     /tmp/cc2wneLk.s:423    .text:0000000000000220 .L37
+     /tmp/cc2wneLk.s:700    .text:0000000000000320 .L52
+     /tmp/cc2wneLk.s:759    .text:0000000000000360 .L45
+     /tmp/cc2wneLk.s:1296   .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/cc2wneLk.s:2477   .debug_str:0000000000000186 .LASF47
+     /tmp/cc2wneLk.s:2453   .debug_str:000000000000009b .LASF48
+     /tmp/cc2wneLk.s:2507   .debug_str:0000000000000302 .LASF49
+GAS LISTING /tmp/cc2wneLk.s 			page 27
+
+
+     /tmp/cc2wneLk.s:5      .text:0000000000000000 .Ltext0
+     /tmp/cc2wneLk.s:788    .text:0000000000000368 .Letext0
+     /tmp/cc2wneLk.s:2425   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/cc2wneLk.s:2487   .debug_str:0000000000000282 .LASF0
+     /tmp/cc2wneLk.s:2465   .debug_str:0000000000000113 .LASF1
+     /tmp/cc2wneLk.s:2457   .debug_str:00000000000000d0 .LASF2
+     /tmp/cc2wneLk.s:2439   .debug_str:000000000000003f .LASF4
+     /tmp/cc2wneLk.s:2463   .debug_str:0000000000000101 .LASF3
+     /tmp/cc2wneLk.s:2429   .debug_str:0000000000000013 .LASF5
+     /tmp/cc2wneLk.s:2427   .debug_str:0000000000000000 .LASF6
+     /tmp/cc2wneLk.s:2449   .debug_str:0000000000000080 .LASF7
+     /tmp/cc2wneLk.s:2497   .debug_str:00000000000002b6 .LASF8
+     /tmp/cc2wneLk.s:2437   .debug_str:0000000000000031 .LASF9
+     /tmp/cc2wneLk.s:2533   .debug_str:00000000000003a5 .LASF10
+     /tmp/cc2wneLk.s:2495   .debug_str:00000000000002a7 .LASF11
+     /tmp/cc2wneLk.s:2525   .debug_str:0000000000000383 .LASF12
+     /tmp/cc2wneLk.s:2505   .debug_str:00000000000002f2 .LASF13
+     /tmp/cc2wneLk.s:2467   .debug_str:0000000000000126 .LASF14
+     /tmp/cc2wneLk.s:2443   .debug_str:0000000000000055 .LASF15
+     /tmp/cc2wneLk.s:2501   .debug_str:00000000000002cf .LASF16
+     /tmp/cc2wneLk.s:2469   .debug_str:0000000000000132 .LASF17
+     /tmp/cc2wneLk.s:2517   .debug_str:000000000000035b .LASF50
+     /tmp/cc2wneLk.s:2441   .debug_str:0000000000000046 .LASF18
+     /tmp/cc2wneLk.s:2527   .debug_str:0000000000000393 .LASF19
+     /tmp/cc2wneLk.s:2431   .debug_str:000000000000001a .LASF20
+     /tmp/cc2wneLk.s:2509   .debug_str:0000000000000325 .LASF51
+     /tmp/cc2wneLk.s:2435   .debug_str:0000000000000024 .LASF23
+     /tmp/cc2wneLk.s:2473   .debug_str:0000000000000152 .LASF25
+     /tmp/cc2wneLk.s:2481   .debug_str:000000000000024f .LASF21
+     /tmp/cc2wneLk.s:2515   .debug_str:0000000000000356 .LASF22
+     /tmp/cc2wneLk.s:2461   .debug_str:00000000000000f7 .LASF52
+     /tmp/cc2wneLk.s:2455   .debug_str:00000000000000b1 .LASF53
+     /tmp/cc2wneLk.s:2447   .debug_str:0000000000000074 .LASF24
+     /tmp/cc2wneLk.s:2483   .debug_str:0000000000000254 .LASF26
+     /tmp/cc2wneLk.s:2513   .debug_str:000000000000033d .LASF27
+     /tmp/cc2wneLk.s:2459   .debug_str:00000000000000de .LASF28
+     /tmp/cc2wneLk.s:311    .text:0000000000000194 .LFB2
+     /tmp/cc2wneLk.s:772    .text:0000000000000368 .LFE2
+     /tmp/cc2wneLk.s:2489   .debug_str:000000000000028f .LASF36
+     /tmp/cc2wneLk.s:1782   .debug_loc:0000000000000000 .LLST13
+     /tmp/cc2wneLk.s:2493   .debug_str:00000000000002a0 .LASF29
+     /tmp/cc2wneLk.s:1925   .debug_loc:0000000000000240 .LLST14
+     /tmp/cc2wneLk.s:2491   .debug_str:0000000000000297 .LASF30
+     /tmp/cc2wneLk.s:1938   .debug_loc:0000000000000278 .LLST15
+     /tmp/cc2wneLk.s:1969   .debug_loc:000000000000030d .LLST16
+     /tmp/cc2wneLk.s:2531   .debug_str:00000000000003a0 .LASF31
+     /tmp/cc2wneLk.s:2027   .debug_loc:00000000000003ea .LLST17
+     /tmp/cc2wneLk.s:2433   .debug_str:000000000000001f .LASF32
+     /tmp/cc2wneLk.s:2052   .debug_loc:000000000000045b .LLST18
+     /tmp/cc2wneLk.s:505    .text:0000000000000264 .LBB33
+     /tmp/cc2wneLk.s:528    .text:0000000000000284 .LBE33
+     /tmp/cc2wneLk.s:2451   .debug_str:0000000000000093 .LASF33
+     /tmp/cc2wneLk.s:2109   .debug_loc:0000000000000564 .LLST22
+     /tmp/cc2wneLk.s:476    .text:0000000000000248 .LBB32
+     /tmp/cc2wneLk.s:492    .text:000000000000025c .LBE32
+     /tmp/cc2wneLk.s:2116   .debug_loc:0000000000000587 .LLST21
+     /tmp/cc2wneLk.s:608    .text:00000000000002cc .LBB15
+GAS LISTING /tmp/cc2wneLk.s 			page 28
+
+
+     /tmp/cc2wneLk.s:631    .text:00000000000002e8 .LBE15
+     /tmp/cc2wneLk.s:2529   .debug_str:0000000000000398 .LASF34
+     /tmp/cc2wneLk.s:2123   .debug_loc:00000000000005aa .LLST20
+     /tmp/cc2wneLk.s:440    .text:0000000000000228 .LBB14
+     /tmp/cc2wneLk.s:455    .text:0000000000000238 .LBE14
+     /tmp/cc2wneLk.s:2130   .debug_loc:00000000000005cd .LLST19
+     /tmp/cc2wneLk.s:672    .text:0000000000000300 .LBB53
+     /tmp/cc2wneLk.s:691    .text:0000000000000318 .LBE53
+     /tmp/cc2wneLk.s:2475   .debug_str:000000000000017e .LASF35
+     /tmp/cc2wneLk.s:2137   .debug_loc:00000000000005f0 .LLST23
+     /tmp/cc2wneLk.s:10     .text:0000000000000000 .LFB1
+     /tmp/cc2wneLk.s:128    .text:00000000000000a0 .LFE1
+     /tmp/cc2wneLk.s:2479   .debug_str:000000000000024a .LASF37
+     /tmp/cc2wneLk.s:2144   .debug_loc:0000000000000613 .LLST0
+     /tmp/cc2wneLk.s:2163   .debug_loc:000000000000066f .LLST1
+     /tmp/cc2wneLk.s:2411   .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/cc2wneLk.s:2445   .debug_str:000000000000006b .LASF38
+     /tmp/cc2wneLk.s:2188   .debug_loc:00000000000006d1 .LLST2
+     /tmp/cc2wneLk.s:2503   .debug_str:00000000000002e5 .LASF39
+     /tmp/cc2wneLk.s:2199   .debug_loc:0000000000000707 .LLST3
+     /tmp/cc2wneLk.s:2519   .debug_str:0000000000000360 .LASF40
+     /tmp/cc2wneLk.s:2211   .debug_loc:000000000000073e .LLST4
+     /tmp/cc2wneLk.s:134    .text:00000000000000a0 .LFB0
+     /tmp/cc2wneLk.s:305    .text:0000000000000194 .LFE0
+     /tmp/cc2wneLk.s:2222   .debug_loc:0000000000000774 .LLST5
+     /tmp/cc2wneLk.s:2523   .debug_str:0000000000000375 .LASF41
+     /tmp/cc2wneLk.s:2259   .debug_loc:000000000000080f .LLST6
+     /tmp/cc2wneLk.s:2471   .debug_str:0000000000000148 .LASF42
+     /tmp/cc2wneLk.s:2282   .debug_loc:000000000000087e .LLST7
+     /tmp/cc2wneLk.s:2511   .debug_str:0000000000000333 .LASF43
+     /tmp/cc2wneLk.s:2297   .debug_loc:00000000000008c7 .LLST8
+     /tmp/cc2wneLk.s:2320   .debug_loc:0000000000000936 .LLST9
+     /tmp/cc2wneLk.s:2347   .debug_loc:00000000000009b8 .LLST10
+     /tmp/cc2wneLk.s:2521   .debug_str:0000000000000369 .LASF44
+     /tmp/cc2wneLk.s:2363   .debug_loc:0000000000000a02 .LLST11
+     /tmp/cc2wneLk.s:2485   .debug_str:0000000000000277 .LASF45
+     /tmp/cc2wneLk.s:2387   .debug_loc:0000000000000a72 .LLST12
+     /tmp/cc2wneLk.s:288    .text:0000000000000184 .LVL27
+     /tmp/cc2wneLk.s:2499   .debug_str:00000000000002c6 .LASF46
+     /tmp/cc2wneLk.s:314    .text:0000000000000194 .LVL30
+     /tmp/cc2wneLk.s:464    .text:000000000000023c .LVL41
+     /tmp/cc2wneLk.s:466    .text:0000000000000240 .LVL42
+     /tmp/cc2wneLk.s:498    .text:0000000000000260 .LVL45
+     /tmp/cc2wneLk.s:500    .text:0000000000000264 .LVL46
+     /tmp/cc2wneLk.s:534    .text:0000000000000288 .LVL50
+     /tmp/cc2wneLk.s:539    .text:000000000000028c .LVL51
+     /tmp/cc2wneLk.s:560    .text:00000000000002a0 .LVL54
+     /tmp/cc2wneLk.s:567    .text:00000000000002a4 .LVL55
+     /tmp/cc2wneLk.s:597    .text:00000000000002c8 .LVL58
+     /tmp/cc2wneLk.s:605    .text:00000000000002cc .LVL59
+     /tmp/cc2wneLk.s:640    .text:00000000000002ec .LVL63
+     /tmp/cc2wneLk.s:648    .text:00000000000002f0 .LVL64
+     /tmp/cc2wneLk.s:697    .text:000000000000031c .LVL67
+     /tmp/cc2wneLk.s:699    .text:0000000000000320 .LVL68
+     /tmp/cc2wneLk.s:711    .text:000000000000032c .LVL69
+     /tmp/cc2wneLk.s:715    .text:0000000000000330 .LVL70
+     /tmp/cc2wneLk.s:721    .text:0000000000000334 .LVL71
+GAS LISTING /tmp/cc2wneLk.s 			page 29
+
+
+     /tmp/cc2wneLk.s:723    .text:0000000000000338 .LVL72
+     /tmp/cc2wneLk.s:726    .text:000000000000033c .LVL73
+     /tmp/cc2wneLk.s:728    .text:0000000000000340 .LVL74
+     /tmp/cc2wneLk.s:732    .text:0000000000000344 .LVL75
+     /tmp/cc2wneLk.s:734    .text:0000000000000348 .LVL76
+     /tmp/cc2wneLk.s:738    .text:000000000000034c .LVL77
+     /tmp/cc2wneLk.s:748    .text:0000000000000358 .LVL78
+     /tmp/cc2wneLk.s:756    .text:000000000000035c .LVL79
+     /tmp/cc2wneLk.s:758    .text:0000000000000360 .LVL80
+     /tmp/cc2wneLk.s:766    .text:0000000000000364 .LVL81
+     /tmp/cc2wneLk.s:322    .text:00000000000001a0 .LVL31
+     /tmp/cc2wneLk.s:326    .text:00000000000001a4 .LVL32
+     /tmp/cc2wneLk.s:401    .text:0000000000000218 .LVL39
+     /tmp/cc2wneLk.s:343    .text:00000000000001cc .LVL33
+     /tmp/cc2wneLk.s:512    .text:000000000000026c .LVL47
+     /tmp/cc2wneLk.s:524    .text:000000000000027c .LVL49
+     /tmp/cc2wneLk.s:551    .text:0000000000000298 .LVL52
+     /tmp/cc2wneLk.s:553    .text:000000000000029c .LVL53
+     /tmp/cc2wneLk.s:587    .text:00000000000002c0 .LVL57
+     /tmp/cc2wneLk.s:621    .text:00000000000002dc .LVL61
+     /tmp/cc2wneLk.s:627    .text:00000000000002e4 .LVL62
+     /tmp/cc2wneLk.s:353    .text:00000000000001dc .LVL35
+     /tmp/cc2wneLk.s:368    .text:00000000000001f0 .LVL36
+     /tmp/cc2wneLk.s:375    .text:00000000000001fc .LVL38
+     /tmp/cc2wneLk.s:348    .text:00000000000001d4 .LVL34
+     /tmp/cc2wneLk.s:373    .text:00000000000001f8 .LVL37
+     /tmp/cc2wneLk.s:491    .text:000000000000025c .LVL44
+     /tmp/cc2wneLk.s:518    .text:0000000000000274 .LVL48
+     /tmp/cc2wneLk.s:582    .text:00000000000002b8 .LVL56
+     /tmp/cc2wneLk.s:618    .text:00000000000002d8 .LVL60
+     /tmp/cc2wneLk.s:690    .text:0000000000000318 .LVL66
+     /tmp/cc2wneLk.s:478    .text:0000000000000248 .LVL43
+     /tmp/cc2wneLk.s:442    .text:0000000000000228 .LVL40
+     /tmp/cc2wneLk.s:674    .text:0000000000000300 .LVL65
+     /tmp/cc2wneLk.s:14     .text:0000000000000000 .LVL0
+     /tmp/cc2wneLk.s:41     .text:0000000000000020 .LVL4
+     /tmp/cc2wneLk.s:67     .text:0000000000000040 .LVL8
+     /tmp/cc2wneLk.s:79     .text:000000000000004c .LVL9
+     /tmp/cc2wneLk.s:111    .text:0000000000000088 .LVL10
+     /tmp/cc2wneLk.s:45     .text:0000000000000024 .LVL5
+     /tmp/cc2wneLk.s:29     .text:0000000000000014 .LVL1
+     /tmp/cc2wneLk.s:60     .text:0000000000000038 .LVL7
+     /tmp/cc2wneLk.s:117    .text:0000000000000090 .LVL11
+     /tmp/cc2wneLk.s:33     .text:0000000000000018 .LVL2
+     /tmp/cc2wneLk.s:48     .text:0000000000000028 .LVL6
+     /tmp/cc2wneLk.s:37     .text:000000000000001c .LVL3
+     /tmp/cc2wneLk.s:137    .text:00000000000000a0 .LVL12
+     /tmp/cc2wneLk.s:210    .text:000000000000012c .LVL16
+     /tmp/cc2wneLk.s:266    .text:0000000000000164 .LVL24
+     /tmp/cc2wneLk.s:281    .text:0000000000000178 .LVL26
+     /tmp/cc2wneLk.s:293    .text:000000000000018c .LVL28
+     /tmp/cc2wneLk.s:301    .text:0000000000000190 .LVL29
+     /tmp/cc2wneLk.s:164    .text:00000000000000d8 .LVL13
+     /tmp/cc2wneLk.s:178    .text:00000000000000e8 .LVL15
+     /tmp/cc2wneLk.s:221    .text:0000000000000130 .LVL17
+     /tmp/cc2wneLk.s:234    .text:0000000000000140 .LVL19
+     /tmp/cc2wneLk.s:168    .text:00000000000000dc .LVL14
+GAS LISTING /tmp/cc2wneLk.s 			page 30
+
+
+     /tmp/cc2wneLk.s:277    .text:0000000000000170 .LVL25
+     /tmp/cc2wneLk.s:225    .text:0000000000000134 .LVL18
+     /tmp/cc2wneLk.s:237    .text:0000000000000144 .LVL20
+     /tmp/cc2wneLk.s:248    .text:000000000000014c .LVL21
+     /tmp/cc2wneLk.s:261    .text:0000000000000160 .LVL23
+     /tmp/cc2wneLk.s:255    .text:0000000000000154 .LVL22
+     /tmp/cc2wneLk.s:793    .debug_info:0000000000000000 .Ldebug_info0
+     /tmp/cc2wneLk.s:27     .text:0000000000000014 .LBB3
+     /tmp/cc2wneLk.s:69     .text:0000000000000040 .LBE3
+     /tmp/cc2wneLk.s:113    .text:0000000000000088 .LBB4
+     /tmp/cc2wneLk.s:123    .text:000000000000009c .LBE4
+     /tmp/cc2wneLk.s:216    .text:000000000000012c .LBB6
+     /tmp/cc2wneLk.s:239    .text:0000000000000144 .LBE6
+     /tmp/cc2wneLk.s:246    .text:000000000000014c .LBB7
+     /tmp/cc2wneLk.s:263    .text:0000000000000160 .LBE7
+
+UNDEFINED SYMBOLS
+HEAP_START_ADDR
+HEAP_END_ADDR
